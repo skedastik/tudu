@@ -3,80 +3,65 @@
 /**
  * Return the latest user.
  */
-create or replace function latest_user() returns tudu_user as $$
+drop function if exists latest_user();
+create function latest_user() returns tudu_user as $$
     select * from tudu_user order by user_id desc limit 1;
 $$ language sql;
 
 /**
  * Return the latest user log.
  */
-create or replace function latest_user_log() returns tudu_user_log as $$
+drop function if exists latest_user_log();
+create function latest_user_log() returns tudu_user_log as $$
     select * from tudu_user_log order by log_id desc limit 1;
 $$ language sql;
 
-/*create table tudu_user (
-    user_id                 bigint primary key default nextval('tudu_user_seq'),
-    email                   varchar(128) not null unique,
-    password_salt           varchar(64) not null,
-    password_hash           varchar(256) not null,
-    --
-    kvs                     hstore default null,
-    status                  varchar(32) not null default 'init',
-    edate                   timestamptz not null default current_timestamp,
-    cdate                   timestamptz not null default current_timestamp
-);
-create table tudu_user_log (
-    log_id                  bigint primary key default nextval('tudu_user_log_seq'),
-    user_id                 bigint references tudu_user,
-    operation               varchar(128) not null,
-    ip                      inet default null,
-    info                    text default null,
-    --
-    kvs                     hstore default null,
-    cdate                   timestamptz not null default current_timestamp
-);*/
-
 create or replace function unit_tests.signup_user() returns test_result as $$
 declare
-    _message        test_result;
-    _user_john      tudu_user%ROWTYPE;
-    _user_john_log  tudu_user_log%ROWTYPE;
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_log   tudu_user_log%ROWTYPE;
 begin
     perform tudu.signup_user('foo@bar.baz', 'djiosd', 'ahdinsdjnsdkfjkul', '127.0.0.1');
-    select * into _user_john from latest_user();
-    select * into _user_john_log from latest_user_log();
+    _user     := latest_user();
+    _user_log := latest_user_log();
     
-    if _user_john.email <> 'foo@bar.baz' then
+    if _user.email <> 'foo@bar.baz' then
         select assert.fail('should create a user with email "foo@bar.baz"') into _message;
         return _message;
     end if;
     
-    if _user_john.password_salt <> 'djiosd' then
+    if _user.password_salt <> 'djiosd' then
         select assert.fail('should create a user with password_salt "djiosd"') into _message;
         return _message;
     end if;
     
-    if _user_john.password_hash <> 'ahdinsdjnsdkfjkul' then
+    if _user.password_hash <> 'ahdinsdjnsdkfjkul' then
         select assert.fail('should create a user with password_hash "ahdinsdjnsdkfjkul"') into _message;
         return _message;
     end if;
     
-    if _user_john.status <> 'init' then
+    if _user.status <> 'init' then
         select assert.fail('should create a user with status "init"') into _message;
         return _message;
     end if;
     
-    if _user_john_log.user_id <> _user_john.user_id then
+    if not _user.kvs ? 'signup_token' then
+        select assert.fail('should create a user with "kvs" HSTORE containing a "signup_token" key') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.user_id <> _user.user_id then
         select assert.fail('should create a user log entry with user_id equal to that of newly signed up user') into _message;
         return _message;
     end if;
     
-    if _user_john_log.ip <> '127.0.0.1' then
+    if _user_log.ip <> '127.0.0.1' then
         select assert.fail('should create a user log entry with ip "127.0.0.1"') into _message;
         return _message;
     end if;
     
-    if _user_john_log.operation <> 'signup' then
+    if _user_log.operation <> 'signup' then
         select assert.fail('should create a user log entry with operation "signup"') into _message;
         return _message;
     end if;
@@ -86,5 +71,92 @@ begin
 end;
 $$ language plpgsql;
 
-/* TODO: Test duplicate email */
-/* TODO: Test confirm user */
+create or replace function unit_tests.signup_user_with_duplicate_email() returns test_result as $$
+declare
+    _message    test_result;
+    _result     bigint;
+begin
+    perform tudu.signup_user('baz@qux.gar', 'opiopuw', 'nasndjasnkjdASD', '127.0.0.1');
+    
+    _result := tudu.signup_user('baz@qux.gar', 'ndfaksh', 'iuiowernsdlfio', '127.0.0.1');
+    if _result <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.confirm_user_using_mismatched_signup_token() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _result     bigint;
+begin
+    perform tudu.signup_user('fee@ble.yer', 'mspbneub', 'nmsabnytrbewkasd', '127.0.0.1');
+    
+    _user   := latest_user();
+    _result := tudu.confirm_user(_user.user_id, 'bad_signup_token', '127.0.0.1');
+    
+    if _result <> -2 then
+        select assert.fail('should fail.') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.confirm_user() returns test_result as $$
+declare
+    _message        test_result;
+    _user           tudu_user%ROWTYPE;
+    _user_log       tudu_user_log%ROWTYPE;
+    _result         bigint;
+begin
+    perform tudu.signup_user('super@user.win', 'biawebd', 'asduytcwfebnail', '127.0.0.1');
+    
+    _user     := latest_user();
+    _result   := tudu.confirm_user(_user.user_id, _user.kvs->'signup_token', '127.0.0.1');
+    _user     := latest_user();
+    _user_log := latest_user_log();
+    
+    if _result <> _user.user_id then
+        select assert.fail('should succeed given a valid user ID and signup token.') into _message;
+        return _message;
+    end if;
+    
+    if _user.status <> 'active' then
+        select assert.fail(E'should set confirmed user\'s status to "active".') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation <> 'confirm' then
+        select assert.fail('should create a user log entry with operation "confirm"') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.confirm_nonexistent_user() returns test_result as $$
+declare
+    _message    test_result;
+    _result     bigint;
+begin
+    _result := tudu.confirm_user(-1, 'kajdsfkjlsdfl', '127.0.0.1');
+    
+    if _result <> -1 then
+        select assert.fail('should fail.') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
