@@ -29,10 +29,10 @@ begin
         return -1;
     end if;
     
-    _user_id := nextval('tudu_user_seq');
-    _email := lower(util.btrim_whitespace(_email));
+    _user_id      := nextval('tudu_user_seq');
+    _email        := lower(util.btrim_whitespace(_email));
     _signup_token := md5(random()::text || 'tudumajik' || _user_id);
-    _kvs := hstore('signup_token', _signup_token);
+    _kvs          := hstore('signup_token', _signup_token);
     
     insert into tudu_user (user_id, email, password_salt, password_hash, kvs)
     values (_user_id, _email, _pw_salt, _pw_hash, _kvs);
@@ -52,7 +52,7 @@ $$ language plpgsql security definer;
  * 
  * Arguments
  *   _user_id           ID of existing user
- *   _signup_token_in   A signup token
+ *   _signup_token      A signup token
  *   _ip                Optional IP address
  * 
  * Returns
@@ -62,14 +62,14 @@ $$ language plpgsql security definer;
  */
 create or replace function tudu.confirm_user(
     _user_id            bigint,
-    _signup_token_in    varchar,
+    _signup_token       varchar,
     _ip                 inet
 ) returns bigint as $$
 declare
-    _kvs varchar;
+    _kvs hstore;
     _status varchar;
 begin
-    select user_id, status, kvs into _user_id, _status, _kvs from tudu_user;
+    select user_id, status, kvs into _user_id, _status, _kvs from tudu_user where user_id = _user_id;
     
     if _user_id is null then
         return -1;
@@ -79,7 +79,7 @@ begin
         return _user_id;
     end if;
     
-    if _signup_token_in is distinct from _kvs->'signup_token' then
+    if _signup_token is distinct from (_kvs->'signup_token') then
         return -2;
     end if;
     
