@@ -20,7 +20,9 @@ create table tudu_user (
     kvs                     hstore default null,
     status                  varchar(32) not null default 'init',
     edate                   timestamptz not null default current_timestamp,
-    cdate                   timestamptz not null default current_timestamp
+    cdate                   timestamptz not null default current_timestamp,
+    --
+    check (status in ('deleted', 'init', 'active', 'suspended'))
 );
 create index tudu_user_cdate_idx on tudu_user using btree (cdate);
 create index tudu_user_kvs_idx on tudu_user using gin (kvs);
@@ -50,7 +52,9 @@ create table tudu_task (
     kvs                     hstore default null,
     status                  varchar(32) not null default 'init',
     edate                   timestamptz not null default current_timestamp,
-    cdate                   timestamptz not null default current_timestamp
+    cdate                   timestamptz not null default current_timestamp,
+    --
+    check (status in ('deleted', 'init', 'finished'))
 );
 create index tudu_task_finished_date_idx on tudu_task using btree (finished_date);
 create index tudu_task_cdate_idx on tudu_task using btree (cdate);
@@ -74,14 +78,17 @@ create index tudu_task_log_kvs_idx on tudu_task_log using gin (kvs);
 create table tudu_access_token (
     token_id                bigint primary key default nextval('tudu_access_token_seq'),
     user_id                 bigint references tudu_user,
-    token_string            char(256) not null,
+    token_string            text not null,
     --
     kvs                     hstore default null,
-    status                  varchar(32) not null default 'valid',
+    status                  varchar(32) not null default 'active',
     edate                   timestamptz not null default current_timestamp,
-    cdate                   timestamptz not null default current_timestamp
+    cdate                   timestamptz not null default current_timestamp,
+    --
+    check (status in ('deleted', 'active', 'revoked'))
 );
 create unique index tudu_access_token_uniq_idx on tudu_access_token (user_id, token_string);
+create unique index tudu_access_token_status_idx on tudu_access_token (status) where status = 'active';
 create index tudu_access_token_cdate_idx on tudu_access_token using btree (cdate);
 create index tudu_access_token_kvs_idx on tudu_access_token using gin (kvs);
 
@@ -89,8 +96,8 @@ create table tudu_access_token_log (
     log_id                  bigint primary key default nextval('tudu_access_token_log_seq'),
     token_id                bigint references tudu_access_token,
     operation               varchar(128) not null,
-    info                    text default null,
     ip                      inet default null,
+    info                    text default null,
     --
     kvs                     hstore default null,
     cdate                   timestamptz not null default current_timestamp

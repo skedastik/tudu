@@ -1,21 +1,5 @@
 /* test */
 
-/**
- * Return the latest user.
- */
-drop function if exists latest_user();
-create function latest_user() returns tudu_user as $$
-    select * from tudu_user order by user_id desc limit 1;
-$$ language sql;
-
-/**
- * Return the latest user log.
- */
-drop function if exists latest_user_log();
-create function latest_user_log() returns tudu_user_log as $$
-    select * from tudu_user_log order by log_id desc limit 1;
-$$ language sql;
-
 create or replace function unit_tests.signup_user() returns test_result as $$
 declare
     _message    test_result;
@@ -23,8 +7,8 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     perform tudu.signup_user('foo@bar.baz', 'djiosd', 'ahdinsdjnsdkfjkul', '127.0.0.1');
-    _user     := latest_user();
-    _user_log := latest_user_log();
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
     
     if _user.email <> 'foo@bar.baz' then
         select assert.fail('should create a user with email "foo@bar.baz"') into _message;
@@ -97,7 +81,7 @@ declare
 begin
     perform tudu.signup_user('fee@ble.yer', 'mspbneub', 'nmsabnytrbewkasd', '127.0.0.1');
     
-    _user   := latest_user();
+    _user   := tudu.latest_user();
     _result := tudu.confirm_user(_user.user_id, 'bad_signup_token', '127.0.0.1');
     
     if _result <> -2 then
@@ -119,10 +103,10 @@ declare
 begin
     perform tudu.signup_user('super@user.win', 'biawebd', 'asduytcwfebnail', '127.0.0.1');
     
-    _user     := latest_user();
+    _user     := tudu.latest_user();
     _result   := tudu.confirm_user(_user.user_id, _user.kvs->'signup_token', '127.0.0.1');
-    _user     := latest_user();
-    _user_log := latest_user_log();
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
     
     if _result <> _user.user_id then
         select assert.fail('should succeed given a valid user ID and signup token.') into _message;

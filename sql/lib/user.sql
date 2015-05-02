@@ -5,8 +5,8 @@
  *   _email         A valid email address
  *   _pw_salt       User's password salt
  *   _pw_hash       Encrypted password
- *   _kvs           Optional KVS data
  *   _ip            Optional IP address
+ *   _kvs           Optional KVS data
  *   _autoconfirm   Pass true to automatically confirm user
  * 
  * Returns
@@ -17,13 +17,14 @@ create or replace function tudu.signup_user(
     _email          varchar,
     _pw_salt        varchar,
     _pw_hash        varchar,
-    _ip             inet,
+    _ip             inet default null,
+    _kvs            hstore default null,
     _autoconfirm    boolean default false
 ) returns bigint as $$
 declare
-    _user_id bigint;
-    _signup_token varchar;
-    _kvs hstore;
+    _user_id        bigint;
+    _signup_token   varchar;
+    _kvs            hstore;
 begin
     if exists (select 1 from tudu_user where email = _email) then
         return -1;
@@ -32,6 +33,7 @@ begin
     _user_id      := nextval('tudu_user_seq');
     _email        := lower(util.btrim_whitespace(_email));
     _signup_token := md5(random()::text || 'tudumajik' || _user_id);
+    /* TODO: Concatenate input KVS */
     _kvs          := hstore('signup_token', _signup_token);
     
     insert into tudu_user (user_id, email, password_salt, password_hash, kvs)
@@ -63,11 +65,11 @@ $$ language plpgsql security definer;
 create or replace function tudu.confirm_user(
     _user_id            bigint,
     _signup_token       varchar,
-    _ip                 inet
+    _ip                 inet default null
 ) returns bigint as $$
 declare
-    _kvs hstore;
-    _status varchar;
+    _kvs                hstore;
+    _status             varchar;
 begin
     select user_id, status, kvs into _user_id, _status, _kvs from tudu_user where user_id = _user_id;
     
@@ -85,7 +87,7 @@ begin
     
     update tudu_user
     set status = 'active',
-        edate = now()
+        edate  = now()
     where user_id = _user_id;
     
     perform tudu.user_log_add(_user_id, 'confirm', _ip);
