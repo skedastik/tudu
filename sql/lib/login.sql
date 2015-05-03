@@ -38,11 +38,11 @@ begin
         return -2;
     end if;
     
-    perform tudu.revoke_active_access_token(_user_id, _ip);
-    
-    _token_id := nextval('tudu_access_token_seq');
-    
     begin
+        perform tudu.revoke_active_access_token(_user_id, _ip);
+    
+        _token_id := nextval('tudu_access_token_seq');
+        
         insert into tudu_access_token (token_id, user_id, token_string, kvs)
         values (_token_id, _user_id, _token_string, _kvs);
     exception when unique_violation then

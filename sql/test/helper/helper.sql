@@ -46,9 +46,9 @@ $$ language plpgsql;
 drop function if exists tudu.create_random_user();
 create function tudu.create_random_user() returns tudu_user as $$
 declare
-    _id     bigint;
+    _id bigint;
 begin
-    _id   := nextval('tudu_user_seq') + 1;
+    _id := currval('tudu_user_seq');
     perform tudu.signup_user('user' || _id || '@foo.xyz', tudu.random_string(), tudu.random_string(), '127.0.0.1');
     return tudu.latest_user();
 end;
