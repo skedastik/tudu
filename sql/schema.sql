@@ -88,7 +88,7 @@ create table tudu_access_token (
     check (status in ('deleted', 'active', 'revoked'))
 );
 create unique index tudu_access_token_uniq_idx on tudu_access_token (user_id, token_string);
-create unique index tudu_access_token_status_idx on tudu_access_token (status) where status = 'active';
+create unique index tudu_access_token_status_idx on tudu_access_token (user_id, status) where status = 'active';
 create index tudu_access_token_cdate_idx on tudu_access_token using btree (cdate);
 create index tudu_access_token_kvs_idx on tudu_access_token using gin (kvs);
 
