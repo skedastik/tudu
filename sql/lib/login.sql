@@ -8,6 +8,8 @@
  *   _pw_hash       User's password hash
  *   _token_string  A non-NULL, access token string. Token strings can never be
  *                  reused per individual user.
+ *   _ttl           Access token time to live. A token is considered expired if
+ *                  (now() - cdate >= ttl).
  *   _ip            Optional IP address
  *   _kvs           Optional KVS data
  * 
@@ -21,6 +23,7 @@ create or replace function tudu.create_access_token(
     _user_id            bigint,
     _pw_hash            varchar,
     _token_string       text,
+    _ttl                interval,
     _ip                 inet default null,
     _kvs                hstore default ''
 ) returns bigint as $$
@@ -43,6 +46,7 @@ begin
         perform tudu.revoke_active_access_token(_user_id, _ip);
     
         _token_id := nextval('tudu_access_token_seq');
+        _kvs      := _kvs || hstore('ttl', _ttl::text);
         
         insert into tudu_access_token (token_id, user_id, token_string, kvs)
         values (_token_id, _user_id, _token_string, _kvs);
@@ -98,8 +102,6 @@ $$ language plpgsql security definer;
  * Arguments
  *   _user_id       ID of existing user
  *   _token_string  An access token string
- *   _ttl           Access token time to live. A token is considered expired if
- *                  (now() - cdate >= ttl).
  *   _ip            Optional IP address
  *  
  * Returns
@@ -108,7 +110,6 @@ $$ language plpgsql security definer;
 create or replace function tudu.validate_access_token(
     _user_id        bigint,
     _token_string   text,
-    _ttl            interval,
     _ip             inet default null
 ) returns bigint as $$
 begin

@@ -9,7 +9,7 @@ declare
     _access_token_log   tudu_access_token_log%ROWTYPE;
 begin
     _user               := tudu.create_random_user();
-    _access_token_id    := tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '127.0.0.1');
+    _access_token_id    := tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '1 week', '127.0.0.1');
     _access_token       := tudu.latest_access_token();
     _access_token_log   := tudu.latest_access_token_log();
     
@@ -59,14 +59,7 @@ declare
     _user               tudu_user%ROWTYPE;
 begin
     _user := tudu.create_random_user();
-    
-    perform tudu.create_access_token(
-        _user.user_id,
-        _user.password_hash,
-        'token-string',
-        '127.0.0.1'
-    );
-    
+    perform tudu.create_access_token(_user.user_id, _user.password_hash, 'token-string', '1 week', '127.0.0.1');
     perform tudu.revoke_active_access_token(_user.user_id, '127.0.0.1');
     
     if exists (select 1 from tudu_access_token where user_id = _user.user_id and status = 'active') then
@@ -86,20 +79,8 @@ declare
     _access_token_id    bigint;
 begin
     _user := tudu.create_random_user();
-    
-    perform tudu.create_access_token(
-        _user.user_id,
-        _user.password_hash,
-        'token-string',
-        '127.0.0.1'
-    );
-    
-    _access_token_id := tudu.create_access_token(
-        _user.user_id,
-        _user.password_hash,
-        'different-token-string',
-        '127.0.0.1'
-    );
+    perform tudu.create_access_token(_user.user_id, _user.password_hash, 'token-string', '1 week', '127.0.0.1');
+    _access_token_id := tudu.create_access_token(_user.user_id, _user.password_hash, 'diff-token-string', '1 week', '127.0.0.1');
     
     if _access_token_id < 0 then
         select assert.fail('should succeed') into _message;
@@ -116,7 +97,7 @@ declare
     _message            test_result;
     _access_token_id    bigint;
 begin
-    _access_token_id := tudu.create_access_token(-1, 'jhdsafkj', 'silly-token-string', '127.0.0.1');
+    _access_token_id := tudu.create_access_token(-1, 'jhdsafkj', 'silly-token-string', '1 week', '127.0.0.1');
     
     if _access_token_id <> -1 then
         select assert.fail('should fail') into _message;
@@ -139,6 +120,7 @@ begin
         _user.user_id,
         _user.password_hash || 'mismatched',
         'silly-token-string',
+        '1 week',
         '127.0.0.1'
     );
     
@@ -159,20 +141,8 @@ declare
     _user               tudu_user%ROWTYPE;
 begin
     _user := tudu.create_random_user();
-
-    perform tudu.create_access_token(
-        _user.user_id,
-        _user.password_hash,
-        'silly-token-string',
-        '127.0.0.1'
-    );
-
-    _access_token_id := tudu.create_access_token(
-        _user.user_id,
-        _user.password_hash,
-        'silly-token-string',
-        '127.0.0.1'
-    );
+    perform tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '1 week', '127.0.0.1');
+    _access_token_id := tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '1 week', '127.0.0.1');
 
     if _access_token_id <> -3 then
         select assert.fail('should fail') into _message;
