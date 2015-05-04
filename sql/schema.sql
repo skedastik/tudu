@@ -45,7 +45,7 @@ create index tudu_user_log_kvs_idx on tudu_user_log using gin (kvs);
 create table tudu_task (
     task_id                 bigint primary key default nextval('tudu_task_seq'),
     user_id                 bigint references tudu_user,
-    description             text,
+    description             varchar(1024),
     tags                    varchar[] default null,
     finished_date           timestamptz,
     --
