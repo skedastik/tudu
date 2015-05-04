@@ -97,26 +97,44 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Validate an access token for a given user and time to live.
+ * Validate an access token for a given user.
  * 
  * Arguments
  *   _user_id       ID of existing user
  *   _token_string  An access token string
- *   _ip            Optional IP address
  *  
  * Returns
- *   
+ *    0 if token is valid
+ *   -1 if token/user pair does not exist
+ *   -2 if token was revoked
+ *   -3 if token is expired
  */
 create or replace function tudu.validate_access_token(
     _user_id        bigint,
-    _token_string   text,
-    _ip             inet default null
-) returns bigint as $$
+    _token_string   text
+) returns integer as $$
+declare
+    _status         varchar;
+    _ttl            interval;
+    _cdate          timestamptz;
 begin
-    /* TODO: validate */
-    /* TODO: log */
+    select status, kvs->'ttl', cdate into _status, _ttl, _cdate
+    from tudu_access_token
+    where user_id = _user_id and token_string = _token_string;
     
-    return _user_id;
+    if _status is null then
+        return -1;
+    end if;
+    
+    if _status <> 'active' then
+        return -2;
+    end if;
+    
+    if now() - _cdate >= _ttl then
+        return -3;
+    end if;
+    
+    return 0;
 end;
 $$ language plpgsql security definer;
 

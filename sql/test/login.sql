@@ -158,3 +158,88 @@ begin
     return _message;
 end;
 $$ language plpgsql;
+
+create or replace function unit_tests.validate_access_token() returns test_result as $$
+declare
+    _message        test_result;
+    _access_token   tudu_access_token%ROWTYPE;
+    _user           tudu_user%ROWTYPE;
+    _result         integer;
+begin
+    _user         := tudu.create_random_user();
+    _access_token := tudu.create_random_access_token(_user.user_id, _user.password_hash);
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    
+    if _result <> 0 then
+        select assert.fail('should succeed given a valid user and access token pair') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.validate_access_token_using_mismatched_user_token_pair() returns test_result as $$
+declare
+    _message        test_result;
+    _user           tudu_user%ROWTYPE;
+    _result         integer;
+begin
+    _user         := tudu.create_random_user();
+    perform tudu.create_random_access_token(_user.user_id, _user.password_hash);
+    _result       := tudu.validate_access_token(_user.user_id, 'mismatched-token-string');
+    
+    if _result <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.validate_access_token_using_revoked_token() returns test_result as $$
+declare
+    _message        test_result;
+    _access_token   tudu_access_token%ROWTYPE;
+    _user           tudu_user%ROWTYPE;
+    _result         integer;
+begin
+    _user         := tudu.create_random_user();
+    _access_token := tudu.create_random_access_token(_user.user_id, _user.password_hash);
+    perform tudu.revoke_active_access_token(_user.user_id);
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    
+    if _result <> -2 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.validate_access_token_using_expired_token() returns test_result as $$
+declare
+    _message        test_result;
+    _access_token   tudu_access_token%ROWTYPE;
+    _user           tudu_user%ROWTYPE;
+    _result         integer;
+begin
+    _user         := tudu.create_random_user();
+    _access_token := tudu.create_random_access_token(_user.user_id, _user.password_hash, '1 millisecond');
+    update tudu_access_token set cdate = cdate - '1 second'::interval where token_id = _access_token.token_id;
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    
+    if _result <> -3 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
