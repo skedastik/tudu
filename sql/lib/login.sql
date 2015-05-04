@@ -27,6 +27,7 @@ create or replace function tudu.create_access_token(
 declare
     _token_id           bigint;
     _pw_hash_current    varchar;
+    _constraint         text;
 begin
     select user_id, password_hash into _user_id, _pw_hash_current from tudu_user where user_id = _user_id;
     
@@ -46,7 +47,16 @@ begin
         insert into tudu_access_token (token_id, user_id, token_string, kvs)
         values (_token_id, _user_id, _token_string, _kvs);
     exception when unique_violation then
-        return -3;
+        /**
+         * Since PostgreSQL 9.3 it is possible to extract comprehensive error
+         * details via GET STACKED DIAGNOSTICS. See:
+         * http://www.postgresql.org/docs/9.3/static/plpgsql-control-structures.html
+         */
+        get stacked diagnostics _constraint = constraint_name;
+        if _constraint = 'tudu_access_token_uniq_idx' then
+            return -3;
+        end if;
+        raise;
     end;
     
     perform tudu.access_token_log_add(_token_id, 'create', _ip);
