@@ -18,13 +18,12 @@ create or replace function tudu.signup_user(
     _pw_salt        varchar,
     _pw_hash        varchar,
     _ip             inet default null,
-    _kvs            hstore default null,
+    _kvs            hstore default '',
     _autoconfirm    boolean default false
 ) returns bigint as $$
 declare
     _user_id        bigint;
     _signup_token   varchar;
-    _kvs            hstore;
 begin
     if exists (select 1 from tudu_user where email = _email) then
         return -1;
@@ -33,8 +32,7 @@ begin
     _user_id      := nextval('tudu_user_seq');
     _email        := lower(util.btrim_whitespace(_email));
     _signup_token := md5(random()::text || 'tudumajik' || _user_id);
-    /* TODO: Concatenate input KVS */
-    _kvs          := hstore('signup_token', _signup_token);
+    _kvs          := _kvs || hstore('signup_token', _signup_token);
     
     insert into tudu_user (user_id, email, password_salt, password_hash, kvs)
     values (_user_id, _email, _pw_salt, _pw_hash, _kvs);
@@ -111,7 +109,7 @@ create or replace function tudu.user_log_add(
     _operation      varchar,
     _ip             inet default null,
     _info           text default null,
-    _kvs            hstore default null
+    _kvs            hstore default ''
 ) returns void as $$
 begin
     insert into tudu_user_log (user_id, operation, ip, info, kvs)

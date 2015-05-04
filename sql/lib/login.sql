@@ -22,7 +22,7 @@ create or replace function tudu.create_access_token(
     _pw_hash            varchar,
     _token_string       text,
     _ip                 inet default null,
-    _kvs                hstore default null
+    _kvs                hstore default ''
 ) returns bigint as $$
 declare
     _token_id           bigint;
@@ -134,7 +134,7 @@ create or replace function tudu.access_token_log_add(
     _operation      varchar,
     _ip             inet default null,
     _info           text default null,
-    _kvs            hstore default null
+    _kvs            hstore default ''
 ) returns void as $$
 begin
     insert into tudu_access_token_log (token_id, operation, ip, info, kvs)

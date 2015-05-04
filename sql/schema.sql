@@ -17,7 +17,7 @@ create table tudu_user (
     password_salt           varchar(64) not null,
     password_hash           varchar(256) not null,
     --                       
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     status                  varchar(32) not null default 'init',
     edate                   timestamptz not null default current_timestamp,
     cdate                   timestamptz not null default current_timestamp,
@@ -34,7 +34,7 @@ create table tudu_user_log (
     ip                      inet default null,
     info                    text default null,
     --
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     cdate                   timestamptz not null default current_timestamp
 );
 create index tudu_user_log_cdate_idx on tudu_user_log using btree (cdate);
@@ -49,7 +49,7 @@ create table tudu_task (
     tags                    varchar[] default null,
     finished_date           timestamptz,
     --
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     status                  varchar(32) not null default 'init',
     edate                   timestamptz not null default current_timestamp,
     cdate                   timestamptz not null default current_timestamp,
@@ -67,7 +67,7 @@ create table tudu_task_log (
     info                    text default null,
     ip                      inet default null,
     --
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     cdate                   timestamptz not null default current_timestamp
 );
 create index tudu_task_log_cdate_idx on tudu_task_log using btree (cdate);
@@ -80,7 +80,7 @@ create table tudu_access_token (
     user_id                 bigint references tudu_user,
     token_string            text not null,
     --
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     status                  varchar(32) not null default 'active',
     edate                   timestamptz not null default current_timestamp,
     cdate                   timestamptz not null default current_timestamp,
@@ -99,7 +99,7 @@ create table tudu_access_token_log (
     ip                      inet default null,
     info                    text default null,
     --
-    kvs                     hstore default null,
+    kvs                     hstore not null default '',
     cdate                   timestamptz not null default current_timestamp
 );
 create index tudu_access_token_log_cdate_idx on tudu_access_token_log using btree (cdate);
