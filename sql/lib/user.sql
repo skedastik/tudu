@@ -106,6 +106,102 @@ end;
 $$ language plpgsql security definer;
 
 /**
+ * Change an existing user's password.
+ * 
+ * Arguments
+ *   _user_id       ID of existing user
+ *   _old_pw_hash   Old password hash
+ *   _new_pw_hash   New password hash
+ *   _ip            Optional IP address
+ * 
+ * Returns
+ *   ID of user on success
+ *   -1 if user ID is invalid
+ *   -2 if old password hash does not match
+ *   -3 if new password hash is identical to the old one
+ */
+create or replace function tudu.set_user_password_hash(
+    _user_id        bigint,
+    _old_pw_hash    varchar,
+    _new_pw_hash    varchar,
+    _ip             inet        default null
+) returns bigint as $$
+declare
+    _pw_hash        varchar;
+begin
+    select user_id, password_hash into _user_id, _pw_hash from tudu_user where user_id = _user_id;
+    
+    if _user_id is null then
+        return -1;
+    end if;
+    
+    if _pw_hash <> _old_pw_hash then
+        return -2;
+    end if;
+    
+    if _pw_hash = _new_pw_hash then
+        return -3;
+    end if;
+    
+    update tudu_user
+    set password_hash = _new_pw_hash,
+        edate         = now()
+    where user_id = _user_id;
+    
+    perform tudu.user_log_add(_user_id, 'set_password_hash', _ip);
+    
+    return _user_id;
+end;
+$$ language plpgsql security definer;
+
+/**
+ * Change an existing user's email address.
+ * 
+ * Arguments
+ *   _user_id       ID of existing user
+ *   _new_email     Email address
+ *   _ip            Optional IP address
+ * 
+ * Returns
+ *   ID of user on success
+ *   -1 if user ID is invalid
+ *   -2 if email address is identical to existing one
+ *   -3 if email address is already linked to another user
+ */
+create or replace function tudu.set_user_email(
+    _user_id    bigint,
+    _new_email  varchar,
+    _ip         inet        default null
+) returns bigint as $$
+declare
+    _email      varchar;    
+begin
+    select user_id, email into _user_id, _email from tudu_user where user_id = _user_id;
+    
+    if _user_id is null then
+        return -1;
+    end if;
+    
+    if _email = _new_email then
+        return -2;
+    end if;
+    
+    if exists (select 1 from tudu_user where email = _new_email) then
+        return -3;
+    end if;
+    
+    update tudu_user
+    set email = _new_email,
+        edate = now()
+    where user_id = _user_id;
+    
+    perform tudu.user_log_add(_user_id, 'set_email', _ip);
+    
+    return _user_id;
+end;
+$$ language plpgsql security definer;
+
+/**
  * Log a user operation. Automatically called by user functions.
  * 
  * Arguments

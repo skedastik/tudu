@@ -173,3 +173,240 @@ begin
     return _message;
 end;
 $$ language plpgsql;
+
+create or replace function unit_tests.set_user_password_hash() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, 'new-unlikely-password-hash');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> _user.user_id then
+        select assert.fail('should succeed') into _message;
+        return _message;
+    end if;
+    
+    if _user.password_hash <> 'new-unlikely-password-hash' then
+        select assert.fail('should set password_hash to "new-unlikely-password-hash"') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.user_id <> _user_id then
+        select assert.fail('should create a user log entry with matching user_id') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation <> 'set_password_hash' then
+        select assert.fail('should create a user log entry with operation "set_password_hash"') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_password_hash_using_invalid_user_id() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_password_hash(-1, _user.password_hash, 'new-unlikely-password-hash');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_password_hash' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_password_hash_using_mismatched_old_password_hash() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_password_hash(_user.user_id, 'mismatched-password-hash', 'new-unlikely-password-hash');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -2 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_password_hash' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_password_hash_using_identical_new_password_hash() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, _user.password_hash);
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -3 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_password_hash' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_email() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_email(_user.user_id, 'new@email.set');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> _user.user_id then
+        select assert.fail('should succeed') into _message;
+        return _message;
+    end if;
+    
+    if _user.email <> 'new@email.set' then
+        select assert.fail('should set email to "new@email.set"') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.user_id <> _user_id then
+        select assert.fail('should create a user log entry with matching user_id') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation <> 'set_email' then
+        select assert.fail('should create a user log entry with operation "set_email"') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_email_using_invalid_user_id() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_email(-1, 'new@email.set');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_email' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_email_to_identical_existing_email() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_email(_user.user_id, _user.email);
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -2 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_email' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_user_email_to_already_taken_email() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    perform tudu.signup_user('this.email.is.taken@ohnoes.woe', 'dsfkbn', 'mnsafdubahksdf');
+    _user     := tudu.create_random_user();
+    _user_id  := tudu.set_user_email(_user.user_id, 'this.email.is.taken@ohnoes.woe');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -3 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'set_email' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
