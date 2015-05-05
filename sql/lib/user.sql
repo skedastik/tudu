@@ -25,12 +25,13 @@ declare
     _user_id        bigint;
     _signup_token   varchar;
 begin
+    _email := lower(util.btrim_whitespace(_email));
+    
     if exists (select 1 from tudu_user where email = _email) then
         return -1;
     end if;
     
     _user_id      := nextval('tudu_user_seq');
-    _email        := lower(util.btrim_whitespace(_email));
     _signup_token := md5(random()::text || 'tudumajik' || _user_id);
     _kvs          := _kvs || hstore('signup_token', _signup_token);
     
@@ -40,7 +41,7 @@ begin
     perform tudu.user_log_add(_user_id, 'signup', _ip);
         
     if _autoconfirm then
-        perform tudu.confirm_user(_user_id, _signup_token, _ip);
+        perform tudu.confirm_user(_user_id, null, _signup_token, _ip);
     end if;
     
     return _user_id;
@@ -48,10 +49,11 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Confirm an existing user.
+ * Verify a user's account.
  * 
  * Arguments
- *   _user_id           ID of existing user
+ *   _user_id           ID of existing user (optional w/ below)
+ *   _email             Email address of existing user (optional w/ above)
  *   _signup_token      A signup token
  *   _ip                Optional IP address
  * 
@@ -62,6 +64,7 @@ $$ language plpgsql security definer;
  */
 create or replace function tudu.confirm_user(
     _user_id            bigint,
+    _email              varchar,
     _signup_token       varchar,
     _ip                 inet default null
 ) returns bigint as $$
@@ -69,7 +72,11 @@ declare
     _kvs                hstore;
     _status             varchar;
 begin
-    select user_id, status, kvs into _user_id, _status, _kvs from tudu_user where user_id = _user_id;
+    _email := lower(util.btrim_whitespace(_email));
+    
+    select user_id, status, kvs into _user_id, _status, _kvs from tudu_user
+    where case when _user_id is null then email = _email
+               else user_id = _user_id end;
     
     if _user_id is null then
         return -1;

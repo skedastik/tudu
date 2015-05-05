@@ -68,7 +68,8 @@ declare
 begin
     perform tudu.signup_user('baz@qux.gar', 'opiopuw', 'nasndjasnkjdASD', '127.0.0.1');
     
-    _result := tudu.signup_user('baz@qux.gar', 'ndfaksh', 'iuiowernsdlfio', '127.0.0.1');
+    /* simultaneously test for case insensitivity */
+    _result := tudu.signup_user('BaZ@qUx.gAr', 'ndfaksh', 'iuiowernsdlfio', '127.0.0.1');
     if _result <> -1 then
         select assert.fail('should fail') into _message;
         return _message;
@@ -88,7 +89,7 @@ begin
     perform tudu.signup_user('fee@ble.yer', 'mspbneub', 'nmsabnytrbewkasd', '127.0.0.1');
     
     _user   := tudu.latest_user();
-    _result := tudu.confirm_user(_user.user_id, 'bad_signup_token', '127.0.0.1');
+    _result := tudu.confirm_user(_user.user_id, null, 'bad_signup_token', '127.0.0.1');
     
     if _result <> -2 then
         select assert.fail('should fail.') into _message;
@@ -100,17 +101,17 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function unit_tests.confirm_user() returns test_result as $$
+create or replace function unit_tests.confirm_user_using_id() returns test_result as $$
 declare
-    _message        test_result;
-    _user           tudu_user%ROWTYPE;
-    _user_log       tudu_user_log%ROWTYPE;
-    _result         bigint;
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _user_log   tudu_user_log%ROWTYPE;
+    _result     bigint;
 begin
     perform tudu.signup_user('super@user.win', 'biawebd', 'asduytcwfebnail', '127.0.0.1');
     
     _user     := tudu.latest_user();
-    _result   := tudu.confirm_user(_user.user_id, _user.kvs->'signup_token', '127.0.0.1');
+    _result   := tudu.confirm_user(_user.user_id, null, _user.kvs->'signup_token', '127.0.0.1');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
@@ -134,12 +135,35 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function unit_tests.confirm_user_using_email() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _result     bigint;
+begin
+    perform tudu.signup_user('iheart@turtles.gmn', 'fsdmnf', 'opoytouyi');
+    
+    _user     := tudu.latest_user();
+    /* simultaneously test for case insensitivity */
+    _result   := tudu.confirm_user(null, 'iHeArT@tUrTlEs.gMn', _user.kvs->'signup_token');
+    _user     := tudu.latest_user();
+    
+    if _result <> _user.user_id then
+        select assert.fail('should succeed given a valid email and signup token.') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
 create or replace function unit_tests.confirm_nonexistent_user() returns test_result as $$
 declare
     _message    test_result;
     _result     bigint;
 begin
-    _result := tudu.confirm_user(-1, 'kajdsfkjlsdfl', '127.0.0.1');
+    _result := tudu.confirm_user(-1, null, 'kajdsfkjlsdfl', '127.0.0.1');
     
     if _result <> -1 then
         select assert.fail('should fail.') into _message;
