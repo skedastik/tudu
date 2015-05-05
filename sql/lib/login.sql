@@ -42,21 +42,17 @@ begin
         return -2;
     end if;
     
-    begin
-        perform tudu.revoke_active_access_token(_user_id, _ip);
+    if exists (select 1 from tudu_access_token where user_id = _user_id and token_string = _token_string) then
+        return -3;
+    end if;
     
-        _token_id := nextval('tudu_access_token_seq');
-        _kvs      := _kvs || hstore('ttl', _ttl::text);
-        
-        insert into tudu_access_token (token_id, user_id, token_string, kvs)
-        values (_token_id, _user_id, _token_string, _kvs);
-    exception when unique_violation then
-        get stacked diagnostics _constraint = constraint_name;
-        if _constraint = 'tudu_access_token_uniq_idx' then
-            return -3;
-        end if;
-        raise;
-    end;
+    perform tudu.revoke_active_access_token(_user_id, _ip);
+    
+    _token_id := nextval('tudu_access_token_seq');
+    _kvs      := _kvs || hstore('ttl', _ttl::text);
+    
+    insert into tudu_access_token (token_id, user_id, token_string, kvs)
+    values (_token_id, _user_id, _token_string, _kvs);
     
     perform tudu.access_token_log_add(_token_id, 'create', _ip);
     
