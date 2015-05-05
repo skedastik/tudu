@@ -640,7 +640,15 @@ BEGIN
                 RAISE INFO 'Running test % : %', _function_name, _started_from; 
             END IF;
             
-            EXECUTE _sql INTO _message;
+            /* AMENDMENT (alaric) 2015.5.4 - Auto-rollback each unit test */
+            BEGIN
+                EXECUTE _sql INTO _message;
+                RAISE EXCEPTION 'plpgunit-auto-rollback-exception';
+            EXCEPTION WHEN OTHERS THEN
+                IF SQLERRM <> 'plpgunit-auto-rollback-exception' THEN
+                    RAISE;
+                END IF;
+            END;
 
             IF _message = '' THEN
                 _status := true;
