@@ -31,7 +31,7 @@ create function tudu.latest_access_token_log() returns tudu_access_token_log as 
 $$ language sql;
 
 /**
- * Return the latest tast.
+ * Return the latest task.
  */
 drop function if exists tudu.latest_task();
 create function tudu.latest_task() returns tudu_task as $$
@@ -82,10 +82,30 @@ drop function if exists tudu.create_random_access_token(bigint, varchar, interva
 create function tudu.create_random_access_token(
     _user_id    bigint,
     _pw_hash    varchar,
-    _ttl        interval default '1 week'
+    _ttl        interval    default '1 week'
 ) returns tudu_access_token as $$
 begin
     perform tudu.create_access_token(_user_id, _pw_hash, tudu.random_string(), _ttl, '127.0.0.1');
     return tudu.latest_access_token();
+end;
+$$ language plpgsql;
+
+/**
+ * Create a random task for the given user.
+ * 
+ * Arguments
+ *   _user_id       User ID
+ *   _description   Optional description
+ *   _tags          Optional array of tag strings
+ */
+drop function if exists tudu.create_random_task(bigint, varchar, interval);
+create function tudu.create_random_task(
+    _user_id        bigint,
+    _description    varchar     default tudu.random_string(),
+    _tags           varchar[]   default array[tudu.random_string(), tudu.random_string()]
+) returns tudu_task as $$
+begin
+    perform tudu.create_task(_user_id, _description, _tags, '127.0.0.1');
+    return tudu.latest_task();
 end;
 $$ language plpgsql;

@@ -5,10 +5,11 @@ declare
     _message    test_result;
     _user       tudu_user%ROWTYPE;
     _task       tudu_task%ROWTYPE;
+    _task_id    bigint;
     _task_log   tudu_task_log%ROWTYPE;
 begin
-    _user := tudu.create_random_user();
-    perform tudu.create_task(
+    _user     := tudu.create_random_user();
+    _task_id  := tudu.create_task(
         _user.user_id,
         'Learn to play Smoke on the Water',
         /* simultaneously test tag normalization */
@@ -18,7 +19,7 @@ begin
     _task     := tudu.latest_task();
     _task_log := tudu.latest_task_log();
     
-    if _task is null then
+    if _task_id < 0 then
         select assert.fail('should succeed') into _message;
         return _message;
     end if;
@@ -60,6 +61,73 @@ begin
     
     if _task_log.ip <> '127.0.0.1' then
         select assert.fail('should create a task log entry with ip "127.0.0.1"') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_task_tags() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _task       tudu_task%ROWTYPE;
+    _task_id    bigint;
+    _task_log   tudu_task_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _task     := tudu.create_random_task(_user.user_id);
+    _task_id  := tudu.set_task_tags(_task.task_id, array['foo', 'bar']);
+    _task     := tudu.latest_task();
+    _task_log := tudu.latest_task_log();
+    
+    if _task_id <> _task.task_id then
+        select assert.fail('should succeed') into _message;
+        return _message;
+    end if;
+    
+    if _task.tags is distinct from array['foo', 'bar']::varchar[] then
+        select assert.fail(E'should set tags to array[\'foo\', \'bar\']') into _message;
+        return _message;
+    end if;
+    
+    if _task_log is null or _task_log.task_id <> _task_id then
+        select assert.fail('should create a task log entry with matching task_id') into _message;
+        return _message;
+    end if;
+    
+    if _task_log.operation <> 'set_tags' then
+        select assert.fail('should create a task log entry with operation "set_tags"') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_task_tags_using_invalid_task_id() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _task       tudu_task%ROWTYPE;
+    _task_id    bigint;
+    _task_log   tudu_task_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _task     := tudu.create_random_task(_user.user_id);
+    _task_id  := tudu.set_task_tags(-1, array['foo', 'bar']);
+    _task_log := tudu.latest_task_log();
+    
+    if _task_id <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _task_log.operation = 'set_tags' then
+        select assert.fail('should NOT create a task log entry') into _message;
         return _message;
     end if;
     
