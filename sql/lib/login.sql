@@ -91,11 +91,11 @@ begin
     )
     select token_id into _token_id from updated_row;
     
-    perform tudu.access_token_log_add(_token_id, 'revoke', _ip);
-    
     if _token_id is null then
         return -1;
     end if;
+    
+    perform tudu.access_token_log_add(_token_id, 'revoke', _ip);
     
     return _token_id;
 end;
