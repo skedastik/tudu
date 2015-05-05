@@ -25,9 +25,9 @@ declare
     _user_id        bigint;
     _signup_token   varchar;
 begin
-    _email := lower(util.btrim_whitespace(_email));
+    _email := util.btrim_whitespace(_email);
     
-    if exists (select 1 from tudu_user where email = _email) then
+    if exists (select 1 from tudu_user where lower(email) = lower(_email)) then
         return -1;
     end if;
     
@@ -72,10 +72,10 @@ declare
     _kvs                hstore;
     _status             varchar;
 begin
-    _email := lower(util.btrim_whitespace(_email));
+    _email := util.btrim_whitespace(_email);
     
     select user_id, status, kvs into _user_id, _status, _kvs from tudu_user
-    where case when _user_id is null then email = _email
+    where case when _user_id is null then lower(email) = lower(_email)
                else user_id = _user_id end;
     
     if _user_id is null then

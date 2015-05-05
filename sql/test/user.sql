@@ -3,21 +3,20 @@
 create or replace function unit_tests.signup_user() returns test_result as $$
 declare
     _message    test_result;
-    _user_id    bigint;
     _user       tudu_user%ROWTYPE;
     _user_log   tudu_user_log%ROWTYPE;
 begin
-    _user_id    := tudu.signup_user('foo@bar.baz', 'djiosd', 'ahdinsdjnsdkfjkul', '127.0.0.1');
+    perform tudu.signup_user('Foo@BaR.baz', 'djiosd', 'ahdinsdjnsdkfjkul', '127.0.0.1');
     _user       := tudu.latest_user();
     _user_log   := tudu.latest_user_log();
     
-    if _user_id < 0 then
+    if _user is null then
         select assert.fail('should succeed') into _message;
         return _message;
     end if;
     
-    if _user.email <> 'foo@bar.baz' then
-        select assert.fail('should create a user with email "foo@bar.baz"') into _message;
+    if _user.email <> 'Foo@BaR.baz' then
+        select assert.fail('should create a user with email "Foo@BaR.baz" (note that case must be preserved)') into _message;
         return _message;
     end if;
     
