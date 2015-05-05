@@ -13,7 +13,7 @@ create sequence tudu_access_token_log_seq  increment 1 start 1 minvalue 1;
 
 create table tudu_user (
     user_id                 bigint primary key default nextval('tudu_user_seq'),
-    email                   varchar(128) not null unique,
+    email                   varchar(64) not null,
     password_salt           varchar(64) not null,
     password_hash           varchar(256) not null,
     --                       
@@ -24,6 +24,7 @@ create table tudu_user (
     --
     check (status in ('deleted', 'init', 'active', 'suspended'))
 );
+create unique index tudu_user_uniq_email_idx on tudu_user (lower(email));
 create index tudu_user_cdate_idx on tudu_user using btree (cdate);
 create index tudu_user_kvs_idx on tudu_user using gin (kvs);
 
@@ -45,7 +46,7 @@ create index tudu_user_log_kvs_idx on tudu_user_log using gin (kvs);
 create table tudu_task (
     task_id                 bigint primary key default nextval('tudu_task_seq'),
     user_id                 bigint references tudu_user,
-    description             varchar(1024),
+    description             varchar(256),
     tags                    varchar[] default null,
     finished_date           timestamptz,
     --

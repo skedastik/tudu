@@ -24,19 +24,23 @@ create or replace function tudu.signup_user(
 declare
     _user_id        bigint;
     _signup_token   varchar;
+    _constraint     text;
 begin
-    _email := util.btrim_whitespace(_email);
-    
-    if exists (select 1 from tudu_user where lower(email) = lower(_email)) then
-        return -1;
-    end if;
-    
+    _email        := util.btrim_whitespace(_email);
     _user_id      := nextval('tudu_user_seq');
     _signup_token := md5(random()::text || 'tudumajik' || _user_id);
     _kvs          := _kvs || hstore('signup_token', _signup_token);
     
-    insert into tudu_user (user_id, email, password_salt, password_hash, kvs)
-    values (_user_id, _email, _pw_salt, _pw_hash, _kvs);
+    begin
+        insert into tudu_user (user_id, email, password_salt, password_hash, kvs)
+        values (_user_id, _email, _pw_salt, _pw_hash, _kvs);
+    exception when unique_violation then
+        get stacked diagnostics _constraint = constraint_name;
+        if _constraint = 'tudu_user_uniq_email_idx' then
+            return -1;
+        end if;
+        raise;
+    end;
     
     perform tudu.user_log_add(_user_id, 'signup', _ip);
         

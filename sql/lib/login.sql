@@ -51,11 +51,6 @@ begin
         insert into tudu_access_token (token_id, user_id, token_string, kvs)
         values (_token_id, _user_id, _token_string, _kvs);
     exception when unique_violation then
-        /**
-         * Since PostgreSQL 9.3 it is possible to extract comprehensive error
-         * details via GET STACKED DIAGNOSTICS. See:
-         * http://www.postgresql.org/docs/9.3/static/plpgsql-control-structures.html
-         */
         get stacked diagnostics _constraint = constraint_name;
         if _constraint = 'tudu_access_token_uniq_idx' then
             return -3;
