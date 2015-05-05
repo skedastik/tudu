@@ -64,8 +64,8 @@ create table tudu_task_log (
     log_id                  bigint primary key default nextval('tudu_task_log_seq'),
     task_id                 bigint references tudu_task,
     operation               varchar(128) not null,
-    info                    text default null,
     ip                      inet default null,
+    info                    text default null,
     --
     kvs                     hstore not null default '',
     cdate                   timestamptz not null default current_timestamp

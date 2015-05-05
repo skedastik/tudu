@@ -4,5 +4,6 @@ begin;
 \ir util.sql
 \ir user.sql
 \ir login.sql
+\ir task.sql
 select * from unit_tests.begin();
 rollback;
