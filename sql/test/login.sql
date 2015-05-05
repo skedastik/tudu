@@ -4,16 +4,15 @@ create or replace function unit_tests.create_access_token() returns test_result 
 declare
     _message            test_result;
     _user               tudu_user%ROWTYPE;
-    _access_token_id    bigint;
     _access_token       tudu_access_token%ROWTYPE;
     _access_token_log   tudu_access_token_log%ROWTYPE;
 begin
     _user               := tudu.create_random_user();
-    _access_token_id    := tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '1 week', '127.0.0.1');
+    perform tudu.create_access_token(_user.user_id, _user.password_hash, 'silly-token-string', '1 week', '127.0.0.1');
     _access_token       := tudu.latest_access_token();
     _access_token_log   := tudu.latest_access_token_log();
     
-    if _access_token_id < 0 then
+    if _access_token.token_id is null then
         select assert.fail('should succeed.') into _message;
         return _message;
     end if;
@@ -101,7 +100,7 @@ begin
         return _message;
     end if;
     
-    if _token_log is not null then
+    if _token_log.log_id is not null then
         select assert.fail('should NOT create an access token log entry') into _message;
         return _message;
     end if;

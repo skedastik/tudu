@@ -10,7 +10,7 @@ begin
     _user       := tudu.latest_user();
     _user_log   := tudu.latest_user_log();
     
-    if _user is null then
+    if _user.user_id is null then
         select assert.fail('should succeed') into _message;
         return _message;
     end if;
