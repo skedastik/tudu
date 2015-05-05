@@ -28,14 +28,14 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function unit_tests.sort_dedup_denull_btrim_whitespace() returns test_result as $$
+create or replace function unit_tests.denull_btrim_whitespace() returns test_result as $$
 declare
     _message    test_result;
 begin
-    if util.sort_dedup_denull_btrim_whitespace(array[E'3 \n', E'\n 3', '1', '  2  ', null, '', '1', '2', E'\r 2 \t'])
-    is distinct from array['1', '2', '3']
+    if util.denull_btrim_whitespace(array[E'Three \n', 'one', '  2  ', null, '', 'One', '2', E'\r 2 \t'])
+    is distinct from array['Three', 'one', '2', 'One', '2', '2']
     then
-        select assert.fail('should remove duplicate elements, sorting them ascending in the process') into _message;
+        select assert.fail('should remove NULLs and empty strings, removing whitespace in the process') into _message;
         return _message;
     end if;
     

@@ -31,6 +31,22 @@ create function tudu.latest_access_token_log() returns tudu_access_token_log as 
 $$ language sql;
 
 /**
+ * Return the latest tast.
+ */
+drop function if exists tudu.latest_task();
+create function tudu.latest_task() returns tudu_task as $$
+    select * from tudu_task order by task_id desc limit 1;
+$$ language sql;
+
+/**
+ * Return the latest task log.
+ */
+drop function if exists tudu.latest_task_log();
+create function tudu.latest_task_log() returns tudu_task_log as $$
+    select * from tudu_task_log order by log_id desc limit 1;
+$$ language sql;
+
+/**
  * Generate a random string.
  */
 drop function if exists tudu.random_string();

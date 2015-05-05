@@ -23,7 +23,7 @@ declare
     _task_id        bigint;
 begin
     _task_id := nextval('tudu_task_seq');
-    _tags    := util.sort_dedup_denull_btrim_whitespace(_tags);
+    _tags    := util.denull_btrim_whitespace(_tags);
     
     insert into tudu_task (task_id, user_id, description, tags, kvs)
     values (_task_id, _user_id, _description, _tags, _kvs);
