@@ -20,5 +20,5 @@ $$ language sql immutable security definer;
 create or replace function util.sort_dedup_denull_btrim_whitespace(_str_array text[]) returns text[] as $$
     select array_agg(x.val) from (
         select distinct util.btrim_whitespace(unnest(_str_array)) as val order by val asc
-    ) x where x.val not in (null, '');
+    ) x where x.val is not null and x.val <> '';
 $$ language sql immutable security definer;

@@ -32,7 +32,9 @@ create or replace function unit_tests.sort_dedup_denull_btrim_whitespace() retur
 declare
     _message    test_result;
 begin
-    if util.sort_dedup_denull_btrim_whitespace(array[E'3 \n', E'\n 3', '1', '  2  ', '1', '2', E'\r 2 \t']) <> array['1', '2', '3'] then
+    if util.sort_dedup_denull_btrim_whitespace(array[E'3 \n', E'\n 3', '1', '  2  ', null, '', '1', '2', E'\r 2 \t'])
+    is distinct from array['1', '2', '3']
+    then
         select assert.fail('should remove duplicate elements, sorting them ascending in the process') into _message;
         return _message;
     end if;
