@@ -70,11 +70,15 @@ $$ language plpgsql security definer;
  * Arguments
  *   _user_id       ID of existing user
  *   _ip            Optional IP address
+ * 
+ * Returns
+ *   ID of access token on success
+ *   -1 if no active access token exists
  */
 create or replace function tudu.revoke_active_access_token(
     _user_id        bigint,
     _ip             inet default null
-) returns void as $$
+) returns bigint as $$
 declare
     _token_id       bigint;
 begin
@@ -88,6 +92,12 @@ begin
     select token_id into _token_id from updated_row;
     
     perform tudu.access_token_log_add(_token_id, 'revoke', _ip);
+    
+    if _token_id is null then
+        return -1;
+    end if;
+    
+    return _token_id;
 end;
 $$ language plpgsql security definer;
 

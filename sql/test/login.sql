@@ -55,15 +55,23 @@ $$ language plpgsql;
 
 create or replace function unit_tests.revoke_active_access_token() returns test_result as $$
 declare
-    _message            test_result;
-    _user               tudu_user%ROWTYPE;
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _token_id   bigint;
 begin
     _user := tudu.create_random_user();
     perform tudu.create_access_token(_user.user_id, _user.password_hash, 'token-string', '1 week', '127.0.0.1');
-    perform tudu.revoke_active_access_token(_user.user_id, '127.0.0.1');
+    _token_id := tudu.revoke_active_access_token(_user.user_id, '127.0.0.1');
     
-    if exists (select 1 from tudu_access_token where user_id = _user.user_id and status = 'active') then
-        select assert.fail('should succeed') into _message;
+    if _token_id < 0 then
+        select assert.fail('should succeed if an active access token exists') into _message;
+        return _message;
+    end if;
+    
+    _token_id := tudu.revoke_active_access_token(_user.user_id, '127.0.0.1');
+    
+    if _token_id <> -1 then
+        select assert.fail('should fail if no active access token exists') into _message;
         return _message;
     end if;
     
