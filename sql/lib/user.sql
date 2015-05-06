@@ -172,6 +172,7 @@ create or replace function tudu.set_user_email(
 declare
     _email      varchar;
 begin
+    _new_email := util.btrim_whitespace(_new_email);
     select user_id, email into _user_id, _email from tudu_user where user_id = _user_id;
     
     if _user_id is null then

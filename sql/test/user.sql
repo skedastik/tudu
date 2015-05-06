@@ -143,8 +143,8 @@ begin
     perform tudu.signup_user('iheart@turtles.gmn', 'fsdmnf', 'opoytouyi');
     
     _user     := tudu.latest_user();
-    /* simultaneously test for case insensitivity */
-    _result   := tudu.confirm_user(null, 'iHeArT@tUrTlEs.gMn', _user.kvs->'signup_token');
+    /* simultaneously test for case insensitivity and normalization */
+    _result   := tudu.confirm_user(null, '   iHeArT@tUrTlEs.gMn   ', _user.kvs->'signup_token');
     _user     := tudu.latest_user();
     
     if _result <> _user.user_id then
@@ -302,8 +302,8 @@ declare
 begin
     _user      := tudu.create_random_user();
     _old_email := _user.email;
-    /* simultaneously test that case is preserved */
-    _user_id   := tudu.set_user_email(_user.user_id, 'New@Email.Set');
+    /* simultaneously test email normalization */
+    _user_id   := tudu.set_user_email(_user.user_id, '   New@Email.Set   ');
     _user      := tudu.latest_user();
     _user_log  := tudu.latest_user_log();
     
