@@ -296,21 +296,24 @@ create or replace function unit_tests.set_user_email() returns test_result as $$
 declare
     _message    test_result;
     _user       tudu_user%ROWTYPE;
+    _old_email  varchar;
     _user_id    bigint;
     _user_log   tudu_user_log%ROWTYPE;
 begin
-    _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_email(_user.user_id, 'new@email.set');
-    _user     := tudu.latest_user();
-    _user_log := tudu.latest_user_log();
+    _user      := tudu.create_random_user();
+    _old_email := _user.email;
+    /* simultaneously test that case is preserved */
+    _user_id   := tudu.set_user_email(_user.user_id, 'New@Email.Set');
+    _user      := tudu.latest_user();
+    _user_log  := tudu.latest_user_log();
     
     if _user_id <> _user.user_id then
         select assert.fail('should succeed') into _message;
         return _message;
     end if;
     
-    if _user.email <> 'new@email.set' then
-        select assert.fail('should set email to "new@email.set"') into _message;
+    if _user.email <> 'New@Email.Set' then
+        select assert.fail('should set email to "New@Email.Set"') into _message;
         return _message;
     end if;
     
@@ -321,6 +324,11 @@ begin
     
     if _user_log.operation <> 'set_email' then
         select assert.fail('should create a user log entry with operation "set_email"') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.kvs->'old_email' <> _old_email or _user_log.kvs->'new_email' <> 'New@Email.Set' then
+        select assert.fail('should create a user log entry with appropriate "old_email" and "new_email" key/value pairs') into _message;
         return _message;
     end if;
     

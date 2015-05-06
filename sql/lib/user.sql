@@ -170,7 +170,7 @@ create or replace function tudu.set_user_email(
     _ip         inet        default null
 ) returns bigint as $$
 declare
-    _email      varchar;    
+    _email      varchar;
 begin
     select user_id, email into _user_id, _email from tudu_user where user_id = _user_id;
     
@@ -191,7 +191,15 @@ begin
         edate = now()
     where user_id = _user_id;
     
-    perform tudu.user_log_add(_user_id, 'set_email', _ip);
+    perform tudu.user_log_add(
+        _user_id,
+        'set_email',
+        _ip,
+        hstore(array[
+            ['old_email', _email],
+            ['new_email', _new_email]
+        ])
+    );
     
     return _user_id;
 end;
@@ -204,15 +212,15 @@ $$ language plpgsql security definer;
  *   _user_id       User ID
  *   _operation     An operation string
  *   _ip            Optional IP address
- *   _info          Optional info string
  *   _kvs           Optional HSTORE
+ *   _info          Optional info string
  */
 create or replace function tudu.user_log_add(
     _user_id        bigint,
     _operation      varchar,
     _ip             inet default null,
-    _info           text default null,
-    _kvs            hstore default ''
+    _kvs            hstore default '',
+    _info           text default null
 ) returns void as $$
 begin
     insert into tudu_user_log (user_id, operation, ip, info, kvs)

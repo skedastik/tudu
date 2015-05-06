@@ -76,9 +76,11 @@ declare
     _task       tudu_task%ROWTYPE;
     _task_id    bigint;
     _task_log   tudu_task_log%ROWTYPE;
+    _old_tags   varchar[];
 begin
     _user     := tudu.create_random_user();
     _task     := tudu.create_random_task(_user.user_id);
+    _old_tags := _task.tags;
     _task_id  := tudu.set_task_tags(_task.task_id, array['   foo   ', null, E'\n  bar  \r', '']);
     _task     := tudu.latest_task();
     _task_log := tudu.latest_task_log();
@@ -100,6 +102,11 @@ begin
     
     if _task_log.operation <> 'set_tags' then
         select assert.fail('should create a task log entry with operation "set_tags"') into _message;
+        return _message;
+    end if;
+    
+    if _task_log.kvs->'old_tags' <> _old_tags::text or _task_log.kvs->'new_tags' <> _task.tags::text then
+        select assert.fail('should create a task log entry with appropriate "old_tags" and "new_tags" key/value pairs') into _message;
         return _message;
     end if;
     

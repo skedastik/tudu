@@ -146,15 +146,15 @@ $$ language plpgsql security definer;
  *   _token_id      Access token ID
  *   _operation     An operation string
  *   _ip            Optional IP address
- *   _info          Optional info string
  *   _kvs           Optional HSTORE
+ *   _info          Optional info string
  */
 create or replace function tudu.access_token_log_add(
     _token_id       bigint,
     _operation      varchar,
     _ip             inet default null,
-    _info           text default null,
-    _kvs            hstore default ''
+    _kvs            hstore default '',
+    _info           text default null
 ) returns void as $$
 begin
     insert into tudu_access_token_log (token_id, operation, ip, info, kvs)

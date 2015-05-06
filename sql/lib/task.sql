@@ -73,7 +73,15 @@ begin
         edate = now()
     where task_id = _task_id;
     
-    perform tudu.task_log_add(_task_id, 'set_tags', _ip);
+    perform tudu.task_log_add(
+        _task_id,
+        'set_tags',
+        _ip,
+        hstore(array[
+            ['old_tags', _tags::text],
+            ['new_tags', _new_tags::text]
+        ])
+    );
     
     return _task_id;
 end;
@@ -171,15 +179,15 @@ $$ language plpgsql security definer;
  *   _task_id       Task ID
  *   _operation     An operation string
  *   _ip            Optional IP address
- *   _info          Optional info string
  *   _kvs           Optional HSTORE
+ *   _info          Optional info string
  */
 create or replace function tudu.task_log_add(
     _task_id        bigint,
     _operation      varchar,
     _ip             inet        default null,
-    _info           text        default null,
-    _kvs            hstore      default ''
+    _kvs            hstore      default '',
+    _info           text        default null
 ) returns void as $$
 begin
     insert into tudu_task_log (task_id, operation, ip, info, kvs)
