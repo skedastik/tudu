@@ -108,6 +108,7 @@ $$ language plpgsql security definer;
  *   _user_id       ID of existing user
  *   _old_pw_hash   Old password hash
  *   _new_pw_hash   New password hash
+ *   _salt          New password salt
  *   _ip            Optional IP address
  * 
  * Returns
@@ -115,17 +116,22 @@ $$ language plpgsql security definer;
  *   -1 if user ID is invalid
  *   -2 if old password hash does not match
  *   -3 if new password hash is identical to the old one
+ *   -4 if new password salt is identical to the old one
  */
 create or replace function tudu.set_user_password_hash(
     _user_id        bigint,
     _old_pw_hash    varchar,
     _new_pw_hash    varchar,
+    _new_pw_salt    varchar,
     _ip             inet        default null
 ) returns bigint as $$
 declare
     _pw_hash        varchar;
+    _pw_salt        varchar;
 begin
-    select user_id, password_hash into _user_id, _pw_hash from tudu_user where user_id = _user_id;
+    select user_id, password_hash, password_salt
+    into _user_id, _pw_hash, _pw_salt
+    from tudu_user where user_id = _user_id;
     
     if _user_id is null then
         return -1;
@@ -139,8 +145,13 @@ begin
         return -3;
     end if;
     
+    if _pw_salt = _new_pw_salt then
+        return -4;
+    end if;
+    
     update tudu_user
     set password_hash = _new_pw_hash,
+        password_salt = _new_pw_salt,
         edate         = now()
     where user_id = _user_id;
     
