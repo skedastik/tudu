@@ -3,3 +3,4 @@
 \ir lib/user.sql
 \ir lib/login.sql
 \ir lib/task.sql
+\ir role.sql
