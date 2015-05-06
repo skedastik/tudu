@@ -32,7 +32,7 @@ create or replace function unit_tests.denull_btrim_whitespace() returns test_res
 declare
     _message    test_result;
 begin
-    if util.denull_btrim_whitespace(array[E'Three \n', 'one', '  2  ', null, '', 'One', '2', E'\r 2 \t'])
+    if util.denull_btrim_whitespace(array[E'Three \n', 'one', E'\r\n\t  ', '  2  ', null, '', 'One', '2', E'\r 2 \t'])
     is distinct from array['Three', 'one', '2', 'One', '2', '2']
     then
         select assert.fail('should remove NULLs and empty strings, removing whitespace in the process') into _message;
