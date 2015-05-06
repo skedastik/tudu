@@ -289,6 +289,11 @@ begin
         return _message;
     end if;
     
+    if _task.finished_date <> now() then
+        select assert.fail('should set finished_date to now()') into _message;
+        return _message;
+    end if;
+    
     if _task_log.task_id <> _task_id then
         select assert.fail('should create a task log entry with matching task_id') into _message;
         return _message;

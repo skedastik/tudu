@@ -162,8 +162,9 @@ begin
     end if;
     
     update tudu_task
-    set status = 'finished',
-        edate  = now()
+    set status        = 'finished',
+        finished_date = now(),
+        edate         = now()
     where task_id = _task_id;
     
     perform tudu.task_log_add(_task_id, 'finish', _ip);
