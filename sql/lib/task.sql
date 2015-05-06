@@ -47,25 +47,31 @@ $$ language plpgsql security definer;
  * Returns
  *   ID of task on success
  *   -1 if task ID is invalid
+ *   -2 if tags are identical (different order is NOT considered identical)
  */
 create or replace function tudu.set_task_tags(
-    _task_id        bigint,
-    _tags           varchar[],
-    _ip             inet        default null
+    _task_id    bigint,
+    _new_tags   varchar[],
+    _ip         inet        default null
 ) returns bigint as $$
+declare
+    _tags       varchar[];
 begin
-    with updated_row as (
-        update tudu_task
-        set tags  = _tags,
-            edate = now()
-        where task_id = _task_id
-        returning task_id
-    )
-    select task_id into _task_id from updated_row;
+    _new_tags := util.denull_btrim_whitespace(_new_tags);
+    select task_id, tags into _task_id, _tags from tudu_task where task_id = _task_id;
     
     if _task_id is null then
         return -1;
     end if;
+    
+    if _tags is not distinct from _new_tags then
+        return -2;
+    end if;
+    
+    update tudu_task
+    set tags  = _new_tags,
+        edate = now()
+    where task_id = _task_id;
     
     perform tudu.task_log_add(_task_id, 'set_tags', _ip);
     

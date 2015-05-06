@@ -79,7 +79,7 @@ declare
 begin
     _user     := tudu.create_random_user();
     _task     := tudu.create_random_task(_user.user_id);
-    _task_id  := tudu.set_task_tags(_task.task_id, array['foo', 'bar']);
+    _task_id  := tudu.set_task_tags(_task.task_id, array['   foo   ', null, E'\n  bar  \r', '']);
     _task     := tudu.latest_task();
     _task_log := tudu.latest_task_log();
     
@@ -126,6 +126,37 @@ begin
         return _message;
     end if;
     
+    if _task_log.operation = 'set_tags' then
+        select assert.fail('should NOT create a task log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.set_task_tags_using_identical_tags() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _task_id    bigint;
+    _task_log   tudu_task_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _task_id  := tudu.create_task(
+        _user.user_id,
+        'Learn to play Smoke on the Water',
+        array['guitar', null, '   Guitar   ', E'\tMusicTime\t', '']
+    );
+    _task_id  := tudu.set_task_tags(_task_id, array[null, E'\rguitar\n', '   Guitar   ', '', '    MusicTime   ']);
+    _task_log := tudu.latest_task_log();
+
+    if _task_id <> -2 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+
     if _task_log.operation = 'set_tags' then
         select assert.fail('should NOT create a task log entry') into _message;
         return _message;
