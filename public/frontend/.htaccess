@@ -1,0 +1,8 @@
+# Note that the mod_rewrite rules below require the frontend to be served from
+# its own DocumentRoot.
+
+RewriteEngine On
+# Only rewrite if requested resource is not an actual file.
+RewriteCond %{REQUEST_FILENAME} !-f
+# Rewrite all matching requests to index.php, preserving query strings
+RewriteRule ^ index.php [QSA,L]

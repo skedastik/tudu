@@ -1,4 +1,4 @@
-DB_NAME = tudu
+DB_NAME = tudu_dev
 
 all: sql
 

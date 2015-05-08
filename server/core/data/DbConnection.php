@@ -1,25 +1,54 @@
 <?php
 namespace Tudu\Core\Data;
 
-abstract class DB {
+/**
+ * A minimal database abstraction layer.
+ */
+abstract class DbConnection {
+    
     protected $options;
     protected $connection;
     
-    function __construct($options) {
+    /**
+     * Constructor.
+     * 
+     * @param string[] $options Must have the following keys: host, database, 
+     * username, password. The following keys are optional: port (defaults to
+     * 5432).
+     */
+    public function __construct($options) {
         $this->connection = null;
         $this->options = [
             'host'     => $options['host'],
             'database' => $options['database'],
             'username' => $options['username'],
-            'password' => $options['password']
+            'password' => $options['password'],
+            'port'     => isset($options['port']) ? $options['port'] : 5432
         ];
     }
     
-    abstract function connect();
-    abstract function query();
+    /**
+     * Establish a connection the database.
+     * 
+     * This need not be called explicitly. A call to query() automatically calls
+     * connect().
+     */
+    abstract public function connect();
     
-    protected function getConnectionString() {
-       return "host=$this->options[host] dbname=$this->options[database] user=$this->options[username] password=$this->options[password]";
-    }
+    /**
+     * Query the database using a parameterized query string.
+     * 
+     * @param string $queryString A parameterized query string. Parameters are
+     * delimited with $1, $2,... corresponding to elements of $params.
+     * @param array $params Array of query parameters. Number of elements in
+     * array must match number of parameters in $queryString.
+     * @param string $queryName An optional name for the query. If a name is
+     * provided, the query is executed as a prepared statement, otherwise the
+     * the database is queried directly.
+     * 
+     * @return array|FALSE Query result as an array of rows on success or FALSE
+     * on failure.
+     */
+    abstract function query($queryString, array $params = [], $queryName = '');
 }
 ?>
