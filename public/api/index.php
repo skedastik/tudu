@@ -7,7 +7,7 @@ require_once __DIR__.'/../../server/handler/api/TasksHandler.php';
 
 use \Tudu\Core;
 use \Tudu\Conf;
-use \Tudu\Handler\Api;
+use \Tudu\Handler;
 
 $db = new Core\Data\PgSQLConnection([
     'host'     => Conf\DB_HOST,
@@ -20,8 +20,7 @@ $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
 
 $app->get('/users/:user_id/tasks/', function ($user_id) use ($delegate, $db) {
-    (new Api\Tasks($delegate, $db, [
-        'method' => 'get',
+    (new Handler\Api\Tasks($delegate, $db, [
         'user_id' => $user_id
     ]))->process();
 });

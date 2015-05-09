@@ -15,6 +15,11 @@ interface App {
     public function redirect($url, $status);
     
     /**
+     * Get the HTTP request method.
+     */
+    public function getRequestMethod();
+    
+    /**
      * Get all request headers as an associative-array-like object.
      */
     public function getRequestHeaders();

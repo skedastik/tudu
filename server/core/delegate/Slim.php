@@ -24,6 +24,10 @@ class Slim implements App {
         return $this->slim->redirect($url, $status);
     }
     
+    public function getRequestMethod() {
+        return $this->slim->request->getMethod();
+    }
+    
     public function getRequestHeaders() {
         return $this->slim->request->headers;
     }
