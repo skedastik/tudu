@@ -19,11 +19,12 @@ $db = new Core\Data\PgSQLConnection([
 $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
 
-$app->get('/users/:user_id/tasks/', function ($user_id) use ($delegate, $db) {
+$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
     (new Handler\Api\Tasks($delegate, $db, [
-        'user_id' => $user_id
+        'user_id' => $user_id,
+        'task_id' => $task_id
     ]))->process();
-});
+})->via('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS');
 
 $app->run();
 ?>
