@@ -3,7 +3,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 require_once __DIR__.'/../../server/core/delegate/Slim.php';
 require_once __DIR__.'/../../server/core/data/PgSQLConnection.php';
 require_once __DIR__.'/../../server/conf/conf.php';
-require_once __DIR__.'/../../server/handler/api/GetTasksHandler.php';
+require_once __DIR__.'/../../server/handler/api/TasksHandler.php';
 
 use \Tudu\Core;
 use \Tudu\Conf;
@@ -20,7 +20,8 @@ $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
 
 $app->get('/users/:user_id/tasks/', function ($user_id) use ($delegate, $db) {
-    (new Api\Get\Tasks($delegate, $db, [
+    (new Api\Tasks($delegate, $db, [
+        'method' => 'get',
         'user_id' => $user_id
     ]))->process();
 });

@@ -23,16 +23,13 @@ abstract class AuthHandler extends Handler {
      * 
      * @return bool TRUE if authentication succeeded, FALSE otherwise.
      */
-    protected function authenticate() {
+    private function authenticate() {
         if (isset($this->context['headers']['Authorization'])) {
             /* TODO: Perform HMAC-inspired authentication. */
         }
-        return false;
+        return true;
     }
     
-    /**
-     * Handle the request.
-     */
     final public function process() {
         if ($this->authenticate()) {
             $this->acceptAuthentication();
