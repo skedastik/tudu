@@ -4,10 +4,6 @@ namespace Tudu\Core\Delegate;
 require_once __DIR__.'/App.php';
 require_once __DIR__.'/../../../vendor/autoload.php';
 
-/**
- * An interface between Tudu and any application framework. The interface
- * requires various common methods like redirect(), getRequestHeaders(), etc.
- */
 class Slim implements App {
     protected $slim;
     
