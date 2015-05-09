@@ -1,12 +1,12 @@
 <?php
 namespace Tudu\Handler\Api;
 
-require_once __DIR__.'/../../core/AuthHandler.php';
+require_once __DIR__.'/../../core/Handler.php';
 
 /**
  * Request handler base class for all API endpoints.
  */
-abstract class APIHandler extends \Tudu\Core\AuthHandler {
+abstract class APIHandler extends \Tudu\Core\Handler {
     
     /**
      * Handle GET requests on this endpoint. Override for custom behavior.
@@ -76,15 +76,9 @@ abstract class APIHandler extends \Tudu\Core\AuthHandler {
         $this->delegate->send();
     }
     
-    final protected function acceptAuthentication() {
+    final public function process() {
         // invoke method corresponding to HTTP request method
         $this->{strtolower($this->delegate->getRequestMethod())}();
-    }
-    
-    protected function rejectAuthentication() {
-        $this->delegate->setResponseHeaders(['WWW-Authenticate' => 'tudu realm="api"']);
-        $this->delegate->setResponseStatus(401);
-        $this->delegate->send();
     }
 }
 

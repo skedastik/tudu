@@ -43,5 +43,16 @@ class Slim implements App {
     public function send() {
         $this->slim->stop();
     }
+    
+    public function map($route, $callback, ...$methods) {
+        if (empty($methods)) {
+            $methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'];
+        }
+        $this->slim->map($route, $callback)->via(...$methods);
+    }
+    
+    public function pass() {
+        $this->slim->pass();
+    }
 }
 ?>

@@ -7,7 +7,8 @@ use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Delegate;
 
 /**
- * Request handler base class.
+ * Request handler base class. A Handler is analogous to a unit of middleware
+ * with a single responsibility (authentication, business processing, etc.).
  */
 abstract class Handler {
     

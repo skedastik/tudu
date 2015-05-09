@@ -3,6 +3,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 require_once __DIR__.'/../../server/core/delegate/Slim.php';
 require_once __DIR__.'/../../server/core/data/PgSQLConnection.php';
 require_once __DIR__.'/../../server/conf/conf.php';
+require_once __DIR__.'/../../server/core/HMACHandler.php';
 require_once __DIR__.'/../../server/handler/api/TasksHandler.php';
 
 use \Tudu\Core;
@@ -19,12 +20,19 @@ $db = new Core\Data\PgSQLConnection([
 $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
 
-$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
+$delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
+    (new Core\HMACHandler($delegate, $db, [
+        'user_id' => $user_id,
+        'task_id' => $task_id
+    ]))->process();
+});
+
+$delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
     (new Handler\Api\Tasks($delegate, $db, [
         'user_id' => $user_id,
         'task_id' => $task_id
     ]))->process();
-})->via('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS');
+});
 
 $app->run();
 ?>

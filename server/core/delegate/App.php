@@ -42,5 +42,30 @@ interface App {
      * Immediately send an HTTP response as currently formed and end processing.
      */
     public function send();
+    
+    /**
+     * Request router.
+     * 
+     * Map a request URI to a callback for the given HTTP request methods. The
+     * callback will be invoked when a matching URI is requested using one of
+     * the listed HTTP methods. Should multiple callbacks apply to a given
+     * route, the first callback registered is invoked. To immediately halt
+     * processing and invoke the next applicable callback, use pass().
+     * 
+     * @param string $route A resource URI, possibly parameterized.
+     * @param callable $callback A callback function, possibly taking arguments
+     * corresponding to parameters in the route string.
+     * @param mixed $methods Any number of string arguments, each an HTTP
+     * request method. If no method arguments are supplied, the route applies to
+     * all methods. The following methods are supported: GET, POST, PUT, DELETE,
+     * OPTIONS, PATCH.
+     */
+    public function map($route, $callback, ...$methods);
+    
+    /**
+     * Immediately halt processing and pass control to the next applicable
+     * router callback.
+     */
+    public function pass();
 }
 ?>

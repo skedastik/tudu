@@ -9,26 +9,27 @@ require_once __DIR__.'/Handler.php';
 abstract class AuthHandler extends Handler {
     
     /**
-     * Process a successfully authenticated request.
+     * Accept a successfully authenticated request.
      */
-    abstract protected function acceptAuthentication();
+    protected function acceptAuthentication() {
+        $this->delegate->pass();
+    }
     
     /**
      * Reject a request that failed authentication.
      */
-    abstract protected function rejectAuthentication();
+    protected function rejectAuthentication() {
+        $this->delegate->setResponseHeaders(['WWW-Authenticate' => 'tudu realm="api"']);
+        $this->delegate->setResponseStatus(401);
+        $this->delegate->send();
+    }
     
     /**
      * Authenticate the request.
      * 
      * @return bool TRUE if authentication succeeded, FALSE otherwise.
      */
-    private function authenticate() {
-        if (isset($this->context['headers']['Authorization'])) {
-            /* TODO: Perform HMAC-inspired authentication. */
-        }
-        return false;
-    }
+    abstract protected function authenticate();
     
     final public function process() {
         if ($this->authenticate()) {
