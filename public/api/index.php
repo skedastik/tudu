@@ -3,8 +3,10 @@ require_once __DIR__.'/../../vendor/autoload.php';
 require_once __DIR__.'/../../server/core/delegate/Slim.php';
 require_once __DIR__.'/../../server/core/data/PgSQLConnection.php';
 require_once __DIR__.'/../../server/conf/conf.php';
+require_once __DIR__.'/../../server/core/BasicHandler.php';
 require_once __DIR__.'/../../server/core/HMACHandler.php';
 require_once __DIR__.'/../../server/handler/api/TasksHandler.php';
+require_once __DIR__.'/../../server/handler/api/UsersHandler.php';
 
 use \Tudu\Core;
 use \Tudu\Conf;
@@ -19,6 +21,18 @@ $db = new Core\Data\PgSQLConnection([
 
 $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
+
+$delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
+    (new Core\BasicHandler($delegate, $db, [
+        'user_id' => $user_id
+    ]))->process();
+}, 'PUT');
+
+$delegate->map('/users/(:user_id)', function ($user_id = null) use ($delegate, $db) {
+    (new Handler\Api\Users($delegate, $db, [
+        'user_id' => $user_id
+    ]))->process();
+});
 
 $delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
     (new Core\HMACHandler($delegate, $db, [
