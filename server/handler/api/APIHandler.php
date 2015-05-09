@@ -70,7 +70,7 @@ abstract class APIHandler extends \Tudu\Core\AuthHandler {
     /**
      * Default behavior for rejecting unsupported request methods.
      */
-    private function rejectMethod() {
+    protected function rejectMethod() {
         $this->delegate->setResponseHeaders(['Allow' => $this->_getAllowedMethods()]);
         $this->delegate->setResponseStatus(405);
         $this->delegate->send();
