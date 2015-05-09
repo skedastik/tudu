@@ -1,7 +1,7 @@
 <?php
-namespace Tudu\Core;
+namespace Tudu\Core\Handler;
 
-require_once __DIR__.'/data/DbConnection.php';
+require_once __DIR__.'/../data/DbConnection.php';
 
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Delegate;

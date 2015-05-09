@@ -1,12 +1,12 @@
 <?php
-namespace Tudu\Handler\Api;
+namespace Tudu\Core\Handler;
 
-require_once __DIR__.'/../../core/Handler.php';
+require_once __DIR__.'/Handler.php';
 
 /**
  * Request handler base class for all API endpoints.
  */
-abstract class APIHandler extends \Tudu\Core\Handler {
+abstract class API extends Handler {
     
     /**
      * Handle GET requests on this endpoint. Override for custom behavior.

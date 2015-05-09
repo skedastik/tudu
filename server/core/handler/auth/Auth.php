@@ -1,12 +1,12 @@
 <?php
-namespace Tudu\Core;
+namespace Tudu\Core\Handler\Auth;
 
-require_once __DIR__.'/Handler.php';
+require_once __DIR__.'/../Handler.php';
 
 /**
  * Request handler with authentication.
  */
-abstract class AuthHandler extends Handler {
+abstract class Auth extends \Tudu\Core\Handler\Handler {
     
     /**
      * Accept a successfully authenticated request.

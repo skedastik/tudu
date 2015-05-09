@@ -1,12 +1,12 @@
 <?php
-namespace Tudu\Core;
+namespace Tudu\Core\Handler\Auth;
 
-require_once __DIR__.'/AuthHandler.php';
+require_once __DIR__.'/Auth.php';
 
 /**
  * Request handler with HMAC-inspired authentication.
  */
-class HMACHandler extends AuthHandler {
+class HMAC extends \Tudu\Core\Handler\Auth\Auth {
     
     protected function authenticate() {
         if (isset($this->context['headers']['Authorization'])) {

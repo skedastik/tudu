@@ -1,12 +1,12 @@
 <?php
-namespace Tudu\Core;
+namespace Tudu\Core\Handler\Auth;
 
-require_once __DIR__.'/AuthHandler.php';
+require_once __DIR__.'/Auth.php';
 
 /**
  * Request handler with basic authentication.
  */
-class BasicHandler extends AuthHandler {
+class Basic extends \Tudu\Core\Handler\Auth\Auth {
     
     protected function authenticate() {
         if (isset($this->context['headers']['Authorization'])) {
