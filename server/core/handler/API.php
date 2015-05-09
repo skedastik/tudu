@@ -4,7 +4,9 @@ namespace Tudu\Core\Handler;
 require_once __DIR__.'/Handler.php';
 
 /**
- * Request handler base class for all API endpoints.
+ * Request handler base class for all API endpoints. This class can be
+ * instantiated if you need an API handler that simply rejects all HTTP methods
+ * except for OPTIONS.
  */
 abstract class API extends Handler {
     
@@ -60,7 +62,9 @@ abstract class API extends Handler {
      * 
      * @return string Example: "GET, PUT, POST"
      */
-    abstract protected function getAllowedMethods();
+    protected function getAllowedMethods() {
+        return 'OPTIONS';
+    }
     
     private function _getAllowedMethods() {
         $methods = strtoupper($this->getAllowedMethods());
