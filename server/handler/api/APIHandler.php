@@ -77,6 +77,7 @@ abstract class APIHandler extends \Tudu\Core\AuthHandler {
     }
     
     final protected function acceptAuthentication() {
+        // invoke method corresponding to HTTP request method
         $this->{strtolower($this->delegate->getRequestMethod())}();
     }
     
