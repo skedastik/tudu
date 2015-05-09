@@ -27,7 +27,7 @@ abstract class AuthHandler extends Handler {
         if (isset($this->context['headers']['Authorization'])) {
             /* TODO: Perform HMAC-inspired authentication. */
         }
-        return true;
+        return false;
     }
     
     final public function process() {
