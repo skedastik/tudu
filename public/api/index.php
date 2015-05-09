@@ -22,6 +22,8 @@ $db = new Core\Data\PgSQLConnection([
 $app = new \Slim\Slim();
 $delegate = new Core\Delegate\Slim($app);
 
+// User URIs -------------------------------------------------------------------
+
 $delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
     (new Core\Handler\Auth\Basic($delegate, $db, [
         'user_id' => $user_id
@@ -33,6 +35,8 @@ $delegate->map('/users/(:user_id)', function ($user_id = null) use ($delegate, $
         'user_id' => $user_id
     ]))->process();
 });
+
+// Task URIs -------------------------------------------------------------------
 
 $delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
     (new Core\Handler\Auth\HMAC($delegate, $db, [
