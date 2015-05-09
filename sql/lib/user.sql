@@ -218,6 +218,28 @@ end;
 $$ language plpgsql security definer;
 
 /**
+ * Get a user record by ID.
+ * 
+ * Arguments
+ *   _user_id   ID of existing user
+ * 
+ * Returns
+ *   tudu_user row on success
+ *   NULL if no such user exists
+ */
+create or replace function tudu.get_user_by_id(
+    _user_id    bigint
+) returns tudu_user as $$
+declare
+    _user       tudu_user%ROWTYPE;
+begin
+    select * into _user from tudu_user where user_id = _user_id;
+    
+    return _user;
+end;
+$$ language plpgsql security definer;
+
+/**
  * Log a user operation. Automatically called by user functions.
  * 
  * Arguments
