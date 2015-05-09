@@ -5,8 +5,8 @@ require_once __DIR__.'/../../server/core/data/PgSQLConnection.php';
 require_once __DIR__.'/../../server/conf/conf.php';
 require_once __DIR__.'/../../server/core/handler/auth/Basic.php';
 require_once __DIR__.'/../../server/core/handler/auth/HMAC.php';
-require_once __DIR__.'/../../server/handler/api/Tasks.php';
-require_once __DIR__.'/../../server/handler/api/Users.php';
+require_once __DIR__.'/../../server/handler/api/Task.php';
+require_once __DIR__.'/../../server/handler/api/User.php';
 
 use \Tudu\Core;
 use \Tudu\Conf;
@@ -31,7 +31,7 @@ $delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
 }, 'PUT');
 
 $delegate->map('/users/(:user_id)', function ($user_id = null) use ($delegate, $db) {
-    (new Handler\Api\Users($delegate, $db, [
+    (new Handler\Api\User($delegate, $db, [
         'user_id' => $user_id
     ]))->process();
 });
@@ -46,7 +46,7 @@ $delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id 
 });
 
 $delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
-    (new Handler\Api\Tasks($delegate, $db, [
+    (new Handler\Api\Task($delegate, $db, [
         'user_id' => $user_id,
         'task_id' => $task_id
     ]))->process();
