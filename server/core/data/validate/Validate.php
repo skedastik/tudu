@@ -40,9 +40,10 @@ abstract class Validate {
      */
     final public function validate($data) {
         if ($data instanceof \Tudu\Core\Data\Validate\Sentinel\Sentinel) {
-            return $data->getError();
+            $result = $data->getError();
+        } else {
+            $result = $this->_validate($data);
         }
-        $result = $this->_validate($data);
         return is_null($result) ? NULL : $this->noun.' '.$result;
     }
     
