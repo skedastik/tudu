@@ -3,9 +3,11 @@ namespace Tudu\Test\Core\Data\Validate;
 
 require_once __DIR__.'/../../../core/data/validate/String.php';
 require_once __DIR__.'/../../../core/data/validate/Email.php';
+require_once __DIR__.'/../../../core/data/validate/sentinel/NotFound.php';
 require_once __DIR__.'/../../../../vendor/autoload.php';
 
 use \Tudu\Core\Data\Validate;
+use \Tudu\Core\Data\Validate\Sentinel;
 
 class StringTest extends \PHPUnit_Framework_TestCase {
 
@@ -50,7 +52,7 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($validator->validate('@invalid@email@xyz'));
         $this->assertNotNull($validator->validate('this_email_is@too_long.xyz'));
     }
-    
+
     public function testChainThreeValidators() {
         $validator = Validate\Email()
             ->also(Validate\String()->length()->from(15))
@@ -59,6 +61,19 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($validator->validate('@invalid@email@xyz'));
         $this->assertNotNull($validator->validate('this_email_is@too_long.xyz'));
         $this->assertNotNull($validator->validate('too@short.xyz'));
+    }
+}
+
+class SentinelTest extends \PHPUnit_Framework_TestCase {
+
+    public function testSentinel() {
+        $validator = Validate\Email();
+        $this->assertNotNull($validator->validate(new Sentinel\NotFound()));
+    }
+    
+    public function testSentinelWithChaining() {
+        $validator = Validate\Email()->also(Validate\String()->length()->upto(5));
+        $this->assertNotNull($validator->validate(new Sentinel\NotFound()));
     }
 }
   

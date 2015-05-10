@@ -1,6 +1,8 @@
 <?php
 namespace Tudu\Core\Data\Validate;
 
+require_once __DIR__.'/sentinel/NotFound.php';
+
 /**
  * Data validator base class.
  * 
@@ -37,6 +39,9 @@ abstract class Validate {
      * @return string|NULL NULL if data validates, error string otherwise.
      */
     final public function validate($data) {
+        if ($data instanceof \Tudu\Core\Data\Validate\Sentinel\Sentinel) {
+            return $data->getError();
+        }
         $result = $this->_validate($data);
         return is_null($result) ? NULL : $this->noun.' '.$result;
     }
@@ -62,7 +67,6 @@ abstract class Validate {
      * @return string|NULL NULL if data validates, error string otherwise.
      */
     protected function _validate($data) {
-        /* TODO: Handle sentinels */
         return $this->pass($data);
     }
     
@@ -113,18 +117,5 @@ abstract class Validate {
     final public function setNext(Validate $validator) {
         $this->next = $validator;
     }
-}
-
-/**
- * Data validator sentinel class. You can subclass Sentinel and pass it to
- * Validate::validate to force an error.
- */
-abstract class Sentinel {
-    /**
-     * Return an error string.
-     * 
-     * @return string Error string.
-     */
-    abstract public function getError();
 }
 ?>
