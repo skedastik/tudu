@@ -4,19 +4,19 @@ namespace Tudu\Core\Data\Validate;
 /**
  * Data validator base class.
  * 
- * TODO: Document validator chaining w/ example, e.g.:
+ * Validators can be chained via Validate::also.
  * 
- *    $validator = (new Validate\email())
- *    ->also((new Validate\string())->from(5)->upTo(32))
- *    ->also((new Validate\charset())->in('utf-8', 'ascii'));
+ * Example:
+ * 
+ *    // Where Validate\String() and Validate\CharSet() are factory functions:
  *    
- *    $validator = Email()->isCorrectFormat()
- *    ->also(Length()->from(5)->to(32))
- *    ->also(Charset()->in('utf-8', 'ascii'));
+ *    $validator = Validate\String()->length()->from(5)->to(32)
+ *    ->also(Validate\Email())->isCorrectFormat();
  *    
- *    $validator->validate('foo@bar.com');
+ *    $validator->validate('foo@bar.com');      // validates, returns NULL
  */
 abstract class Validate {
+    
     protected $next;
     protected $last;
     protected $noun;
