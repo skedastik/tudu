@@ -3,18 +3,12 @@ namespace Tudu\Test\Core\Data\Model;
 
 require_once __DIR__.'/../../../../../vendor/autoload.php';
 require_once __DIR__.'/../../../../core/data/validate/sentinel/NotFound.php';
-require_once __DIR__.'/../../../../core/Logger.php';
-require_once __DIR__.'/../../../mock/core/LoggerMock.php';
 require_once __DIR__.'/../../../../core/data/model/Model.php';
 require_once __DIR__.'/../../../../core/data/validate/Email.php';
 require_once __DIR__.'/../../../../core/data/validate/String.php';
 
-use \Tudu\Core\Logger;
 use \Tudu\Core\Data\Validate;
 use \Tudu\Core\Data\Validate\Sentinel;
-use \Tudu\Test\Mock\Core\LoggerMock;
-
-Logger::setInstance(new LoggerMock());
 
 class FakeModel extends \Tudu\Core\Data\Model\Model {
     
@@ -76,6 +70,18 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($errors);
         $this->assertNull($errors['name']);
         $this->assertNotNull($errors['email']);
+    }
+    
+    public function testAllValidDataWithExtraProperty() {
+        $fakeModel = new FakeModel([
+            'name' => 'John Doe',
+            'email' => 'sooperdooper@abc.xyz',
+            'extra' => 'Whoa, where did this come from?'
+        ]);
+        $this->assertFalse($fakeModel->isValid());
+        $errors = $fakeModel->validate();
+        $this->assertTrue($fakeModel->isValid());
+        $this->assertNull($errors);
     }
 }
 ?>
