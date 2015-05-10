@@ -1,10 +1,16 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
+require_once __DIR__.'/Model.php';
+
 /**
  * User model.
  */
-abstract class User {
+class User extends Model\Model {
     
+    protected function getValidationMatrix() {
+        // TODO
+        return [];
+    }
 }
 ?>

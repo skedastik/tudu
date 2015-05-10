@@ -21,7 +21,7 @@ class String extends Validate {
     
     public function __construct() {
         parent::__construct();
-        $this->noun = "String";
+        $this->description = "String";
         $this->options = [];
     }
     
@@ -34,7 +34,7 @@ class String extends Validate {
         return $this;
     }
     
-    public function upto($length) {
+    public function upTo($length) {
         $this->options['max_length'] = $length;
         return $this;
     }

@@ -423,40 +423,6 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function unit_tests.get_user_by_id() returns test_result as $$
-declare
-    _message    test_result;
-    _user       tudu_user%ROWTYPE;
-    _result     tudu_user%ROWTYPE;
-begin
-    _user   := tudu.create_random_user();
-    _result := tudu.get_user_by_id(_user.user_id);
-    
-    if _result is null then
-        select assert.fail('should succeed') into _message;
-        return _message;
-    end if;
-    
-    if _result.email <> _user.email then
-        select assert.fail('should select a user with matching email') into _message;
-        return _message;
-    end if;
-    
-    if _result.password_salt <> _user.password_salt then
-        select assert.fail('should select a user with matching password salt') into _message;
-        return _message;
-    end if;
-    
-    if _result.password_hash <> _user.password_hash then
-        select assert.fail('should select a user with matching password hash') into _message;
-        return _message;
-    end if;
-    
-    select assert.ok('End of test.') into _message;
-    return _message;
-end;
-$$ language plpgsql;
-
 create or replace function unit_tests.set_user_email_to_already_taken_email() returns test_result as $$
 declare
     _message    test_result;

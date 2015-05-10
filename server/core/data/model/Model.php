@@ -1,6 +1,10 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
+require_once __DIR__.'/../../Logger.php';
+
+use \Tudu\Core\Logger;
+
 /**
  * Model base class.
  */
@@ -13,7 +17,7 @@ abstract class Model {
      * 
      * @param array $properties Key/value properties array.
      */
-    final public function __construct($model) {
+    final public function __construct($properties) {
         $this->fromArray($properties);
     }
     
@@ -42,6 +46,23 @@ abstract class Model {
     }
     
     /**
+     * Return a key/value array of validators. Each key should be a model
+     * property. Each value should be an appropriate validator.
+     * 
+     * Example:
+     * 
+     *    return [
+     *        'user_id' => Validate\ID()->isPositive()->isNotNull(),
+     *        'email'   => Validate\Email()
+     *                     ->also(Validate\String()->length()->from(5)),
+     *        'unicorn' => Validate\Creature()->has()->horn(1)
+     *    ];
+     * 
+     * @return array Key/value array describing validation matrix
+     */
+    abstract protected function getValidationMatrix();
+    
+    /**
      * Validate the model.
      * 
      * @return array|NULL Key/value array of errors where each key is a property
@@ -49,7 +70,23 @@ abstract class Model {
      * validates. If all properties are valid, NULL is returned.
      */
     final public function validate() {
-        /* TODO */
+        $logger = Logger::getInstance();
+        $matrix = $this->getValidationMatrix();
+        $errors = [];
+        $this->isValid = true;
+        if (count($this->properties) > count($matrix)) {
+            $logger->warning(get_class($this).' instance has more properties than validators.',
+                [
+                    'properties' => $this->properties,
+                    'validators' => $matrix
+                ]
+            );
+        }
+        foreach ($matrix as $property => $validator) {
+            $errors[$property] = $validator->validate($this->properties[$property]);
+            $this->isValid = $this->isValid && is_null($errors[$property]);
+        }
+        return $this->isValid ? null : $errors;
     }
 }
 ?>

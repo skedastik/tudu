@@ -19,7 +19,7 @@ class Email extends Validate {
     
     public function __construct() {
         parent::__construct();
-        $this->noun = "Email address";
+        $this->description = "Email address";
     }
     
     protected function _validate($data) {

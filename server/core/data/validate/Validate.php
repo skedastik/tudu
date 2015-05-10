@@ -13,7 +13,7 @@ require_once __DIR__.'/sentinel/NotFound.php';
  *    // Validate\String() and Validate\CharSet() are shorthand constructors:
  *    
  *    $validator = Validate\Email()
- *        ->also(Validate\String()->length()->from(5)->upto(32));
+ *        ->also(Validate\String()->length()->from(5)->upTo(32));
  *    
  *    $validator->validate('foo@bar.com');      // validates, returns NULL
  */
@@ -21,7 +21,7 @@ abstract class Validate {
     
     protected $next;
     protected $last;
-    protected $noun;
+    protected $description;
     
     /**
      * Constructor. You MUST call this from subclass constructors.
@@ -29,7 +29,7 @@ abstract class Validate {
     public function __construct() {
         $this->next = null;
         $this->last = $this;
-        $this->noun = "This";
+        $this->description = "This";
     }
     
     /**
@@ -44,7 +44,7 @@ abstract class Validate {
         } else {
             $result = $this->_validate($data);
         }
-        return is_null($result) ? NULL : $this->noun.' '.$result;
+        return is_null($result) ? NULL : $this->description.' '.$result;
     }
     
     /**
@@ -60,7 +60,7 @@ abstract class Validate {
      *    "is too frobnicated."
      *    ...
      * 
-     * Notice the lack of capitalization, as the noun will be provided
+     * Notice the lack of capitalization, as the description will be provided
      * automatically. Remember: The error string may be presented to the end
      * user, so make it as presentable as possible while still being precise.
      * 
@@ -96,16 +96,26 @@ abstract class Validate {
     }
     
     /**
-     * Provide a custom noun for pretty-printing validation error messages.
-     * Validate base class uses "This" by default. Note the capitalization, as
-     * the noun will appear at the beginning of the error message. If validators
-     * are chained, the noun of the first validator will be used.
+     * Provide a custom description for pretty-printing validation error
+     * messages. Validate uses "This" by default. Note the capitalization, as
+     * the description will appear at the beginning of the error message. If 
+     * validators are chained, the description of the first validator will be
+     * used.
      * 
-     * @param string $noun A noun describing the data to be validated, e.g.
-     * "E-mail address".
+     * Examples:
+     * 
+     *    "Email address"
+     *    "Oops! It looks like your email address"
+     *    "This email address"
+     * 
+     * Notice that the final segment of each description is a noun. Abide by
+     * this format, always.
+     * 
+     * @param string $description A description describing the data to be
+     * validated.
      */
-    final public function describeAs($noun) {
-        $this->noun = $noun;
+    final public function describeAs($description) {
+        $this->description = $description;
         return $this;
     }
     
