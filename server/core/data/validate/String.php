@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Validate;
 require_once __DIR__.'/Validate.php';
 
 /**
- * Shorthand factory function.
+ * Shorthand constructor.
  * 
  * @return Tudu\Core\Data\Validate\String A string validator.
  */
@@ -21,6 +21,7 @@ class String extends Validate {
     
     public function __construct() {
         parent::__construct();
+        $this->noun = "String";
         $this->options = [];
     }
     
@@ -40,14 +41,14 @@ class String extends Validate {
     
     protected function _validate($data) {
         $length = strlen($data);
-        $minLen = $this->options['min_length'];
-        $maxLen = $this->options['max_length'];
+        $minLen = isset($this->options['min_length']) ? $this->options['min_length'] : 0;
+        $maxLen = isset($this->options['max_length']) ? $this->options['max_length'] : PHP_INT_MAX;
         
         if ($length < $minLen || $length > $maxLen) {
             return "must be $minLen to $maxLen characters in length.";
         }
         
-        return $this->pass();
+        return $this->pass($data);
     }
 }
 ?>
