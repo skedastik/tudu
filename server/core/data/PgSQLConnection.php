@@ -18,12 +18,14 @@ class PgSQLConnection extends DbConnection {
     public function query($queryString, array $params = [], $queryName = '') {
         $logger = Logger::getInstance();
         $this->connect();
+        
         if (empty($queryName)) {
             $result = pg_query_params($this->connection, $queryString, $params);
         } else {
             pg_prepare($this->connection, $queryName, $queryString);
             $result = pg_execute($this->connection, $queryName, $params);
         }
+        
         if ($result) {
             if (empty($params)) {
                 $logger->info('Database query ['.$queryString.'] succeeded');
@@ -33,6 +35,7 @@ class PgSQLConnection extends DbConnection {
         } else {
             $logger->error('Database query ['.$queryString.'] failed with error', [pg_last_error()]);
         }
+        
         return $result ? pg_fetch_all($result) : FALSE;
     }
 }
