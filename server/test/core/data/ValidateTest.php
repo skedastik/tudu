@@ -34,7 +34,11 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
     public function testEmailFormat() {
         $validator = Validate\Email();
         $this->assertNull($validator->validate('valid@email.xyz'));
+        $this->assertNull($validator->validate('123@123.xyz'));
+        $this->assertNull($validator->validate('123@123.blarg.xyz'));
+        $this->assertNull($validator->validate('123.abc@123.blarg.xyz'));
         $this->assertNotNull($validator->validate('@invalid@email@xyz'));
+        $this->assertNotNull($validator->validate('invalid@email'));
     }
 }
 
