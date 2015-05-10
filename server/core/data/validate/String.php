@@ -4,9 +4,19 @@ namespace Tudu\Core\Data\Validate;
 require_once __DIR__.'/Validate.php';
 
 /**
+ * Shorthand factory function.
+ * 
+ * @return Tudu\Core\Data\Validate\String A string validator.
+ */
+function String() {
+    return new String();
+}
+
+/**
  * String validator.
  */
 class String extends Validate {
+    
     protected $options;
     
     public function __construct() {
