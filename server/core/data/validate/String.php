@@ -33,7 +33,7 @@ class String extends Validate {
         return $this;
     }
     
-    public function to($length) {
+    public function upto($length) {
         $this->options['max_length'] = $length;
         return $this;
     }

@@ -10,7 +10,7 @@ namespace Tudu\Core\Data\Validate;
  * 
  *    // Where Validate\String() and Validate\CharSet() are factory functions:
  *    
- *    $validator = Validate\String()->length()->from(5)->to(32)
+ *    $validator = Validate\String()->length()->from(5)->upto(32)
  *    ->also(Validate\Email())->isCorrectFormat();
  *    
  *    $validator->validate('foo@bar.com');      // validates, returns NULL
