@@ -46,7 +46,7 @@ abstract class Validate {
      * fails, return an appropriate error string. Otherwise, you MUST
      * `return $this->pass($data)`.
      * 
-     * The error string returned should match the following example formats:
+     * The error string returned should follow these example formats:
      * 
      *    "must be longer than 10 characters."
      *    "should be shorter than two dwarves."
@@ -54,8 +54,9 @@ abstract class Validate {
      *    "is too frobnicated."
      *    ...
      * 
-     * Notice the lack of capitalization as the noun will be provided
-     * automatically.
+     * Notice the lack of capitalization, as the noun will be provided
+     * automatically. Remember: The error string may be presented to the end
+     * user, so make it as presentable as possible while still being precise.
      * 
      * @param mixed $data The data to validate.
      * @return string|NULL NULL if data validates, error string otherwise.
