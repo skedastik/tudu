@@ -6,8 +6,6 @@ require_once __DIR__.'/../model/User.php';
 
 use \Tudu\Core\Data\Model\User;
 
-
-
 class User extends Repository {
     
     public function getById($id) {
@@ -18,7 +16,7 @@ class User extends Repository {
         
         if (is_null($result)) {
             $result = [
-                'user_id' => <some val/obj that evaluates to NOT FOUND when validated>
+                // 'user_id' => /* TODO: Use validation sentinel */
             ]
         }
         
