@@ -8,10 +8,10 @@ namespace Tudu\Core\Data\Validate;
  * 
  * Example:
  * 
- *    // Where Validate\String() and Validate\CharSet() are factory functions:
+ *    // Validate\String() and Validate\CharSet() are shorthand constructors:
  *    
- *    $validator = Validate\String()->length()->from(5)->upto(32)
- *    ->also(Validate\Email())->isCorrectFormat();
+ *    $validator = Validate\Email()
+ *        ->also(Validate\String()->length()->from(5)->upto(32));
  *    
  *    $validator->validate('foo@bar.com');      // validates, returns NULL
  */
@@ -44,13 +44,14 @@ abstract class Validate {
     /**
      * Internal validator method. Override this method. If data validation
      * fails, return an appropriate error string. Otherwise, you MUST
-     * `return $this->pass()`.
+     * `return $this->pass($data)`.
      * 
      * The error string returned should match the following example formats:
      * 
      *    "must be longer than 10 characters."
      *    "should be shorter than two dwarves."
      *    "cannot be a unicorn."
+     *    "is too frobnicated."
      *    ...
      * 
      * Notice the lack of capitalization as the noun will be provided
@@ -61,15 +62,16 @@ abstract class Validate {
      */
     protected function _validate($data) {
         /* TODO: Handle sentinels */
-        return $this->pass();
+        return $this->pass($data);
     }
     
     /**
      * Invoke the next validator in the chain.
      * 
+     * @param mixed $data The data to validate.
      * @return string|NULL NULL if data validates, error string otherwise.
      */
-    final protected function pass() {
+    final protected function pass($data) {
         if (is_null($this->next)) {
             return NULL;
         }
@@ -84,12 +86,14 @@ abstract class Validate {
     final public function also(Validate $validator) {
         $this->last->setNext($validator);
         $this->last = $validator;
+        return $this;
     }
     
     /**
-     * Provide a noun for pretty-printing validation error messages, otherwise
-     * "This" will be used. Note the capitalization, as the noun will appear at
-     * the beginning of the error message.
+     * Provide a custom noun for pretty-printing validation error messages.
+     * Validate base class uses "This" by default. Note the capitalization, as
+     * the noun will appear at the beginning of the error message. If validators
+     * are chained, the noun of the first validator will be used.
      * 
      * @param string $noun A noun describing the data to be validated, e.g.
      * "E-mail address".
