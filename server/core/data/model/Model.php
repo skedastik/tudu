@@ -88,5 +88,25 @@ abstract class Model {
         }
         return $this->isValid ? null : $errors;
     }
+    
+    /**
+     * Get value of property.
+     * 
+     * @param string $property The property.
+     */
+    final public function get($property) {
+        return $this->properties[$property];
+    }
+    
+    /**
+     * Set value of property. Invalidates the model.
+     * 
+     * @param string $property The property.
+     * @param mixed $value The value.
+     */
+    final public function set($property, $value) {
+        $this->properties[$property] = $value;
+        $this->isValid = false;
+    }
 }
 ?>
