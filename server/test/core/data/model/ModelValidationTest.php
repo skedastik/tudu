@@ -71,17 +71,5 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($errors['name']);
         $this->assertNotNull($errors['email']);
     }
-    
-    public function testAllValidDataWithExtraProperty() {
-        $fakeModel = new FakeModel([
-            'name' => 'John Doe',
-            'email' => 'sooperdooper@abc.xyz',
-            'extra' => 'Whoa, where did this come from?'
-        ]);
-        $this->assertFalse($fakeModel->isValid());
-        $errors = $fakeModel->validate();
-        $this->assertTrue($fakeModel->isValid());
-        $this->assertNull($errors);
-    }
 }
 ?>
