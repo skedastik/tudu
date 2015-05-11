@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="server/tudu_autoload.php">
+    <testsuites>
+        <testsuite name="data">
+            <!-- Test Validate class -->
+            <file>server/test/core/data/ValidateTest.php</file>
+            <!-- Test Transform class -->
+            <file>server/test/core/data/TransformTest.php</file>
+            <!-- Test chaining of Validate and Transform objects -->
+            <file>server/test/core/data/ChainingTest.php</file>
+            <!-- Test validation of Model objects -->
+            <file>server/test/core/data/model/ModelValidationTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

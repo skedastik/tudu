@@ -15,6 +15,6 @@ sql_test:
 	psql -d $(DB_NAME) -f sql/test/test.sql -v ON_ERROR_STOP=1
 
 server_test:
-	phpunit --bootstrap server/tudu_autoload.php server/test/
+	phpunit
 
 .PHONY: all
