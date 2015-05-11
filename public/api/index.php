@@ -3,14 +3,14 @@
 require_once __DIR__.'/../../server/tudu_autoload.php';
 
 use \Tudu\Core;
-use \Tudu\Conf;
+use \Tudu\Conf\Conf;
 use \Tudu\Handler;
 
 $db = new Core\Data\PgSQLConnection([
-    'host'     => Conf\DB_HOST,
-    'database' => Conf\DB_NAME,
-    'username' => Conf\DB_USERNAME,
-    'password' => Conf\DB_PASSWORD
+    'host'     => Conf::DB_HOST,
+    'database' => Conf::DB_NAME,
+    'username' => Conf::DB_USERNAME,
+    'password' => Conf::DB_PASSWORD
 ]);
 
 $app = new \Slim\Slim();

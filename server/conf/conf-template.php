@@ -1,23 +1,21 @@
 <?php
-/**
- * This is a configuration file template. To get started, duplicate it and name 
- * it "conf.php".
- */
-
 namespace Tudu\Conf;
 
 use \Psr\Log\LogLevel;
 
-// database
-
-define('Tudu\Conf\DB_HOST',     /* TODO */);
-define('Tudu\Conf\DB_NAME',     /* TODO */);
-define('Tudu\Conf\DB_USERNAME', /* TODO */);
-define('Tudu\Conf\DB_PASSWORD', /* TODO */);
-
-// logger
-
-define('Tudu\Conf\LOG_PATH', __DIR__.'/../../logs');
-define('Tudu\Conf\LOG_LEVEL', LogLevel::DEBUG);
+/**
+ * This is a template configuration file. To get started, duplicate this file,
+ * name it "Conf.php", and adjust the constants below as needed.
+ */
+class Conf
+{
+    const DB_HOST = /* TODO */;
+    const DB_NAME = /* TODO */;
+    const DB_USERNAME = /* TODO */;
+    const DB_PASSWORD = /* TODO */;
+    
+    const LOG_PATH = __DIR__.'/../../logs';
+    const LOG_LEVEL = LogLevel::DEBUG;
+}
 
 ?>

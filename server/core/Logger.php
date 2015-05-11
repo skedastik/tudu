@@ -2,7 +2,7 @@
 namespace Tudu\Core;
 
 use \Katzgrau\KLogger\Logger as KLogger;
-use \Tudu\Conf;
+use \Tudu\Conf\Conf;
 
 /**
  * A PSR3-compliant logger singleton. Get or set an instance and proceed to log!
@@ -50,7 +50,7 @@ class Logger {
      */
     public static function getInstance() {
         if (self::$instance === NULL) {
-            self::$instance = new KLogger(Conf\LOG_PATH, Conf\LOG_LEVEL);
+            self::$instance = new KLogger(Conf::LOG_PATH, Conf::LOG_LEVEL);
         }
         return self::$instance;
     }
