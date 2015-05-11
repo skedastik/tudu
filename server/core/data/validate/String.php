@@ -30,7 +30,7 @@ class String extends Validate {
         return $this;
     }
     
-    protected function _validate($data) {
+    protected function process($data) {
         $length = strlen($data);
         $minLen = isset($this->options['min_length']) ? $this->options['min_length'] : null;
         $maxLen = isset($this->options['max_length']) ? $this->options['max_length'] : null;
@@ -45,7 +45,7 @@ class String extends Validate {
             }
         }
         
-        return $this->pass($data);
+        return parent::process($data);
     }
 }
 ?>

@@ -52,7 +52,7 @@ abstract class Model {
      *    return [
      *        'user_id' => (new Validate\ID())->isPositive()->isNotNull(),
      *        'email'   => (new Validate\Email())
-     *                     ->also(Validate\String()->length()->from(5)),
+     *                     ->then((new Validate\String())->length()->from(5)),
      *        'unicorn' => (new Validate\Creature())->has()->horn(1)
      *    ];
      * 

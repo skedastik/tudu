@@ -4,27 +4,44 @@ namespace Tudu\Core\Data\Validate;
 /**
  * Data validator base class.
  * 
- * Validators can be chained via Validate::also.
+ * Validators can be chained via Validate::then.
  * 
  * Example:
  *    
  *    $validator = (new Validate\Email())
- *        ->also((new Validate\String())->length()->from(5)->upTo(32));
+ *        ->then((new Validate\String())->length()->from(5)->upTo(32));
  *    
  *    $validator->validate('foo@bar.com');      // validates, returns NULL
+ * 
+ * EXTENDING
+ * 
+ * When extending Validate, you must override process() to carry out the actual
+ * validation.
+ * 
+ * In process(), return an error string if validation fails. If validation
+ * succeeds, you must call `parent::process($data)`.
+ * 
+ * The error string returned should follow these example formats:
+ * 
+ *    "must be longer than 10 characters."
+ *    "should be shorter than two dwarves."
+ *    "cannot be a unicorn."
+ *    "is too frobnicated."
+ *    ...
+ * 
+ * Notice the lack of capitalization, as the description will be provided
+ * automatically. Remember: The error string may be presented to the end
+ * user, so make it as presentable as possible while still being precise.
  */
-abstract class Validate {
+abstract class Validate extends \Tudu\Core\Chainable {
     
-    protected $next;
-    protected $last;
     protected $description;
     
     /**
-     * Constructor. You MUST call this from subclass constructors.
+     * Constructor. You must call this from subclass constructors.
      */
     public function __construct() {
-        $this->next = null;
-        $this->last = $this;
+        parent::__construct();
         $this->description = "This";
     }
     
@@ -38,57 +55,9 @@ abstract class Validate {
         if ($data instanceof \Tudu\Core\Data\Validate\Sentinel\Sentinel) {
             $result = $data->getError();
         } else {
-            $result = $this->_validate($data);
+            $result = $this->process($data);
         }
         return is_null($result) ? NULL : $this->description.' '.$result;
-    }
-    
-    /**
-     * Internal validator method. Override this method. If data validation
-     * fails, return an appropriate error string. Otherwise, you MUST
-     * `return $this->pass($data)`.
-     * 
-     * The error string returned should follow these example formats:
-     * 
-     *    "must be longer than 10 characters."
-     *    "should be shorter than two dwarves."
-     *    "cannot be a unicorn."
-     *    "is too frobnicated."
-     *    ...
-     * 
-     * Notice the lack of capitalization, as the description will be provided
-     * automatically. Remember: The error string may be presented to the end
-     * user, so make it as presentable as possible while still being precise.
-     * 
-     * @param mixed $data The data to validate.
-     * @return string|NULL NULL if data validates, error string otherwise.
-     */
-    protected function _validate($data) {
-        return $this->pass($data);
-    }
-    
-    /**
-     * Invoke the next validator in the chain.
-     * 
-     * @param mixed $data The data to validate.
-     * @return string|NULL NULL if data validates, error string otherwise.
-     */
-    final protected function pass($data) {
-        if (is_null($this->next)) {
-            return NULL;
-        }
-        return $this->next->_validate($data);
-    }
-    
-    /**
-     * Chain another validator.
-     * 
-     * @param \Tudu\Core\Data\Validate $validator The validator.
-     */
-    final public function also(Validate $validator) {
-        $this->last->setNext($validator);
-        $this->last = $validator;
-        return $this;
     }
     
     /**
@@ -113,16 +82,6 @@ abstract class Validate {
     final public function describeAs($description) {
         $this->description = $description;
         return $this;
-    }
-    
-    /**
-     * Set next validator. This is used internally by other Validate objects.
-     * Do not call directly.
-     * 
-     * @param \Tudu\Core\Data\Validate $validator The validator.
-     */
-    final public function setNext(Validate $validator) {
-        $this->next = $validator;
     }
 }
 ?>

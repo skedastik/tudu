@@ -11,13 +11,13 @@ class Email extends Validate {
         $this->description = "Email address";
     }
     
-    protected function _validate($data) {
+    protected function process($data) {
         // email validation is intentionally lax
         if (preg_match('/^[^@]+@[^@]+\.[^@]+$/', $data) !== 1) {
             return "is invalid.";
         }
         
-        return $this->pass($data);
+        return parent::process($data);
     }
 }
 ?>

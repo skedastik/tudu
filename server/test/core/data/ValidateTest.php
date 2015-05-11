@@ -42,7 +42,7 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
 class ChainingTest extends \PHPUnit_Framework_TestCase {
 
     public function testChainTwoValidators() {
-        $validator = (new Validate\Email())->also((new Validate\String())->length()->upTo(15));
+        $validator = (new Validate\Email())->then((new Validate\String())->length()->upTo(15));
         $this->assertNull($validator->validate('valid@email.xyz'));
         $this->assertNotNull($validator->validate('@invalid@email@xyz'));
         $this->assertNotNull($validator->validate('this_email_is@too_long.xyz'));
@@ -50,8 +50,8 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
 
     public function testChainThreeValidators() {
         $validator = (new Validate\Email())
-            ->also((new Validate\String())->length()->from(15))
-            ->also((new Validate\String())->length()->upTo(20));
+            ->then((new Validate\String())->length()->from(15))
+            ->then((new Validate\String())->length()->upTo(20));
         $this->assertNull($validator->validate('just_right@valid.xyz'));
         $this->assertNotNull($validator->validate('@invalid@email@xyz'));
         $this->assertNotNull($validator->validate('this_email_is@too_long.xyz'));
@@ -67,7 +67,7 @@ class SentinelTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testSentinelWithChaining() {
-        $validator = (new Validate\Email())->also((new Validate\String())->length()->upTo(5));
+        $validator = (new Validate\Email())->then((new Validate\String())->length()->upTo(5));
         $this->assertNotNull($validator->validate(new Sentinel\NotFound()));
     }
 }
