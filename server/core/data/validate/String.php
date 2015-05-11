@@ -5,6 +5,8 @@ require_once __DIR__.'/Validate.php';
 
 /**
  * String validator.
+ * 
+ * Use various option methods to set validation options.
  */
 final class String extends Validate {
     
@@ -16,15 +18,26 @@ final class String extends Validate {
         $this->options = [];
     }
     
+    /**
+     * No-op.
+     * 
+     * "Fluent" function for readable code.
+     */
     public function length() {
         return $this;
     }
     
+    /**
+     * Set maximum number of characters allowed.
+     */
     public function from($length) {
         $this->options['min_length'] = $length;
         return $this;
     }
     
+    /**
+     * Set minimum number of characters allowed.
+     */
     public function upTo($length) {
         $this->options['max_length'] = $length;
         return $this;
