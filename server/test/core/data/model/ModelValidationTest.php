@@ -1,12 +1,6 @@
 <?php
 namespace Tudu\Test\Core\Data\Model;
 
-require_once __DIR__.'/../../../../../vendor/autoload.php';
-require_once __DIR__.'/../../../../core/data/validate/sentinel/NotFound.php';
-require_once __DIR__.'/../../../../core/data/model/Model.php';
-require_once __DIR__.'/../../../../core/data/validate/Email.php';
-require_once __DIR__.'/../../../../core/data/validate/String.php';
-
 use \Tudu\Core\Data\Validate;
 use \Tudu\Core\Data\Validate\Sentinel;
 

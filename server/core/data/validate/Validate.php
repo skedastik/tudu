@@ -1,19 +1,15 @@
 <?php
 namespace Tudu\Core\Data\Validate;
 
-require_once __DIR__.'/sentinel/NotFound.php';
-
 /**
  * Data validator base class.
  * 
  * Validators can be chained via Validate::also.
  * 
  * Example:
- * 
- *    // Validate\String() and Validate\CharSet() are shorthand constructors:
  *    
- *    $validator = Validate\Email()
- *        ->also(Validate\String()->length()->from(5)->upTo(32));
+ *    $validator = (new Validate\Email())
+ *        ->also((new Validate\String())->length()->from(5)->upTo(32));
  *    
  *    $validator->validate('foo@bar.com');      // validates, returns NULL
  */

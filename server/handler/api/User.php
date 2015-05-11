@@ -1,8 +1,6 @@
 <?php
 namespace Tudu\Handler\Api;
 
-require_once __DIR__.'/../../core/handler/API.php';
-
 /**
  * Request handler for GET /users/:user_id/tasks/
  */

@@ -1,9 +1,6 @@
 <?php
 namespace Tudu\Core\Delegate;
 
-require_once __DIR__.'/App.php';
-require_once __DIR__.'/../../../vendor/autoload.php';
-
 class Slim implements App {
     protected $slim;
     

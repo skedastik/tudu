@@ -1,9 +1,6 @@
 <?php
 namespace Tudu\Core\Data\Repository;
 
-require_once __DIR__.'/../DbConnection.php';
-require_once __DIR__.'/../model/Model.php';
-
 /**
  * Data repository base class.
  */

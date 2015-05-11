@@ -1,8 +1,6 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
-require_once __DIR__.'/../../TuduException.php';
-
 use \Tudu\Core\TuduException;
 
 /**

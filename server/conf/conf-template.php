@@ -6,8 +6,6 @@
 
 namespace Tudu\Conf;
 
-require __DIR__.'/../../vendor/autoload.php';
-
 use \Psr\Log\LogLevel;
 
 // database

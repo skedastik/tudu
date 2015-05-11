@@ -1,4 +1,9 @@
 <?php
+namespace Tudu\Core;
+
+use \Katzgrau\KLogger\Logger as KLogger;
+use \Tudu\Conf;
+
 /**
  * A PSR3-compliant logger singleton. Get or set an instance and proceed to log!
  * By default, getInstance() returns an instance of KLogger.
@@ -20,15 +25,6 @@
  *    $logger->emergency('message', $data);
  *    
  */
-
-namespace Tudu\Core;
-
-require_once __DIR__.'/../../vendor/autoload.php';
-require_once __DIR__.'/../conf/conf.php';
-
-use \Katzgrau\KLogger\Logger as KLogger;
-use \Tudu\Conf;
-
 class Logger {
     
     private static $instance = NULL;

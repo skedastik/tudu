@@ -1,9 +1,6 @@
 <?php
 namespace Tudu\Core\Data;
 
-require_once __DIR__.'/DbConnection.php';
-require_once __DIR__.'/../Logger.php';
-
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Logger;
 

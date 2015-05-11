@@ -1,12 +1,6 @@
 <?php
-require_once __DIR__.'/../../vendor/autoload.php';
-require_once __DIR__.'/../../server/core/delegate/Slim.php';
-require_once __DIR__.'/../../server/core/data/PgSQLConnection.php';
-require_once __DIR__.'/../../server/conf/conf.php';
-require_once __DIR__.'/../../server/core/handler/auth/Basic.php';
-require_once __DIR__.'/../../server/core/handler/auth/HMAC.php';
-require_once __DIR__.'/../../server/handler/api/Task.php';
-require_once __DIR__.'/../../server/handler/api/User.php';
+
+require_once __DIR__.'/../../server/tudu_autoload.php';
 
 use \Tudu\Core;
 use \Tudu\Conf;

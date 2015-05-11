@@ -1,17 +1,6 @@
 <?php
 namespace Tudu\Core\Data\Validate;
 
-require_once __DIR__.'/Validate.php';
-
-/**
- * Shorthand constructor.
- * 
- * @return Tudu\Core\Data\Validate\Email An email validator.
- */
-function Email() {
-    return new Email();
-}
-
 /**
  * String validator.
  */
