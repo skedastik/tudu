@@ -1,9 +1,9 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
-require_once __DIR__.'/../../Logger.php';
+require_once __DIR__.'/../../TuduException.php';
 
-use \Tudu\Core\Logger;
+use \Tudu\Core\TuduException;
 
 /**
  * Model base class.
@@ -73,16 +73,6 @@ abstract class Model {
         $matrix = $this->getValidationMatrix();
         $errors = [];
         $this->isValid = true;
-        
-        if (count($this->properties) > count($matrix)) {
-            $logger = Logger::getInstance();
-            $logger->warning(get_class($this).' instance has more properties than validators.',
-                [
-                    'properties' => $this->properties,
-                    'validators' => $matrix
-                ]
-            );
-        }
         
         foreach ($matrix as $property => $validator) {
             $errors[$property] = $validator->validate($this->properties[$property]);
