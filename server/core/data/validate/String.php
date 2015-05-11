@@ -19,9 +19,7 @@ final class String extends Validate {
     }
     
     /**
-     * No-op.
-     * 
-     * "Fluent" function for readable code.
+     * No-op, fluent function.
      */
     public function length() {
         return $this;
