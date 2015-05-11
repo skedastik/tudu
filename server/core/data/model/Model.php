@@ -50,15 +50,29 @@ abstract class Model {
      * Example:
      * 
      *    return [
-     *        'user_id' => Validate\ID()->isPositive()->isNotNull(),
-     *        'email'   => Validate\Email()
+     *        'user_id' => (new Validate\ID())->isPositive()->isNotNull(),
+     *        'email'   => (new Validate\Email())
      *                     ->also(Validate\String()->length()->from(5)),
-     *        'unicorn' => Validate\Creature()->has()->horn(1)
+     *        'unicorn' => (new Validate\Creature())->has()->horn(1)
      *    ];
+     * 
+     * This method MUST be idempotent.
      * 
      * @return array Key/value array describing validation matrix
      */
     abstract protected function getValidationMatrix();
+    
+    /**
+     * Because getValidationMatrix is idempotent, it can be called once and
+     * cached forever.
+     */
+    final private function getCachedValidationMatrix() {
+        static $cachedMatrix = null;
+        if (is_null($cachedMatrix)) {
+            $cachedMatrix = $this->getValidationMatrix();
+        }
+        return $cachedMatrix;
+    }
     
     /**
      * Validate the model.
@@ -68,7 +82,7 @@ abstract class Model {
      * validates. If all properties are valid, NULL is returned.
      */
     final public function validate() {
-        $matrix = $this->getValidationMatrix();
+        $matrix = $this->getCachedValidationMatrix();
         $errors = [];
         $this->isValid = true;
         
