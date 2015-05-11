@@ -41,10 +41,10 @@ class String extends Validate {
     
     protected function _validate($data) {
         $length = strlen($data);
-        $minLen = $this->options['min_length'];
-        $maxLen = $this->options['max_length'];
+        $minLen = isset($this->options['min_length']) ? $this->options['min_length'] : null;
+        $maxLen = isset($this->options['max_length']) ? $this->options['max_length'] : null;
         
-        if ($length < (isset($minLen) ? $minLen : 0) || $length > (isset($maxLen) ? $maxLen : PHP_INT_MAX)) {
+        if ($length < (isset($minLen) ? $minLen : 0) || $length > (isset($maxLen) ? $maxLen : INF)) {
             if (!isset($minLen)) {
                 return "must be at most $maxLen characters in length.";
             } else if (!isset($maxLen)) {
