@@ -8,8 +8,8 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
     
     protected function getValidationMatrix() {
         return [
-            'name'  => Validate\String()->length()->from(5)->upTo(10),
-            'email' => Validate\Email()
+            'name'  => (new Validate\String())->length()->from(5)->upTo(10),
+            'email' => new Validate\Email()
         ];
     }
 }
