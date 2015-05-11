@@ -1,7 +1,10 @@
 <?php
 namespace Tudu\Core\Delegate;
 
-class Slim implements App {
+/**
+ * Slim app delegate for Slim 2.6.*
+ */
+final class Slim implements App {
     protected $slim;
     
     /**

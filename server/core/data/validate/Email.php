@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Validate;
 /**
  * String validator.
  */
-class Email extends Validate {
+final class Email extends Validate {
     
     public function __construct() {
         parent::__construct();

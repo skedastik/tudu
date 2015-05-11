@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Repository;
 use \Tudu\Core\Data\Model\User;
 use \Tudu\Core\Data\Validate\Sentinel;
 
-class User extends Repository\Repository {
+final class User extends Repository\Repository {
     
     public function getById($id) {
         $result = $this->db->query(

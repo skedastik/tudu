@@ -4,7 +4,7 @@ namespace Tudu\Core\Data;
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Logger;
 
-class PgSQLConnection extends DbConnection {
+final class PgSQLConnection extends DbConnection {
     
     public function connect() {
         if ($this->connection === null) {

@@ -6,7 +6,7 @@ require_once __DIR__.'/Validate.php';
 /**
  * String validator.
  */
-class String extends Validate {
+final class String extends Validate {
     
     protected $options;
     
