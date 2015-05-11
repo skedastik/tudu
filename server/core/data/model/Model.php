@@ -70,11 +70,12 @@ abstract class Model {
      * validates. If all properties are valid, NULL is returned.
      */
     final public function validate() {
-        $logger = Logger::getInstance();
         $matrix = $this->getValidationMatrix();
         $errors = [];
         $this->isValid = true;
+        
         if (count($this->properties) > count($matrix)) {
+            $logger = Logger::getInstance();
             $logger->warning(get_class($this).' instance has more properties than validators.',
                 [
                     'properties' => $this->properties,
@@ -82,10 +83,12 @@ abstract class Model {
                 ]
             );
         }
+        
         foreach ($matrix as $property => $validator) {
             $errors[$property] = $validator->validate($this->properties[$property]);
             $this->isValid = $this->isValid && is_null($errors[$property]);
         }
+        
         return $this->isValid ? null : $errors;
     }
     
