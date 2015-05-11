@@ -2,15 +2,18 @@
 namespace Tudu\Core\Data\Validate\Sentinel;
 
 /**
- * Data validator sentinel interface. You can implement Sentinel in a class and
- * pass an instance of that class to Validate::validate to force a validation
- * error. Useful for non-semantic data validation errors like "User ID not
- * found!".
+ * An interface for data validation "sentinels".
+ * 
+ * Sentinels are useful for non-semantic data validation errors like "User ID
+ * not found!". Implement Sentinel and pass an instance to Validate::validate
+ * to force a validation error.
  * 
  * Example:
  * 
  *    $validator = Validate\Email();
- *    $validator->validate(new Sentinel\NotFound());    // returns an error
+ *    
+ *    // return a special "not found" validation error
+ *    $validator->validate(new Sentinel\NotFound());
  */
 interface Sentinel {
     
