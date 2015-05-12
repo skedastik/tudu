@@ -14,7 +14,7 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
     }
 }
 
-class ModelValidationTest extends \PHPUnit_Framework_TestCase {
+class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testAllValidData() {
         $fakeModel = new FakeModel([
@@ -22,7 +22,7 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
             'email' => 'sooperdooper@abc.xyz'
         ]);
         $this->assertFalse($fakeModel->isValid());
-        $errors = $fakeModel->validate();
+        $errors = $fakeModel->normalize();
         $this->assertTrue($fakeModel->isValid());
         $this->assertNull($errors);
     }
@@ -33,7 +33,7 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
             'email' => 'sooperdooper@abc.xyz'
         ]);
         $this->assertFalse($fakeModel->isValid());
-        $errors = $fakeModel->validate();
+        $errors = $fakeModel->normalize();
         $this->assertFalse($fakeModel->isValid());
         $this->assertNotNull($errors);
         $this->assertNotNull($errors['name']);
@@ -46,7 +46,7 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
             'email' => 'sooperdooper@abc'
         ]);
         $this->assertFalse($fakeModel->isValid());
-        $errors = $fakeModel->validate();
+        $errors = $fakeModel->normalize();
         $this->assertFalse($fakeModel->isValid());
         $this->assertNotNull($errors);
         $this->assertNotNull($errors['name']);
@@ -59,7 +59,7 @@ class ModelValidationTest extends \PHPUnit_Framework_TestCase {
             'email' => new Sentinel\NotFound()
         ]);
         $this->assertFalse($fakeModel->isValid());
-        $errors = $fakeModel->validate();
+        $errors = $fakeModel->normalize();
         $this->assertFalse($fakeModel->isValid());
         $this->assertNotNull($errors);
         $this->assertNull($errors['name']);

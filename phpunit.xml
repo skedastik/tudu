@@ -10,7 +10,7 @@
             <!-- Test chaining of Validate and Transform objects -->
             <file>server/test/core/data/ChainingTest.php</file>
             <!-- Test validation of Model objects -->
-            <file>server/test/core/data/model/ModelValidationTest.php</file>
+            <file>server/test/core/data/model/ModelNormalizeTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

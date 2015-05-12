@@ -86,7 +86,7 @@ abstract class Model {
      * and each value is either an error string or NULL if the property
      * validates. If all properties are valid, NULL is returned.
      */
-    final public function validate() {
+    final public function normalize() {
         $normalizers = $this->getCachedNormalizers();
         $errors = [];
         $this->isValid = true;
