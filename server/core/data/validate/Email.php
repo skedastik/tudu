@@ -2,7 +2,7 @@
 namespace Tudu\Core\Data\Validate;
 
 /**
- * String validator.
+ * Email validator.
  */
 final class Email extends Validate {
     
