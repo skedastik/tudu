@@ -44,8 +44,9 @@ abstract class Model {
     }
     
     /**
-     * Return a key/value array of validators. Each key should be a model
-     * property. Each value should be an appropriate validator.
+     * Return a key/value array of transformers and validators. Each key should
+     * be a model property. Each value should be an appropriate
+     * Validate/Transform chain.
      * 
      * Example:
      * 
@@ -53,23 +54,25 @@ abstract class Model {
      *        'user_id' => (new Validate\ID())->isPositive()->isNotNull(),
      *        'email'   => (new Validate\Email())
      *                     ->then((new Validate\String())->length()->from(5)),
-     *        'unicorn' => (new Validate\Creature())->has()->horn(1)
+     *        'status'  => (new Transform\ToAllCaps())
+     *                     ->then((new Validate\String())->length()->upTo(10)),
+     *        'unicorn' => (new Validate\Creature())->has()->horns(1)
      *    ];
      * 
      * This method MUST be idempotent.
      * 
-     * @return array Key/value array describing validation matrix
+     * @return array Key/value array describing normalization matrix
      */
-    abstract protected function getValidationMatrix();
+    abstract protected function getNormalizationMatrix();
     
     /**
-     * Because getValidationMatrix is idempotent, it can be called once and
+     * Because getNormalizationMatrix is idempotent, it can be called once and
      * cached forever.
      */
-    final private function getCachedValidationMatrix() {
+    final private function getCachedNormalizationMatrix() {
         static $cachedMatrix = null;
         if (is_null($cachedMatrix)) {
-            $cachedMatrix = $this->getValidationMatrix();
+            $cachedMatrix = $this->getNormalizationMatrix();
         }
         return $cachedMatrix;
     }
@@ -82,7 +85,7 @@ abstract class Model {
      * validates. If all properties are valid, NULL is returned.
      */
     final public function validate() {
-        $matrix = $this->getCachedValidationMatrix();
+        $matrix = $this->getCachedNormalizationMatrix();
         $errors = [];
         $this->isValid = true;
         

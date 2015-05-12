@@ -6,7 +6,7 @@ use \Tudu\Core\Data\Validate\Sentinel;
 
 class FakeModel extends \Tudu\Core\Data\Model\Model {
     
-    protected function getValidationMatrix() {
+    protected function getNormalizationMatrix() {
         return [
             'name'  => (new Validate\String())->length()->from(5)->upTo(10),
             'email' => new Validate\Email()
