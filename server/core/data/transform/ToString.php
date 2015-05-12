@@ -2,13 +2,13 @@
 namespace Tudu\Core\Data\Transform;
 
 /**
- * To-string transformer.
+ * Chainable to-string transformer.
  * 
  * By default, this transformer simply casts the input to a string and returns
  * the result. Achieve more nuanced transformations by calling the various
  * option methods.
  */
-final class ToString extends Transform {
+final class ToString extends \Tudu\Core\Chainable {
     
     protected $options;
     static protected $dispatchTable = [
@@ -46,7 +46,7 @@ final class ToString extends Transform {
     }
     
     protected function process($data) {
-        return $this->{self::$dispatchTable[$this->options['interpreter']]}($data);
+        return $this->pass($this->{self::$dispatchTable[$this->options['interpreter']]}($data));
     }
 }
 ?>

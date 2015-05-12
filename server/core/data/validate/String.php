@@ -56,7 +56,7 @@ final class String extends Validate {
             }
         }
         
-        return parent::process($data);
+        return $this->pass($data);
     }
 }
 ?>

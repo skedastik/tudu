@@ -2,24 +2,16 @@
 namespace Tudu\Core\Data\Validate;
 
 /**
- * Data validator base class.
- * 
- * Validators can be chained via Validate::then.
- * 
- * Example:
- *    
- *    $validator = (new Validate\Email())
- *        ->then((new Validate\String())->length()->from(5)->upTo(32));
- *    
- *    $validator->validate('foo@bar.com');      // validates, returns NULL
+ * Chainable data validation base class.
  * 
  * EXTENDING
  * 
- * When extending Validate, you must override process() to carry out the actual
- * validation.
+ * When extending Validate, you must override process() to carry out the
+ * actual validation.
  * 
  * In process(), return an error string if validation fails. If validation
- * succeeds, you must call `parent::process($data)`.
+ * succeeds, you must pass data to the next object in the chain via
+ * `$this->pass($data)`.
  * 
  * The error string returned should follow these example formats:
  * 
@@ -51,13 +43,20 @@ abstract class Validate extends \Tudu\Core\Chainable {
      * @param mixed $data The data to validate.
      * @return string|NULL NULL if data validates, error string otherwise.
      */
-    final public function validate($data) {
+    final public function execute($data) {
         if ($data instanceof \Tudu\Core\Data\Validate\Sentinel\Sentinel) {
-            $result = $data->getError();
-        } else {
-            $result = $this->process($data);
+            return $data->getError();
         }
+        $result = $this->process($data);
         return is_null($result) ? NULL : $this->description.' '.$result;
+    }
+    
+    /**
+     * If processing reaches the end of the chain, then no validation errors
+     * occurred, so return NULL.
+     */
+    protected function finalize($data) {
+        return NULL;
     }
     
     /**

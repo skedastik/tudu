@@ -17,7 +17,7 @@ final class Email extends Validate {
             return "is invalid.";
         }
         
-        return parent::process($data);
+        return $this->pass($data);
     }
 }
 ?>

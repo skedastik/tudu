@@ -87,7 +87,7 @@ abstract class Model {
         $this->isValid = true;
         
         foreach ($matrix as $property => $validator) {
-            $errors[$property] = $validator->validate($this->properties[$property]);
+            $errors[$property] = $validator->execute($this->properties[$property]);
             $this->isValid = $this->isValid && is_null($errors[$property]);
         }
         
