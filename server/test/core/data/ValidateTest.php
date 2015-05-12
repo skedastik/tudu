@@ -24,6 +24,16 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($validator->execute('too short'));
         $this->assertNotNull($validator->execute('toooooooooooooooooo long'));
     }
+    
+    public function testDescribeAs() {
+        $validator = Validate::String()->length()->upTo(5)->describeAs('Test string');
+        $result1 = $validator->execute('invalid');
+        $this->assertNotNull($result1);
+        $validator->describeAs('Another string');
+        $result2 = $validator->execute('invalid');
+        $this->assertNotNull($result2);
+        $this->assertNotEquals($result1, $result2);
+    }
 }
 
 class EmailTest extends \PHPUnit_Framework_TestCase {
