@@ -9,9 +9,10 @@ use \Tudu\Core\Data\Validate;
  */
 final class User extends Model\Model {
     
-    protected function getNormalizationMatrix() {
+    protected function getNormalizers() {
         return [
-            'email'         => Validate::Email()
+            'user_id'       => Validate::Basic(),
+            'email'         => Validate::Email()->describeAs('Email address')
                             -> then(Validate::String()->length()->from(5)->upTo(64)),
             'password_salt' => Validate::String()->length()->from(8)->upTo(64),
             'password_hash' => Validate::String()->length()->from(8)->upTo(256)

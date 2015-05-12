@@ -61,20 +61,20 @@ abstract class Model {
      * 
      * This method MUST be idempotent.
      * 
-     * @return array Key/value array describing normalization matrix
+     * @return array Key/value array of transformers and validators
      */
-    abstract protected function getNormalizationMatrix();
+    abstract protected function getNormalizers();
     
     /**
-     * Because getNormalizationMatrix is idempotent, it can be called once and
+     * Because getNormalizers is idempotent, it can be called once and
      * cached forever.
      */
-    final private function getCachedNormalizationMatrix() {
-        static $cachedMatrix = null;
-        if (is_null($cachedMatrix)) {
-            $cachedMatrix = $this->getNormalizationMatrix();
+    final private function getCachedNormalizers() {
+        static $cachedNormalizers = null;
+        if (is_null($cachedNormalizers)) {
+            $cachedNormalizers = $this->getNormalizers();
         }
-        return $cachedMatrix;
+        return $cachedNormalizers;
     }
     
     /**
@@ -87,12 +87,12 @@ abstract class Model {
      * validates. If all properties are valid, NULL is returned.
      */
     final public function validate() {
-        $matrix = $this->getCachedNormalizationMatrix();
+        $normalizers = $this->getCachedNormalizers();
         $errors = [];
         $this->isValid = true;
         
-        foreach ($matrix as $property => $validator) {
-            $errors[$property] = $validator->execute($this->properties[$property]);
+        foreach ($normalizers as $property => $normalizer) {
+            $errors[$property] = $normalizer->execute($this->properties[$property]);
             $this->isValid = $this->isValid && is_null($errors[$property]);
         }
         
