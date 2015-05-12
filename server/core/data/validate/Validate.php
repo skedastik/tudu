@@ -12,17 +12,17 @@ class Validate extends \Tudu\Core\Chainable {
      * Shorthand factory function for default validator. The default validator
      * only reports Sentinel errors.
      */
-    public static function None()    { return new Validate(); }
+    public static function Basic() { return new Validate(); }
     
     /**
      * Shorthand factory function for Validate\Email.
      */
-    public static function Email()   { return new Email(); }
+    public static function Email() { return new Email(); }
     
     /**
      * Shorthand factory function for Validate\String.
      */
-    public static function String()  { return new String(); }
+    public static function String() { return new String(); }
     
     /**
      * Constructor. You must call this from subclass constructors.
