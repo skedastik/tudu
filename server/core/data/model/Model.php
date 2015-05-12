@@ -78,7 +78,9 @@ abstract class Model {
     }
     
     /**
-     * Validate the model.
+     * Attempt to normalize the model.
+     * 
+     * Executes 
      * 
      * @return array|NULL Key/value array of errors where each key is a property
      * and each value is either an error string or NULL if the property

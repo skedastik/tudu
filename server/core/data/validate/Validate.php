@@ -3,37 +3,17 @@ namespace Tudu\Core\Data\Validate;
 
 /**
  * Chainable data validation base class.
- * 
- * EXTENDING
- * 
- * When extending Validate, you must override process() to carry out the
- * actual validation.
- * 
- * In process(), return an error string if validation fails. If validation
- * succeeds, you must pass data to the next object in the chain via
- * `$this->pass($data)`.
- * 
- * The error string returned should follow these example formats:
- * 
- *    "must be longer than 10 characters."
- *    "should be shorter than two dwarves."
- *    "cannot be a unicorn."
- *    "is too frobnicated."
- *    ...
- * 
- * Notice the lack of capitalization, as the description will be provided
- * automatically. Remember: The error string may be presented to the end
- * user, so make it as presentable as possible while still being precise.
  */
-abstract class Validate extends \Tudu\Core\Chainable {
+class Validate extends \Tudu\Core\Chainable {
     
     protected $description;
     
     /**
      * Shorthand factory functions for subclasses.
      */
-    public static function Email() { return new Email(); }
-    public static function String() { return new String(); }
+    public static function None() { return new Validate(); }
+    public static function Email()   { return new Email(); }
+    public static function String()  { return new String(); }
     
     /**
      * Constructor. You must call this from subclass constructors.
@@ -55,6 +35,29 @@ abstract class Validate extends \Tudu\Core\Chainable {
         }
         $result = $this->process($data);
         return is_null($result) ? NULL : $this->description.' '.$result;
+    }
+    
+    /**
+     * Override this to carry out the actual validation.
+     * 
+     * In process(), return an error string if validation fails. If validation
+     * succeeds, you must pass data to the next object in the chain via
+     * `$this->pass($data)`.
+     * 
+     * The error string returned should follow these example formats:
+     * 
+     *    "must be longer than 10 characters."
+     *    "should be shorter than two dwarves."
+     *    "cannot be a unicorn."
+     *    "is too frobnicated."
+     *    ...
+     * 
+     * Notice the lack of capitalization, as the description will be provided
+     * automatically. Remember: The error string may be presented to the end
+     * user, so make it as presentable as possible while still being precise.
+     */
+    protected function process($data) {
+        return NULL;
     }
     
     /**
