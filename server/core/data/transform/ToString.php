@@ -17,6 +17,7 @@ final class ToString extends \Tudu\Core\Chainable {
     ];
     
     public function __construct() {
+        parent::__construct();
         $this->options = [
             'interpreter' => 'untyped'
         ];
