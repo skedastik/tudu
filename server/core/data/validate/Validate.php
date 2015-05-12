@@ -39,7 +39,7 @@ class Validate extends \Tudu\Core\Chainable {
      * @return string|NULL NULL if data validates, error string otherwise.
      */
     final public function execute($data) {
-        if ($data instanceof \Tudu\Core\Data\Validate\Sentinel\Sentinel) {
+        if ($data instanceof Sentinel\Sentinel) {
             return $data->getError();
         }
         $result = $this->process($data);
