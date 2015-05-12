@@ -19,6 +19,10 @@ abstract class Auth extends \Tudu\Core\Handler\Handler {
      * Reject a request that failed authentication.
      */
     protected function rejectAuthentication() {
+        /**
+         * TODO: Produce the authentication scheme via an overridable method
+         * rather than hard-coding it.
+         */
         $this->delegate->setResponseHeaders(['WWW-Authenticate' => 'tudu realm="api"']);
         $this->delegate->setResponseStatus(401);
         $this->delegate->send();
