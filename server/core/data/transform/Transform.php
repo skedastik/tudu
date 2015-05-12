@@ -7,7 +7,7 @@ namespace Tudu\Core\Data\Transform;
 abstract class Transform extends \Tudu\Core\Chainable {
     
     /**
-     * Shorthand factory functions for subclasses.
+     * Shorthand factory function for Transform\ToString.
      */
     public static function ToString() { return new ToString(); }
 }
