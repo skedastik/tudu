@@ -1,19 +1,19 @@
 <?php
 namespace Tudu\Test\Core\Data\Validate;
 
-use \Tudu\Core\Data\Transform;
+use \Tudu\Core\Data\Transform\Transform;
 
 class ToStringTest extends \PHPUnit_Framework_TestCase {
     
     public function testNumberToString() {
-        $transformer = new Transform\ToString();
+        $transformer = Transform::ToString();
         $this->assertEquals('1', $transformer->execute(1));
         $this->assertEquals('1.5', $transformer->execute(1.5));
         $this->assertEquals('1.034E-15', $transformer->execute(10.34e-16));
     }
 
     public function testBoolToString() {
-        $transformer = (new Transform\ToString())->interpret()->boolean();
+        $transformer = Transform::ToString()->interpret()->boolean();
         $this->assertEquals('t', $transformer->execute(true));
         $this->assertEquals('f', $transformer->execute(false));
         $this->assertEquals('t', $transformer->execute(1));

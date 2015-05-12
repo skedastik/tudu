@@ -10,16 +10,11 @@ use \Tudu\Core\Data\Validate;
 final class User extends Model\Model {
     
     protected function getNormalizationMatrix() {
-        // TODO user_id, email, password_salt, password_hash, kvs, status, edate, cdate
         return [
-            'email' = (new Validate\Email())
-                ->then((new Validate\String())->length()->from(5)->upTo(64)),
-            
-            'password_salt' = (new Validate\String())->length()->from(8)->upTo(64),
-            
-            'password_hash' = (new Validate\String())->length()->from(8)->upTo(256)
-            
-            /* TODO */
+            'email'         => Validate::Email()
+                            -> then(Validate::String()->length()->from(5)->upTo(64)),
+            'password_salt' => Validate::String()->length()->from(8)->upTo(64),
+            'password_hash' => Validate::String()->length()->from(8)->upTo(256)
         ];
     }
 }

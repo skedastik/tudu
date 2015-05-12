@@ -30,6 +30,12 @@ abstract class Validate extends \Tudu\Core\Chainable {
     protected $description;
     
     /**
+     * Shorthand factory functions for subclasses.
+     */
+    public static function Email() { return new Email(); }
+    public static function String() { return new String(); }
+    
+    /**
      * Constructor. You must call this from subclass constructors.
      */
     public function __construct() {

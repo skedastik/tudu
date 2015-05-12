@@ -51,12 +51,12 @@ abstract class Model {
      * Example:
      * 
      *    return [
-     *        'user_id' => (new Validate\ID())->isPositive()->isNotNull(),
-     *        'email'   => (new Validate\Email())
-     *                     ->then((new Validate\String())->length()->from(5)),
-     *        'status'  => (new Transform\ToAllCaps())
-     *                     ->then((new Validate\String())->length()->upTo(10)),
-     *        'unicorn' => (new Validate\Creature())->has()->horns(1)
+     *        'user_id' => Validate::Number()->isPositive(),
+     *        'email'   => Validate::Email()
+     *                  -> then(Validate::String()->length()->from(5)),
+     *        'status'  => Transform::ToAllCaps()
+     *                  -> then(Validate::String()->length()->upTo(10)),
+     *        'unicorn' => Validate::Creature()->has()->horns(1)
      *    ];
      * 
      * This method MUST be idempotent.

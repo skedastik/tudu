@@ -8,7 +8,7 @@ namespace Tudu\Core\Data\Transform;
  * the result. Achieve more nuanced transformations by calling the various
  * option methods.
  */
-final class ToString extends \Tudu\Core\Chainable {
+final class ToString extends Transform {
     
     protected $options;
     static protected $dispatchTable = [
