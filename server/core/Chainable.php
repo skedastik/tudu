@@ -29,10 +29,11 @@ abstract class Chainable {
     }
     
     /**
-     * Process input data, producing an output.
+     * Process input data, producing an output. Override this.
      * 
-     * Call Chainable::pass() to pass data to the next object in the chain. To
-     * break the chain at any point, simply do not call Chainable::pass().
+     * Call Chainable::pass() from within this method to pass data to the next
+     * object in the chain. To break the chain at any point, simply do not call
+     * Chainable::pass().
      * 
      * @param mixed $data Input data.
      * @return mixed Output data.
