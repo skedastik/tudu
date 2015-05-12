@@ -87,6 +87,7 @@ class ValidateNoneTest extends \PHPUnit_Framework_TestCase {
     public function testNoneValidator() {
         $validator = Validate::None();
         $this->assertNotNull($validator->execute(new Sentinel\NotFound()));
+        $this->assertNull($validator->execute('whatever'));
     }
 }
   
