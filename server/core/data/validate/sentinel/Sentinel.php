@@ -10,7 +10,7 @@ namespace Tudu\Core\Data\Validate\Sentinel;
  * 
  * Example:
  * 
- *    $validator = Validate\Email();
+ *    $validator = Validate::Email();
  *    
  *    // return a special "not found" validation error
  *    $validator->validate(new Sentinel\NotFound());
