@@ -26,7 +26,7 @@ final class ToString extends Transform {
     /**
      * No-op, fluent function.
      */
-    public function interpret() {
+    public function interpreting() {
         return $this;
     }
     

@@ -13,7 +13,7 @@ class ToStringTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBoolToString() {
-        $transformer = Transform::ToString()->interpret()->boolean();
+        $transformer = Transform::ToString()->interpreting()->boolean();
         $this->assertEquals('t', $transformer->execute(true));
         $this->assertEquals('f', $transformer->execute(false));
         $this->assertEquals('t', $transformer->execute(1));

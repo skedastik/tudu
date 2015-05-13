@@ -13,7 +13,7 @@ final class User extends Repository\Repository {
         );
         
         if (is_null($result)) {
-            $result = ['user_id' => new Sentinel\NotFound()];
+            $result = ['user_id' => Sentinel\Factory::NotFound()];
         }
         
         return new User($result);

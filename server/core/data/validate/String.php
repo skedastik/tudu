@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Data\Validate;
 
-require_once __DIR__.'/Validate.php';
+use \Tudu\Core\Chainable\Sentinel;
 
 /**
  * String validator.
@@ -48,15 +48,15 @@ final class String extends Validate {
         
         if ($length < (isset($minLen) ? $minLen : 0) || $length > (isset($maxLen) ? $maxLen : INF)) {
             if (!isset($minLen)) {
-                return "must be at most $maxLen characters in length.";
+                return new Sentinel("must be at most $maxLen character".($maxLen == 1 ? '' : 's').' in length');
             } else if (!isset($maxLen)) {
-                return "must be at least $minLen characters in length.";
+                return new Sentinel("must be at least $minLen character".($minLen == 1 ? '' : 's').' in length');
             } else {
-                return "must be $minLen to $maxLen characters in length.";
+                return new Sentinel("must be $minLen to $maxLen character".($maxLen == 1 ? '' : 's').' in length');
             }
         }
         
-        return $this->pass($data);
+        return $data;
     }
 }
 ?>

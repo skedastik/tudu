@@ -1,38 +1,64 @@
 <?php
 namespace Tudu\Test\Core\Data\Validate;
 
+use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Core\Data\Validate\Sentinel;
+use \Tudu\Core\Data\Validate\Error as Error;
+use \Tudu\Core\Chainable\Sentinel;
 
 class StringTest extends \PHPUnit_Framework_TestCase {
 
     public function testLengthLowerBound() {
         $validator = Validate::String()->length()->from(10);
-        $this->assertNull($validator->execute('this string is valid even if it is rather long'));
-        $this->assertNotNull($validator->execute('too short'));
+
+        $input = 'this string is valid even if it is rather long';
+        $this->assertEquals($input, $validator->execute($input));
+        
+        $validator = Validate::String()->length()->from(1);
+        $input = '';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be at least 1 character in length', $result->getValue());
     }
 
     public function testLengthUpperBound() {
         $validator = Validate::String()->length()->upTo(5);
-        $this->assertNull($validator->execute('valid'));
-        $this->assertNotNull($validator->execute('toooooooooooooooooo long'));
+
+        $input = 'valid';
+        $this->assertEquals($input, $validator->execute($input));
+        
+        $validator = Validate::String()->length()->upTo(1);
+        $input = 'toooooooooooooooooo long';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be at most 1 character in length', $result->getValue());
     }
 
     public function testLengthRange() {
         $validator = Validate::String()->length()->from(10)->upTo(15);
-        $this->assertNull($validator->execute('valid string'));
-        $this->assertNotNull($validator->execute('too short'));
-        $this->assertNotNull($validator->execute('toooooooooooooooooo long'));
+
+        $input = 'valid string';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = 'too short';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
+
+        $input = 'toooooooooooooooooo long';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
     }
     
-    public function testDescribeAs() {
-        $validator = Validate::String()->length()->upTo(5)->describeAs('Test string');
-        $result1 = $validator->execute('invalid');
-        $this->assertNotNull($result1);
-        $validator->describeAs('Another string');
-        $result2 = $validator->execute('invalid');
-        $this->assertNotNull($result2);
-        $this->assertNotEquals($result1, $result2);
+    public function testWithDescriptionTo() {
+        $validator = Validate::String()->length()->from(10)
+                   ->then(Transform::DescriptionTo('String'));
+
+        $input = 'too short';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
     }
 }
 
@@ -40,32 +66,88 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
 
     public function testEmailFormat() {
         $validator = Validate::Email();
-        $this->assertNull($validator->execute('valid@email.xyz'));
-        $this->assertNull($validator->execute('123@123.xyz'));
-        $this->assertNull($validator->execute('123@123.blarg.xyz'));
-        $this->assertNull($validator->execute('123.abc@123.blarg.xyz'));
-        $this->assertNotNull($validator->execute('@invalid@email@xyz'));
-        $this->assertNotNull($validator->execute('invalid@email'));
+
+        $input = 'valid@email.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '123@123.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '123@123.blarg.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '123.abc@123.blarg.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '@invalid@email@xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('is invalid', $result->getValue());
+
+        $input = '@invalid@email.com';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('is invalid', $result->getValue());
+
+        $input = 'email.com';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('is invalid', $result->getValue());
+    }
+    
+    public function testWithDescriptionTo() {
+        $validator = Validate::Email()
+                   ->then(Transform::DescriptionTo('Email address'));
+
+        $input = 'invalid@foo';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('Email address is invalid.', $result->getValue());
     }
 }
 
 class ChainingTest extends \PHPUnit_Framework_TestCase {
 
     public function testChainTwoValidators() {
-        $validator = Validate::Email()->then(Validate::String()->length()->upTo(15));
-        $this->assertNull($validator->execute('valid@email.xyz'));
-        $this->assertNotNull($validator->execute('@invalid@email@xyz'));
-        $this->assertNotNull($validator->execute('this_email_is@too_long.xyz'));
+        $validator = Validate::Email()
+                   ->then(Validate::String()->length()->upTo(15));
+
+        $input = 'valid@email.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '@invalid@email@xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('is invalid', $result->getValue());
+
+        $input = 'this_email_is@too_long.xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be at most 15 characters in length', $result->getValue());
     }
 
     public function testChainThreeValidators() {
         $validator = Validate::Email()
-            ->then(Validate::String()->length()->from(15))
-            ->then(Validate::String()->length()->upTo(20));
-        $this->assertNull($validator->execute('just_right@valid.xyz'));
-        $this->assertNotNull($validator->execute('@invalid@email@xyz'));
-        $this->assertNotNull($validator->execute('this_email_is@too_long.xyz'));
-        $this->assertNotNull($validator->execute('too@short.xyz'));
+                   ->then(Validate::String()->length()->from(15))
+                   ->then(Validate::String()->length()->upTo(20));
+
+        $input = 'just_right@valid.xyz';
+        $this->assertEquals($input, $validator->execute($input));
+
+        $input = '@invalid@email@xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('is invalid', $result->getValue());
+
+        $input = 'this_email_is@too_long.xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be at most 20 characters in length', $result->getValue());
+
+        $input = 'too@short.xyz';
+        $result = $validator->execute($input);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be at least 15 characters in length', $result->getValue());
     }
 }
 
@@ -73,21 +155,34 @@ class SentinelTest extends \PHPUnit_Framework_TestCase {
 
     public function testSentinel() {
         $validator = Validate::Email();
-        $this->assertNotNull($validator->execute(new Sentinel\NotFound()));
+
+        $input = new Sentinel(Error::NOT_FOUND);
+        $this->assertEquals('not found', $validator->execute($input)->getValue());
     }
-    
+
     public function testSentinelWithChaining() {
-        $validator = Validate::Email()->then(Validate::String()->length()->upTo(5));
-        $this->assertNotNull($validator->execute(new Sentinel\NotFound()));
+        $validator = Validate::Email()
+                   ->then(Validate::String()->length()->upTo(5));
+        $input = new Sentinel(Error::NOT_FOUND);
+        $this->assertEquals('not found', $validator->execute($input)->getValue());
+
+        $validator = Validate::String()->length()->upTo(5)
+                   ->then(Validate::Email());
+        $input = new Sentinel(Error::NOT_FOUND);
+        $this->assertEquals('not found', $validator->execute($input)->getValue());
     }
 }
 
-class ValidateNoneTest extends \PHPUnit_Framework_TestCase {
+class ValidateBasicTest extends \PHPUnit_Framework_TestCase {
 
-    public function testNoneValidator() {
+    public function testBasicValidator() {
         $validator = Validate::Basic();
-        $this->assertNotNull($validator->execute(new Sentinel\NotFound()));
-        $this->assertNull($validator->execute('whatever'));
+
+        $input = new Sentinel(Error::NOT_FOUND);
+        $this->assertEquals('not found', $validator->execute($input)->getValue());
+
+        $input = 'whatever';
+        $this->assertEquals($input, $validator->execute($input));
     }
 }
   

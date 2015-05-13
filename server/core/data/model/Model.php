@@ -1,6 +1,7 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
+use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Core\TuduException;
 
 /**
@@ -8,7 +9,7 @@ use \Tudu\Core\TuduException;
  */
 abstract class Model {
     private $properties;
-    private $isValid;
+    private $isNormalized;
     
     /**
      * Constructor.
@@ -26,7 +27,7 @@ abstract class Model {
      */
     final public function fromArray($properties) {
         $this->properties = $properties;
-        $this->isValid = false;
+        $this->isNormalized = false;
     }
     
     /**
@@ -39,8 +40,8 @@ abstract class Model {
     /**
      * Returns TRUE if model is valid, FALSE otherwise.
      */
-    final public function isValid() {
-        return $this->isValid;
+    final public function isNormalized() {
+        return $this->isNormalized;
     }
     
     /**
@@ -80,23 +81,37 @@ abstract class Model {
     /**
      * Attempt to normalize the model.
      * 
-     * Executes 
+     * Normalization consists of both transformation and validation.
      * 
      * @return array|NULL Key/value array of errors where each key is a property
-     * and each value is either an error string or NULL if the property
-     * validates. If all properties are valid, NULL is returned.
+     * and each value is either an error string or NULL if all properties
+     * validate. Properties that validate will have transformations applied.
+     * Properties that do not validate will not have transformations applied.
      */
     final public function normalize() {
         $normalizers = $this->getCachedNormalizers();
         $errors = [];
-        $this->isValid = true;
+        $this->isNormalized = true;
+        
+        /**
+         * TODO: It might be worthwhile to track normalizations per-property as
+         * opposed to per-Model in order to avoid repeated normalizations.
+         * Something to consider down the road.
+         */
         
         foreach ($normalizers as $property => $normalizer) {
-            $errors[$property] = $normalizer->execute($this->properties[$property]);
-            $this->isValid = $this->isValid && is_null($errors[$property]);
+            $result = $normalizer->execute($this->properties[$property]);
+            if ($result instanceof Sentinel) {
+                // error encountered, extract it from the sentinel
+                $errors[$property] = $result->getValue();
+            } else {
+                // property successfully normalized, so apply transform
+                $this->properties[$property] = $result;
+            }
+            $this->isNormalized = $this->isNormalized && !isset($errors[$property]);
         }
         
-        return $this->isValid ? null : $errors;
+        return $this->isNormalized ? null : $errors;
     }
     
     /**
@@ -116,7 +131,7 @@ abstract class Model {
      */
     final public function set($property, $value) {
         $this->properties[$property] = $value;
-        $this->isValid = false;
+        $this->isNormalized = false;
     }
 }
 ?>

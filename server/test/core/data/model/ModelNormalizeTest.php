@@ -1,15 +1,20 @@
 <?php
 namespace Tudu\Test\Core\Data\Model;
 
+use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Core\Data\Validate\Sentinel;
+use \Tudu\Core\Data\Validate\Error as Error;
+use \Tudu\Core\Chainable\Sentinel;
 
 class FakeModel extends \Tudu\Core\Data\Model\Model {
     
     protected function getNormalizers() {
         return [
-            'name'  => Validate::String()->length()->from(5)->upTo(10),
+            'name'  => Validate::String()->length()->from(5)->upTo(10)
+                    -> then(Transform::DescriptionTo('Name')),
+                        
             'email' => Validate::Email()
+                    -> then(Transform::DescriptionTo('Email address'))
         ];
     }
 }
@@ -21,9 +26,9 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
         ]);
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
-        $this->assertTrue($fakeModel->isValid());
+        $this->assertTrue($fakeModel->isNormalized());
         $this->assertNull($errors);
     }
     
@@ -32,38 +37,38 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
             'name' => 'Jonathan Nametoolong',
             'email' => 'sooperdooper@abc.xyz'
         ]);
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $this->assertNotNull($errors);
-        $this->assertNotNull($errors['name']);
-        $this->assertNull($errors['email']);
+        $this->assertTrue(!isset($errors['email']));
+        $this->assertEquals('Name must be 5 to 10 characters in length.', $errors['name']);
     }
-    
+
     public function testAllInvalidData() {
         $fakeModel = new FakeModel([
             'name' => 'Jonathan Nametoolong',
             'email' => 'sooperdooper@abc'
         ]);
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $this->assertNotNull($errors);
-        $this->assertNotNull($errors['name']);
-        $this->assertNotNull($errors['email']);
+        $this->assertEquals('Name must be 5 to 10 characters in length.', $errors['name']);
+        $this->assertEquals('Email address is invalid.', $errors['email']);
     }
     
     public function testDataWithSentinelValue() {
         $fakeModel = new FakeModel([
             'name' => 'John Doe',
-            'email' => new Sentinel\NotFound()
+            'email' => new Sentinel(Error::NOT_FOUND)
         ]);
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
-        $this->assertFalse($fakeModel->isValid());
+        $this->assertFalse($fakeModel->isNormalized());
         $this->assertNotNull($errors);
-        $this->assertNull($errors['name']);
-        $this->assertNotNull($errors['email']);
+        $this->assertTrue(!isset($errors['name']));
+        $this->assertEquals('Email address not found.', $errors['email']);
     }
 }
 ?>
