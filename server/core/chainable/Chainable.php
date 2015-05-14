@@ -39,14 +39,14 @@ abstract class Chainable {
     /**
      * Preprocessing step.
      * 
-     * If input data is a sentinel, the data is passed to to processSentinel().
+     * If input data is a sentinel, the data is passed to processSentinel().
      * Otherwise, data is passed to process(). The result is then passed to the
      * next object in the chain.
      * 
      * @param mixed $data Input data.
      * @return mixed Output data.
      */
-    final protected function preprocess($data) {
+    final private function preprocess($data) {
         if ($data instanceof Sentinel) {
             $result = $this->processSentinel($data);
         } else {
@@ -89,7 +89,7 @@ abstract class Chainable {
      * @param mixed $data Input data.
      * @return mixed Output data.
      */
-    final protected function pass($data) {
+    final private function pass($data) {
         if (is_null($this->next)) {
             return $data;
         }

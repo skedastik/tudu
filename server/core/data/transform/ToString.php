@@ -47,7 +47,7 @@ final class ToString extends Transform {
     }
     
     protected function process($data) {
-        return $this->pass($this->{self::$dispatchTable[$this->options['interpreter']]}($data));
+        return $this->{self::$dispatchTable[$this->options['interpreter']]}($data);
     }
 }
 ?>
