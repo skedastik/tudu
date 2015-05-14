@@ -10,17 +10,14 @@ namespace Tudu\Core\Data\Transform;
  */
 final class ToString extends Transform {
     
-    protected $options;
-    static protected $dispatchTable = [
-        'untyped' => 'interpretUntyped',
-        'boolean' => 'interpretBoolean'
-    ];
+    protected $interpreter;
+    
+    const OPT_INTERPET_UNTYPED = 1;
+    const OPT_INTERPET_BOOLEAN = 2;
     
     public function __construct() {
         parent::__construct();
-        $this->options = [
-            'interpreter' => 'untyped'
-        ];
+        $this->interpreter = ToString::OPT_INTERPET_UNTYPED;
     }
     
     /**
@@ -34,20 +31,25 @@ final class ToString extends Transform {
      * Output "truthiness" of input (based on PHP's rules) as 't' or 'f'.
      */
     public function boolean() {
-        $this->options['interpreter'] = 'boolean';
+        $this->interpreter = ToString::OPT_INTERPET_BOOLEAN;
         return $this;
     }
     
-    private function interpretUntyped($data) {
+    static protected $dispatchTable = [
+        ToString::OPT_INTERPET_UNTYPED => 'interpretUntyped',
+        ToString::OPT_INTERPET_BOOLEAN => 'interpretBoolean'
+    ];
+    
+    protected function interpretUntyped($data) {
         return (string)$data;
     }
     
-    private function interpretBoolean($data) {
+    protected function interpretBoolean($data) {
         return $data ? 't' : 'f';
     }
     
     protected function process($data) {
-        return $this->{self::$dispatchTable[$this->options['interpreter']]}($data);
+        return $this->dispatch($this->interpreter, $data);
     }
 }
 ?>
