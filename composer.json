@@ -1,5 +1,14 @@
 {
+    "authors": [
+        {
+            "name": "Alaric Holloway",
+            "email": "alaric.holloway@gmail.com",
+            "homepage": "https://github.com/skedastik"
+        }
+    ],
+    "license": "MIT",
     "require": {
+        "php": ">=5.6.7",
         "katzgrau/klogger": "dev-master",
         "slim/slim": "~2.6"
     },
