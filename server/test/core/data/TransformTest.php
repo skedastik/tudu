@@ -5,17 +5,28 @@ use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Core\Data\Validate;
 
-class ToStringTest extends \PHPUnit_Framework_TestCase {
+class ConvertTest extends \PHPUnit_Framework_TestCase {
     
-    public function testNumberToString() {
-        $transformer = Transform::ToString();
+    public function testConvertWithoutSpecifyingOutputType() {
+        $transformer = Transform::Convert();
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $transformer->execute('whatever');
+    }
+    
+    public function testConvertInterpretingBooleanWithoutSpecifyingOutputType() {
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $transformer = Transform::Convert()->interpreting()->boolean();
+    }
+    
+    public function testNumberConvert() {
+        $transformer = Transform::Convert()->toString();
         $this->assertEquals('1', $transformer->execute(1));
         $this->assertEquals('1.5', $transformer->execute(1.5));
         $this->assertEquals('1.034E-15', $transformer->execute(10.34e-16));
     }
 
-    public function testBoolToString() {
-        $transformer = Transform::ToString()->interpreting()->boolean();
+    public function testBoolConvert() {
+        $transformer = Transform::Convert()->toString()->interpreting()->boolean();
         $this->assertEquals('t', $transformer->execute(true));
         $this->assertEquals('f', $transformer->execute(false));
         $this->assertEquals('t', $transformer->execute(1));

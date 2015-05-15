@@ -21,10 +21,10 @@ abstract class Transform extends \Tudu\Core\Chainable\Chainable {
     }
     
     /**
-     * Shorthand factory function for Transform\ToString.
+     * Shorthand factory function for Transform\Convert.
      */
-    public static function ToString() {
-        return new ToString();
+    public static function Convert() {
+        return new Convert();
     }
     
     /**

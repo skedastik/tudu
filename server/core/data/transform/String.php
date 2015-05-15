@@ -13,8 +13,9 @@ final class String extends Transform {
     
     protected $transforms;
     
-    const ESCAPE_HTML = 1;
-    const STRIP_TAGS = 2;
+    // string transforms
+    const ESCAPE_HTML = 'escape_html';
+    const STRIP_TAGS = 'string_tags';
     
     public function __construct() {
         parent::__construct();
@@ -46,11 +47,11 @@ final class String extends Transform {
         String::STRIP_TAGS => 'processStripTags'
     ];
     
-    public function processEscapeHTML($data) {
+    protected function processEscapeHTML($data) {
         return htmlspecialchars($data);
     }
     
-    public function processStripTags($data) {
+    protected function processStripTags($data) {
         return strip_tags($data);
     }
     
