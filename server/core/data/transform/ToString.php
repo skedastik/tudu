@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Transform;
 /**
  * Chainable to-string transformer.
  * 
- * By default, this transformer simply casts the input to a string and returns
+ * By default, this transformer simply casts the input to a string and outputs
  * the result. Achieve more nuanced transformations by calling the various
  * option methods.
  */
@@ -12,13 +12,15 @@ final class ToString extends Transform {
     
     protected $interpreter;
     
-    const OPT_INTERPET_UNTYPED = 1;
-    const OPT_INTERPET_BOOLEAN = 2;
+    const INTERPET_UNTYPED = 1;
+    const INTERPET_BOOLEAN = 2;
     
     public function __construct() {
         parent::__construct();
-        $this->interpreter = ToString::OPT_INTERPET_UNTYPED;
+        $this->interpreter = ToString::INTERPET_UNTYPED;
     }
+    
+    // Option methods ----------------------------------------------------------
     
     /**
      * No-op, fluent function.
@@ -31,13 +33,15 @@ final class ToString extends Transform {
      * Output "truthiness" of input (based on PHP's rules) as 't' or 'f'.
      */
     public function boolean() {
-        $this->interpreter = ToString::OPT_INTERPET_BOOLEAN;
+        $this->interpreter = ToString::INTERPET_BOOLEAN;
         return $this;
     }
     
+    // Processing methods ------------------------------------------------------
+    
     static protected $dispatchTable = [
-        ToString::OPT_INTERPET_UNTYPED => 'interpretUntyped',
-        ToString::OPT_INTERPET_BOOLEAN => 'interpretBoolean'
+        ToString::INTERPET_UNTYPED => 'interpretUntyped',
+        ToString::INTERPET_BOOLEAN => 'interpretBoolean'
     ];
     
     protected function interpretUntyped($data) {

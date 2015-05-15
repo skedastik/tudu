@@ -14,6 +14,13 @@ abstract class Transform extends \Tudu\Core\Chainable\Chainable {
     static protected $dispatchTable = [];
     
     /**
+     * Shorthand factory function for Transform\String.
+     */
+    public static function String() {
+        return new String();
+    }
+    
+    /**
      * Shorthand factory function for Transform\ToString.
      */
     public static function ToString() {

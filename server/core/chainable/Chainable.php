@@ -6,8 +6,7 @@ use \Tudu\Core\Chainable\Sentinel;
 /**
  * Chainable is a base class for function-like objects. These objects have only
  * one purpose: take some input X and produce some output Y. You compose larger
- * functions by chaining multiple instances of such objects together using
- * Chainable::then().
+ * functions by chaining multiple instances together using Chainable::then().
  */
 abstract class Chainable {
     
