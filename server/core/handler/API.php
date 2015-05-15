@@ -68,7 +68,10 @@ abstract class API extends Handler {
     
     private function _getAllowedMethods() {
         $methods = strtoupper($this->getAllowedMethods());
-        return strpos($methods, 'OPTIONS') === false ? (empty($methods) ? 'OPTIONS' : $methods.', OPTIONS') : $methods;
+        if (strpos($methods, 'OPTIONS') === false) {
+            return empty($methods) ? 'OPTIONS' : $methods.', OPTIONS';
+        }
+        return $methods;
     }
     
     /**
