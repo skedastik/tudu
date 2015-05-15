@@ -7,11 +7,11 @@ namespace Tudu\Core\Data\Transform;
 abstract class Transform extends \Tudu\Core\Chainable\Chainable {
     
     /**
-     * When extending Transform, you can define a static $dispatchTable in the
-     * subclass for string-based method dispatching. This is a convenient way of
-     * mapping option strings to methods.
+     * When extending Transform, you can define a static $functionMap as a
+     * convenient way of mapping option strings to methods. See
+     * Transform::dispatch().
      */
-    static protected $dispatchTable = [];
+    static protected $functionMap = [];
     
     /**
      * Shorthand factory function for Transform\String.
@@ -38,14 +38,14 @@ abstract class Transform extends \Tudu\Core\Chainable\Chainable {
      * Dispatch a method call mapped to the given string.
      * 
      * This method uses late static binding to call the method mapped to the
-     * input string by a subclass' dispatch table.
+     * input string by a subclass' function map.
      * 
      * @param string $string The input string.
      * @param mixed ...$args Arguments to pass to the mapped method.
      * @return mixed The return value of the mapped method.
      */
     public function dispatch($string, ...$args) {
-        return $this->{static::$dispatchTable[$string]}(...$args);
+        return $this->{static::$functionMap[$string]}(...$args);
     }
 }
 ?>

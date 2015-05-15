@@ -43,7 +43,7 @@ final class Convert extends Transform {
     
     // Processing methods ------------------------------------------------------
     
-    static protected $dispatchTable = [
+    static protected $functionMap = [
         Convert::OUTPUT_STRING => 'processToString',
         Convert::OUTPUT_BOOLEAN_STRING => 'processToBooleanString'
     ];

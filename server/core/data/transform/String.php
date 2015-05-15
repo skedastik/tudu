@@ -42,7 +42,7 @@ final class String extends Transform {
     
     // Processing methods ------------------------------------------------------
     
-    static protected $dispatchTable = [
+    static protected $functionMap = [
         String::ESCAPE_HTML => 'processEscapeHTML',
         String::STRIP_TAGS => 'processStripTags'
     ];
