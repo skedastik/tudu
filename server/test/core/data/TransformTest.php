@@ -13,11 +13,6 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $transformer->execute('whatever');
     }
     
-    public function testConvertInterpretingBooleanWithoutSpecifyingOutputType() {
-        $this->setExpectedException('\Tudu\Core\TuduException');
-        $transformer = Transform::Convert()->interpreting()->boolean();
-    }
-    
     public function testNumberConvert() {
         $transformer = Transform::Convert()->toString();
         $this->assertEquals('1', $transformer->execute(1));
@@ -26,7 +21,7 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBoolConvert() {
-        $transformer = Transform::Convert()->toString()->interpreting()->boolean();
+        $transformer = Transform::Convert()->toBooleanString();
         $this->assertEquals('t', $transformer->execute(true));
         $this->assertEquals('f', $transformer->execute(false));
         $this->assertEquals('t', $transformer->execute(1));
