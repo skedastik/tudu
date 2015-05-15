@@ -11,10 +11,10 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
     protected function getNormalizers() {
         return [
             'name'  => Validate::String()->length()->from(5)->upTo(10)
-                    -> then(Transform::DescriptionTo('Name')),
+                    -> then(Transform::Description()->to('Name')),
                         
             'email' => Validate::Email()
-                    -> then(Transform::DescriptionTo('Email address'))
+                    -> then(Transform::Description()->to('Email address'))
         ];
     }
 }

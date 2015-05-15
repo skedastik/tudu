@@ -28,10 +28,10 @@ abstract class Transform extends \Tudu\Core\Chainable\Chainable {
     }
     
     /**
-     * Shorthand factory function for Transform\DescriptionTo.
+     * Shorthand factory function for Transform\Description.
      */
-    public static function DescriptionTo($description) {
-        return new DescriptionTo($description);
+    public static function Description() {
+        return new Description();
     }
     
     /**

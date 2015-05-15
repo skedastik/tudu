@@ -34,16 +34,16 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
     }
 }
 
-class DescriptionToTest extends \PHPUnit_Framework_TestCase {
+class DescriptionTest extends \PHPUnit_Framework_TestCase {
     
-    public function testDescriptionTo() {
-        $transformer = Transform::DescriptionTo('Test thing');
+    public function testDescription() {
+        $transformer = Transform::Description()->to('Test thing');
         $input = new Sentinel(Validate\Error::NOT_FOUND);
         $this->assertEquals('Test thing not found.', $transformer->execute($input)->getValue());
     }
     
-    public function testDescriptionToWithNonSentinelInput() {
-        $transformer = Transform::DescriptionTo('Test thing');
+    public function testDescriptionWithNonSentinelInput() {
+        $transformer = Transform::Description()->to('Test thing');
         $input = 'input';
         $this->assertEquals('input', $transformer->execute($input));
     }

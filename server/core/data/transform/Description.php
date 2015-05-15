@@ -6,16 +6,19 @@ use \Tudu\Core\Chainable\Sentinel;
 /**
  * Chainable transformer for generating human-readable validation error strings.
  * 
- * DescriptionTo generates error string outputs from Sentinel inputs. If the
- * input is not a Sentinel object, DescriptionTo simply outputs the input.
+ * Description generates error string outputs from Sentinel inputs. If the
+ * input is not a Sentinel object, Description simply outputs the input.
  */
-final class DescriptionTo extends Transform {
+final class Description extends Transform {
     
     protected $description;
     
+    public function __construct() {
+        parent::__construct();
+        $this->description = '';
+    }
+    
     /**
-     * Constructor.
-     * 
      * Provide a custom description for generating human-readable validation
      * error strings.
      * 
@@ -31,9 +34,9 @@ final class DescriptionTo extends Transform {
      * 
      * @param string $description A description describing the data.
      */
-    public function __construct($description) {
-        parent::__construct();
+    public function to($description) {
         $this->description = $description;
+        return $this;
     }
     
     /**

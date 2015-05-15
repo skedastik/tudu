@@ -51,9 +51,9 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
     }
     
-    public function testWithDescriptionTo() {
+    public function testWithDescription() {
         $validator = Validate::String()->length()->from(10)
-                   ->then(Transform::DescriptionTo('String'));
+                   ->then(Transform::Description()->to('String'));
 
         $input = 'too short';
         $result = $validator->execute($input);
@@ -95,9 +95,9 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('is invalid', $result->getValue());
     }
     
-    public function testWithDescriptionTo() {
+    public function testWithDescription() {
         $validator = Validate::Email()
-                   ->then(Transform::DescriptionTo('Email address'));
+                   ->then(Transform::Description()->to('Email address'));
 
         $input = 'invalid@foo';
         $result = $validator->execute($input);

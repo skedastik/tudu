@@ -40,9 +40,9 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('not found', $result2->getValue());
     }
     
-    public function testChainingWithDescriptionTo() {
+    public function testChainingWithDescription() {
         $chain = Validate::String()->length()->upTo(15)
-               ->then(Transform::DescriptionTo('Test string'));
+               ->then(Transform::Description()->to('Test string'));
         
         $input = 'valid string';
         $this->assertEquals($input, $chain->execute($input));
@@ -55,7 +55,7 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
     
     public function testChainingOfSentinels() {
         $chain = Validate::String()->length()->upTo(15)
-               ->then(Transform::DescriptionTo('Test string'));
+               ->then(Transform::Description()->to('Test string'));
         
         $input = new Sentinel(Error::NOT_FOUND);
         $result = $chain->execute($input);
