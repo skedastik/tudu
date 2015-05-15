@@ -7,9 +7,10 @@ use \Tudu\Core\Data\Validate;
 /**
  * User model.
  */
-final class User extends Model\Model {
+final class User extends Model {
     
     protected function getNormalizers() {
+        // TODO
         return [
             'user_id'       => Validate::Basic()->describeAs('User'),
             
@@ -20,6 +21,10 @@ final class User extends Model\Model {
             
             'password_hash' => Validate::String()->length()->from(8)->upTo(256)
         ];
+    }
+    
+    protected function getSanitizers() {
+        // TODO
     }
 }
 ?>

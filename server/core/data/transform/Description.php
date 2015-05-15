@@ -6,8 +6,8 @@ use \Tudu\Core\Chainable\Sentinel;
 /**
  * Chainable transformer for generating human-readable validation error strings.
  * 
- * Description generates error string outputs from Sentinel inputs. If the
- * input is not a Sentinel object, Description simply outputs the input.
+ * Generates error string outputs from Sentinel inputs. If the input is not a
+ * Sentinel object, Description simply outputs the input.
  */
 final class Description extends Transform {
     

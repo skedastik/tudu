@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="server/tudu_autoload.php">
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="server/tudu_autoload.php"
+>
     <testsuites>
-        <testsuite name="data">
-            <!-- Test Transform class -->
-            <file>server/test/core/data/TransformTest.php</file>
-            <!-- Test Validate class -->
-            <file>server/test/core/data/ValidateTest.php</file>
-            <!-- Test chaining of Validate and Transform objects -->
-            <file>server/test/core/data/ChainableTest.php</file>
-            <!-- Test normalization of Model objects -->
-            <file>server/test/core/data/model/ModelNormalizeTest.php</file>
+        <testsuite name="Tudu Test Suite">
+            <directory phpVersion="5.6.7" phpVersionOperator=">=">./server/test/</directory>
         </testsuite>
     </testsuites>
+    
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./server/</directory>
+            <exclude>
+                <directory>./server/test/</directory>
+                <file>./server/conf/Conf-template.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>
