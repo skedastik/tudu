@@ -16,6 +16,7 @@ final class String extends Transform {
     // string transforms
     const ESCAPE_HTML = 'escape_html';
     const STRIP_TAGS = 'string_tags';
+    const TRIM_WHITESPACE = 'trim_whitespace';
     
     public function __construct() {
         parent::__construct();
@@ -40,11 +41,21 @@ final class String extends Transform {
         return $this;
     }
     
+    /**
+     * Trim whitepsace both before and after input string. Whitespace includes
+     * spaces, tabs, and newline characters.
+     */
+    public function trim() {
+        $this->transforms[String::TRIM_WHITESPACE] = 1;
+        return $this;
+    }
+    
     // Processing methods ------------------------------------------------------
     
     static protected $functionMap = [
         String::ESCAPE_HTML => 'processEscapeHTML',
-        String::STRIP_TAGS => 'processStripTags'
+        String::STRIP_TAGS => 'processStripTags',
+        String::TRIM_WHITESPACE => 'processTrim'
     ];
     
     protected function processEscapeHTML($data) {
@@ -53,6 +64,10 @@ final class String extends Transform {
     
     protected function processStripTags($data) {
         return strip_tags($data);
+    }
+    
+    protected function processTrim($data) {
+        return preg_replace('/^[\n\r\t ]*([^\n\r\t ]+)[\n\r\t ]*$/', '$1', $data);
     }
     
     protected function process($data) {
