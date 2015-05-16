@@ -9,6 +9,8 @@ final class Convert extends Transform {
     // output types
     const OPT_OUTPUT_STRING = 'string';
     const OPT_OUTPUT_BOOL_STRING = 'boolean_string';
+    const OPT_OUTPUT_INTEGER = 'integer';
+    const OPT_OUTPUT_FLOAT = 'float';
     
     // Option methods ----------------------------------------------------------
     
@@ -32,11 +34,29 @@ final class Convert extends Transform {
         return $this;
     }
     
+    /**
+     * Convert input to integer.
+     */
+    public function toInteger() {
+        $this->setOption(self::OPT_OUTPUT_INTEGER);
+        return $this;
+    }
+    
+    /**
+     * Convert input to float.
+     */
+    public function toFloat() {
+        $this->setOption(self::OPT_OUTPUT_FLOAT);
+        return $this;
+    }
+    
     // Processing methods ------------------------------------------------------
     
     static protected $functionMap = [
         self::OPT_OUTPUT_STRING => 'processToString',
-        self::OPT_OUTPUT_BOOL_STRING => 'processToBooleanString'
+        self::OPT_OUTPUT_BOOL_STRING => 'processToBooleanString',
+        self::OPT_OUTPUT_INTEGER => 'processToInteger',
+        self::OPT_OUTPUT_FLOAT => 'processToFloat'
     ];
     
     protected function processToString($data) {
@@ -45,6 +65,14 @@ final class Convert extends Transform {
     
     protected function processToBooleanString($data) {
         return $data ? 't' : 'f';
+    }
+    
+    protected function processToInteger($data) {
+        return intval($data);
+    }
+    
+    protected function processToFloat($data) {
+        return floatval($data);
     }
     
     protected function process($data) {

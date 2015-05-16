@@ -13,24 +13,43 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $transformer->execute('whatever');
     }
     
-    public function testNumberConvert() {
+    public function testConvertNumericToString() {
         $transformer = Transform::Convert()->toString();
         $this->assertEquals('1', $transformer->execute(1));
         $this->assertEquals('1.5', $transformer->execute(1.5));
         $this->assertEquals('1.034E-15', $transformer->execute(10.34e-16));
     }
 
-    public function testBoolConvert() {
-        $transformer = Transform::Convert()->toBooleanString();
-        $this->assertEquals('t', $transformer->execute(true));
-        $this->assertEquals('f', $transformer->execute(false));
-        $this->assertEquals('t', $transformer->execute(1));
-        $this->assertEquals('f', $transformer->execute(0));
-        $this->assertEquals('t', $transformer->execute('1'));
-        $this->assertEquals('f', $transformer->execute('0'));
-        $this->assertEquals('f', $transformer->execute(null));
-        $this->assertEquals('f', $transformer->execute(''));
-        $this->assertEquals('f', $transformer->execute([]));
+    public function testConvertToInteger() {
+        $transformer = Transform::Convert()->toInteger();
+        $this->assertEquals(42, $transformer->execute(42));
+        $this->assertEquals(4, $transformer->execute(4.2));
+        $this->assertEquals(42, $transformer->execute('42'));
+        $this->assertEquals(42, $transformer->execute('+42'));
+        $this->assertEquals(-42, $transformer->execute('-42'));
+        $this->assertEquals(34, $transformer->execute(042));
+        $this->assertEquals(42, $transformer->execute('042'));
+        $this->assertEquals(100, $transformer->execute(1e2));
+        $this->assertEquals(1, $transformer->execute('1e2'));
+        $this->assertEquals(26, $transformer->execute(0x1A));
+    }
+    
+    public function testConvertToFloat() {
+        $transformer = Transform::Convert()->toFloat();
+        $this->assertEquals(42, $transformer->execute(42));
+        $this->assertEquals(4.2, $transformer->execute(4.2));
+        $this->assertEquals(42, $transformer->execute('42'));
+        $this->assertEquals(42, $transformer->execute('+42'));
+        $this->assertEquals(-42, $transformer->execute('-42'));
+        $this->assertEquals(34, $transformer->execute(042));
+        $this->assertEquals(42, $transformer->execute('042'));
+        $this->assertEquals(100, $transformer->execute(1e2));
+        $this->assertEquals(100, $transformer->execute('1e2'));
+        $this->assertEquals(26, $transformer->execute(0x1A));
+        $this->assertEquals(1.655678E+274, $transformer->execute('1.655678e274'));
+        $this->assertEquals(3.14, $transformer->execute('3.14'));
+        $this->assertEquals(3.14, $transformer->execute('3.14foobarbaz'));
+        $this->assertEquals(0, $transformer->execute('foobarbaz3.14'));
     }
 }
 
