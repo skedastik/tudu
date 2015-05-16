@@ -119,14 +119,21 @@ class StringTest extends \PHPUnit_Framework_TestCase {
     }
 }
 
-// class NumberTest extends \PHPUnit_Framework_TestCase {
-//
-//     public function testIsPositive() {
-//         $validator = Validate::Number()->is()->positive();
-//
-//         $input = 135
-//     }
-// }
+class NumberTest extends \PHPUnit_Framework_TestCase {
+
+    public function testNonNumericInput() {
+        $validator = Validate::Number();
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $validator->execute('this is not a number');
+    }
+    
+    public function testIsPositive() {
+        $validator = Validate::Number()->is()->positive();
+        $result = $validator->execute(-135);
+        $this->assertTrue($result instanceof Sentinel);
+        $this->assertEquals('must be a positive number', $result->getValue());
+    }
+}
 
 class ChainingTest extends \PHPUnit_Framework_TestCase {
 

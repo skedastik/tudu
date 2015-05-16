@@ -20,5 +20,10 @@ class Validate {
      * Shorthand factory function for Validate\String.
      */
     public static function String() { return new String(); }
+    
+    /**
+     * Shorthand factory function for Validate\Number.
+     */
+    public static function Number() { return new Number(); }
 }
 ?>
