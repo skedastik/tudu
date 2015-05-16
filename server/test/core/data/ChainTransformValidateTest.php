@@ -6,7 +6,7 @@ use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Data\Validate\Error as Error;
 use \Tudu\Core\Chainable\Sentinel;
 
-class ChainingTest extends \PHPUnit_Framework_TestCase {
+class ChainTransformValidateTest extends \PHPUnit_Framework_TestCase {
     
     public function testTransformThenValidate() {
         $chain = Transform::Convert()->to()->booleanString()
