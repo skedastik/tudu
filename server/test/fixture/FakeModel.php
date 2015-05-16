@@ -10,7 +10,7 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
         return [
             'name'  => Validate::String()->length()->from(5)->upTo(35)
                     -> then(Transform::Description()->to('Name')),
-            'email' => Validate::Email()
+            'email' => Validate::String()->is()->validEmail()
                     -> then(Transform::Description()->to('Email address'))
         ];
     }

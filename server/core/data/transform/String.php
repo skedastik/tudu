@@ -11,17 +11,10 @@ use Tudu\Core\TuduException;
  */
 final class String extends Transform {
     
-    protected $transforms;
-    
     // string transforms
-    const ESCAPE_HTML = 'escape_html';
-    const STRIP_TAGS = 'string_tags';
-    const TRIM_WHITESPACE = 'trim_whitespace';
-    
-    public function __construct() {
-        parent::__construct();
-        $this->transforms = [];
-    }
+    const OPT_ESCAPE_HTML     = 'escape_html';
+    const OPT_STRIP_TAGS      = 'string_tags';
+    const OPT_TRIM_WHITESPACE = 'trim_whitespace';
     
     // Option methods ----------------------------------------------------------
     
@@ -29,7 +22,7 @@ final class String extends Transform {
      * Escape special characters for rendering as HTML.
      */
     public function escapeForHTML() {
-        $this->transforms[String::ESCAPE_HTML] = 1;
+        $this->addOption(self::OPT_ESCAPE_HTML);
         return $this;
     }
     
@@ -37,7 +30,7 @@ final class String extends Transform {
      * Strip HTML tags.
      */
     public function stripTags() {
-        $this->transforms[String::STRIP_TAGS] = 1;
+        $this->addOption(self::OPT_STRIP_TAGS);
         return $this;
     }
     
@@ -46,16 +39,16 @@ final class String extends Transform {
      * spaces, tabs, and newline characters.
      */
     public function trim() {
-        $this->transforms[String::TRIM_WHITESPACE] = 1;
+        $this->addOption(self::OPT_TRIM_WHITESPACE);
         return $this;
     }
     
     // Processing methods ------------------------------------------------------
     
     static protected $functionMap = [
-        String::ESCAPE_HTML => 'processEscapeHTML',
-        String::STRIP_TAGS => 'processStripTags',
-        String::TRIM_WHITESPACE => 'processTrim'
+        self::OPT_ESCAPE_HTML => 'processEscapeHTML',
+        self::OPT_STRIP_TAGS => 'processStripTags',
+        self::OPT_TRIM_WHITESPACE => 'processTrim'
     ];
     
     protected function processEscapeHTML($data) {
@@ -72,14 +65,9 @@ final class String extends Transform {
     
     protected function process($data) {
         if (!is_string($data)) {
-            throw new TuduException('Non-string input provided to Transform\String.');
+            throw new TuduException('Non-string input passed to Transform\self::process().');
         }
-        
-        foreach (array_keys($this->transforms) as $transform) {
-            $data = $this->dispatch($transform, $data);
-        }
-        
-        return $data;
+        return $this->apply($data);
     }
 }
 ?>

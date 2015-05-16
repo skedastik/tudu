@@ -70,10 +70,13 @@ abstract class Model {
      * 
      *    [
      *        'user_id'  => Validate::Number()->isPositive(),
-     *        'email'    => Validate::Email()
-     *                   -> then(Validate::String()->length()->from(5)),
+     *        
+     *        'email'    => Validate::String()->is()->validEmail()->
+     *                   -> with()->length()->from(5),
+     *                   
      *        'status'   => Transform::String()->capitalize()
      *                   -> then(Validate::String()->length()->upTo(10)),
+     *                   
      *        'isActive' => Transform::Convert()->toBooleanString()
      *    ];
      * 

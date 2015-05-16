@@ -6,21 +6,21 @@ use \Tudu\Core\Chainable\Sentinel;
 /**
  * Chainable data validation base class.
  * 
- * This class can be instantiated if you need a validator that only generates
- * validation errors for sentinel values.
+ * Validators take any input. If the input is valid, the validator simply
+ * outputs the input. Otherwise, the validator outputs an error string wrapped
+ * in a Sentinel object (see \Tudu\Core\Chainable\Sentinel).
  */
-class Validate extends \Tudu\Core\Chainable\Chainable {
+class Validate extends \Tudu\Core\Chainable\OptionsChainable {
     
     /**
-     * Shorthand factory function for default validator. The default validator
-     * only reports Sentinel errors.
+     * Shorthand factory function for default validator.
+     * 
+     * The default validator doesn't perform any validation. It simply outputs
+     * whatever was input. This means you can input an arbitrary error string
+     * wrapped in a Sentinel object to force a validation error. Unless
+     * otherwise specified, classes that extend Validate inherit this behavior.
      */
     public static function Basic() { return new Validate(); }
-    
-    /**
-     * Shorthand factory function for Validate\Email.
-     */
-    public static function Email() { return new Email(); }
     
     /**
      * Shorthand factory function for Validate\String.
@@ -59,6 +59,27 @@ class Validate extends \Tudu\Core\Chainable\Chainable {
      */
     protected function process($data) {
         return $data;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    final public function length() {
+        return $this;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    final public function with() {
+        return $this;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    final public function is() {
+        return $this;
     }
 }
 ?>

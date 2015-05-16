@@ -51,21 +51,8 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
     }
     
-    public function testWithDescription() {
-        $validator = Validate::String()->length()->from(10)
-                   ->then(Transform::Description()->to('String'));
-
-        $input = 'too short';
-        $result = $validator->execute($input);
-        $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
-    }
-}
-
-class EmailTest extends \PHPUnit_Framework_TestCase {
-
-    public function testEmailFormat() {
-        $validator = Validate::Email();
+    public function testValidEmail() {
+        $validator = Validate::String()->is()->validEmail();
 
         $input = 'valid@email.xyz';
         $this->assertEquals($input, $validator->execute($input));
@@ -96,20 +83,20 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testWithDescription() {
-        $validator = Validate::Email()
-                   ->then(Transform::Description()->to('Email address'));
+        $validator = Validate::String()->length()->from(10)
+                   ->then(Transform::Description()->to('String'));
 
-        $input = 'invalid@foo';
+        $input = 'too short';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('Email address is invalid.', $result->getValue());
+        $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
     }
 }
 
 class ChainingTest extends \PHPUnit_Framework_TestCase {
 
     public function testChainTwoValidators() {
-        $validator = Validate::Email()
+        $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->upTo(15));
 
         $input = 'valid@email.xyz';
@@ -127,7 +114,7 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testChainThreeValidators() {
-        $validator = Validate::Email()
+        $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->from(15))
                    ->then(Validate::String()->length()->upTo(20));
 
@@ -154,20 +141,20 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
 class SentinelTest extends \PHPUnit_Framework_TestCase {
 
     public function testSentinel() {
-        $validator = Validate::Email();
+        $validator = Validate::String()->is()->validEmail();
 
         $input = new Sentinel(Error::NOT_FOUND);
         $this->assertEquals('not found', $validator->execute($input)->getValue());
     }
 
     public function testSentinelWithChaining() {
-        $validator = Validate::Email()
+        $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->upTo(5));
         $input = new Sentinel(Error::NOT_FOUND);
         $this->assertEquals('not found', $validator->execute($input)->getValue());
 
         $validator = Validate::String()->length()->upTo(5)
-                   ->then(Validate::Email());
+                   ->then(Validate::String()->is()->validEmail());
         $input = new Sentinel(Error::NOT_FOUND);
         $this->assertEquals('not found', $validator->execute($input)->getValue());
     }
