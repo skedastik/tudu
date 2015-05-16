@@ -5,6 +5,26 @@ use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Data\Validate\Error as Error;
 use \Tudu\Core\Chainable\Sentinel;
+use \Tudu\Test\Fixture\FakeValidator;
+
+class BasicTest extends \PHPUnit_Framework_TestCase {
+
+    public function testBasicValidator() {
+        $validator = Validate::Basic();
+
+        $input = new Sentinel(Error::NOT_FOUND);
+        $this->assertEquals('not found', $validator->execute($input)->getValue());
+
+        $input = 'whatever';
+        $this->assertEquals($input, $validator->execute($input));
+    }
+    
+    public function testApplyWithoutSpecifyingOptions() {
+        $validator = new FakeValidator();
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $validator->execute('whatever');
+    }
+}
 
 class StringTest extends \PHPUnit_Framework_TestCase {
 
@@ -91,7 +111,22 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($result instanceof Sentinel);
         $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
     }
+    
+    public function testValidateNonStringInput() {
+        $validator = Validate::String();
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $validator->execute([]);
+    }
 }
+
+// class NumberTest extends \PHPUnit_Framework_TestCase {
+//
+//     public function testIsPositive() {
+//         $validator = Validate::Number()->is()->positive();
+//
+//         $input = 135
+//     }
+// }
 
 class ChainingTest extends \PHPUnit_Framework_TestCase {
 
@@ -157,19 +192,6 @@ class SentinelTest extends \PHPUnit_Framework_TestCase {
                    ->then(Validate::String()->is()->validEmail());
         $input = new Sentinel(Error::NOT_FOUND);
         $this->assertEquals('not found', $validator->execute($input)->getValue());
-    }
-}
-
-class ValidateBasicTest extends \PHPUnit_Framework_TestCase {
-
-    public function testBasicValidator() {
-        $validator = Validate::Basic();
-
-        $input = new Sentinel(Error::NOT_FOUND);
-        $this->assertEquals('not found', $validator->execute($input)->getValue());
-
-        $input = 'whatever';
-        $this->assertEquals($input, $validator->execute($input));
     }
 }
   

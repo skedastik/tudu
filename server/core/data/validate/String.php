@@ -2,6 +2,7 @@
 namespace Tudu\Core\Data\Validate;
 
 use \Tudu\Core\Chainable\Sentinel;
+use \Tudu\Core\TuduException;
 
 /**
  * String validator.
@@ -44,6 +45,13 @@ final class String extends Validator {
         return $this;
     }
     
+    /**
+     * No-op, fluent function.
+     */
+    public function length() {
+        return $this;
+    }
+    
     // Processing methods ------------------------------------------------------
     
     static protected $functionMap = [
@@ -80,6 +88,9 @@ final class String extends Validator {
     }
     
     protected function process($data) {
+        if (!is_string($data)) {
+            throw new TuduException('Non-string input passed to Validate\String.');
+        }
         return $this->apply($data);
     }
 }

@@ -72,7 +72,7 @@ final class String extends Transformer {
     
     protected function process($data) {
         if (!is_string($data)) {
-            throw new TuduException('Non-string input passed to Transform\self::process().');
+            throw new TuduException('Non-string input passed to Transform\String.');
         }
         return $this->apply($data);
     }
