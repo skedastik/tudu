@@ -122,13 +122,6 @@ abstract class OptionsChainable extends Chainable {
     /**
      * No-op, fluent function.
      */
-    public function length() {
-        return $this;
-    }
-    
-    /**
-     * No-op, fluent function.
-     */
     public function with() {
         return $this;
     }

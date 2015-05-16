@@ -43,6 +43,13 @@ final class String extends Transformer {
         return $this;
     }
     
+    /**
+     * No-op, fluent function.
+     */
+    public function length() {
+        return $this;
+    }
+    
     // Processing methods ------------------------------------------------------
     
     static protected $functionMap = [
