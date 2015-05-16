@@ -8,7 +8,7 @@ use \Tudu\Core\Chainable\Sentinel;
  * 
  * Use various option methods to set validation options.
  */
-final class String extends Validate {
+final class String extends Validator {
     
     // options
     const OPT_MIN_LENGTH   = 'min_length';

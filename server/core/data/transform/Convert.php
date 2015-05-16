@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Transform;
 /**
  * Chainable data conversion transformer.
  */
-final class Convert extends Transform {
+final class Convert extends Transformer {
     
     // output types
     const OPT_OUTPUT_STRING = 'string';
@@ -19,17 +19,17 @@ final class Convert extends Transform {
      * 
      * This simply casts the input to a string and outputs the result.
      */
-    public function toString() {
+    public function string() {
         $this->setOption(self::OPT_OUTPUT_STRING);
         return $this;
     }
     
     /**
-     * Convert input to string.
+     * Convert input to boolean string.
      * 
      * Output "truthiness" of input (based on PHP's rules) as 't' or 'f'.
      */
-    public function toBooleanString() {
+    public function booleanString() {
         $this->setOption(self::OPT_OUTPUT_BOOL_STRING);
         return $this;
     }
@@ -37,7 +37,7 @@ final class Convert extends Transform {
     /**
      * Convert input to integer.
      */
-    public function toInteger() {
+    public function integer() {
         $this->setOption(self::OPT_OUTPUT_INTEGER);
         return $this;
     }
@@ -45,7 +45,7 @@ final class Convert extends Transform {
     /**
      * Convert input to float.
      */
-    public function toFloat() {
+    public function float() {
         $this->setOption(self::OPT_OUTPUT_FLOAT);
         return $this;
     }

@@ -2,7 +2,7 @@
 namespace Tudu\Core\Data\Transform;
 
 /**
- * Chainable data transformation base class.
+ * Shorthand factory functions for creating Transformer objects.
  */
 abstract class Transform extends \Tudu\Core\Chainable\OptionsChainable {
     

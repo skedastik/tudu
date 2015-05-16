@@ -9,7 +9,7 @@ use Tudu\Core\TuduException;
  * Expects a string as input. Applies optional transforms before outputting.
  * Throws an exception if input is not a string.
  */
-final class String extends Transform {
+final class String extends Transformer {
     
     // string transforms
     const OPT_ESCAPE_HTML     = 'escape_html';

@@ -9,7 +9,7 @@ use \Tudu\Core\Chainable\Sentinel;
  * Generates error string outputs from Sentinel inputs. If the input is not a
  * Sentinel object, Description simply outputs the input.
  */
-final class Description extends Transform {
+final class Description extends Transformer {
     
     protected $description;
     
@@ -34,7 +34,7 @@ final class Description extends Transform {
      * 
      * @param string $description A description describing the data.
      */
-    public function to($description) {
+    public function to($description = '') {
         $this->description = $description;
         return $this;
     }

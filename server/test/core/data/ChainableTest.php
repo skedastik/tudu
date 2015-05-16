@@ -9,7 +9,7 @@ use \Tudu\Core\Chainable\Sentinel;
 class ChainingTest extends \PHPUnit_Framework_TestCase {
     
     public function testTransformThenValidate() {
-        $chain = Transform::Convert()->toBooleanString()
+        $chain = Transform::Convert()->to()->booleanString()
                ->then(Validate::String()->length()->upTo(1));
         
         $input = 'truthy';
@@ -18,7 +18,7 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
 
     public function testValidateThenTransform() {
         $chain = Validate::String()->length()->upTo(1)
-               ->then(Transform::Convert()->toBooleanString());
+               ->then(Transform::Convert()->to()->booleanString());
         
         $input = 'truthy';
         $result = $chain->execute($input);
@@ -27,7 +27,7 @@ class ChainingTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testTransformThenValidateWithSentinel() {
-        $chain = Transform::Convert()->toBooleanString()
+        $chain = Transform::Convert()->to()->booleanString()
                ->then(Validate::String()->length()->from(5));
         
         $result1 = $chain->execute('error expected');

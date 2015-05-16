@@ -77,7 +77,7 @@ abstract class Model {
      *        'status'   => Transform::String()->capitalize()
      *                   -> then(Validate::String()->length()->upTo(10)),
      *                   
-     *        'isActive' => Transform::Convert()->toBooleanString()
+     *        'isActive' => Transform::Convert()->to()->booleanString()
      *    ];
      * 
      * Data should never be persisted without being normalized first.

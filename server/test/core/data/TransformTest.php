@@ -14,14 +14,14 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testConvertNumericToString() {
-        $transformer = Transform::Convert()->toString();
+        $transformer = Transform::Convert()->to()->string();
         $this->assertEquals('1', $transformer->execute(1));
         $this->assertEquals('1.5', $transformer->execute(1.5));
         $this->assertEquals('1.034E-15', $transformer->execute(10.34e-16));
     }
 
     public function testConvertToInteger() {
-        $transformer = Transform::Convert()->toInteger();
+        $transformer = Transform::Convert()->to()->integer();
         $this->assertEquals(42, $transformer->execute(42));
         $this->assertEquals(4, $transformer->execute(4.2));
         $this->assertEquals(42, $transformer->execute('42'));
@@ -35,7 +35,7 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testConvertToFloat() {
-        $transformer = Transform::Convert()->toFloat();
+        $transformer = Transform::Convert()->to()->float();
         $this->assertEquals(42, $transformer->execute(42));
         $this->assertEquals(4.2, $transformer->execute(4.2));
         $this->assertEquals(42, $transformer->execute('42'));

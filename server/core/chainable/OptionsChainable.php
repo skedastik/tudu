@@ -118,5 +118,33 @@ abstract class OptionsChainable extends Chainable {
     final protected function dispatch($string, ...$args) {
         return $this->{static::$functionMap[$string]}(...$args);
     }
+    
+    /**
+     * No-op, fluent function.
+     */
+    public function length() {
+        return $this;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    public function with() {
+        return $this;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    public function is() {
+        return $this;
+    }
+    
+    /**
+     * No-op, fluent function.
+     */
+    public function to() {
+        return $this;
+    }
 }
 ?>
