@@ -3,7 +3,6 @@ namespace Tudu\Test\Core\Data\Model;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Core\Data\Validate\Error as Error;
 use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Test\Fixture\FakeModel;
 
@@ -47,16 +46,17 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testDataWithSentinelValue() {
+        $error = 'not found';
         $fakeModel = new FakeModel([
             'name' => 'John Doe',
-            'email' => new Sentinel(Error::NOT_FOUND)
+            'email' => new Sentinel($error)
         ]);
         $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
         $this->assertFalse($fakeModel->isNormalized());
         $this->assertNotNull($errors);
         $this->assertTrue(!isset($errors['name']));
-        $this->assertEquals('Email address not found.', $errors['email']);
+        $this->assertEquals("Email address $error.", $errors['email']);
     }
     
     public function testWithFewerPropertiesThanNormalizers() {

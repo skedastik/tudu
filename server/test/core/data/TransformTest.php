@@ -57,8 +57,9 @@ class DescriptionTest extends \PHPUnit_Framework_TestCase {
     
     public function testDescription() {
         $transformer = Transform::Description()->to('Test thing');
-        $input = new Sentinel(Validate\Error::NOT_FOUND);
-        $this->assertEquals('Test thing not found.', $transformer->execute($input)->getValue());
+        $error = 'not found';
+        $input = new Sentinel($error);
+        $this->assertEquals("Test thing $error.", $transformer->execute($input)->getValue());
     }
     
     public function testDescriptionWithNonSentinelInput() {

@@ -3,7 +3,6 @@ namespace Tudu\Test\Core\Data\Validate;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Core\Data\Validate\Error as Error;
 use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Test\Fixture\FakeValidator;
 
@@ -12,8 +11,9 @@ class BasicTest extends \PHPUnit_Framework_TestCase {
     public function testBasicValidator() {
         $validator = Validate::Basic();
 
-        $input = new Sentinel(Error::NOT_FOUND);
-        $this->assertEquals('not found', $validator->execute($input)->getValue());
+        $error = 'not found';
+        $input = new Sentinel($error);
+        $this->assertEquals($error, $validator->execute($input)->getValue());
 
         $input = 'whatever';
         $this->assertEquals($input, $validator->execute($input));
@@ -185,20 +185,22 @@ class SentinelTest extends \PHPUnit_Framework_TestCase {
     public function testSentinel() {
         $validator = Validate::String()->is()->validEmail();
 
-        $input = new Sentinel(Error::NOT_FOUND);
-        $this->assertEquals('not found', $validator->execute($input)->getValue());
+        $error = 'not found';
+        $input = new Sentinel($error);
+        $this->assertEquals($error, $validator->execute($input)->getValue());
     }
 
     public function testSentinelWithChaining() {
+        $error = 'not found';
         $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->upTo(5));
-        $input = new Sentinel(Error::NOT_FOUND);
-        $this->assertEquals('not found', $validator->execute($input)->getValue());
+        $input = new Sentinel($error);
+        $this->assertEquals($error, $validator->execute($input)->getValue());
 
         $validator = Validate::String()->length()->upTo(5)
                    ->then(Validate::String()->is()->validEmail());
-        $input = new Sentinel(Error::NOT_FOUND);
-        $this->assertEquals('not found', $validator->execute($input)->getValue());
+        $input = new Sentinel($error);
+        $this->assertEquals($error, $validator->execute($input)->getValue());
     }
 }
   

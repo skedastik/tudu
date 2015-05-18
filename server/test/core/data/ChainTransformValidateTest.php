@@ -3,7 +3,6 @@ namespace Tudu\Test\Core\Data;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Core\Data\Validate\Error as Error;
 use \Tudu\Core\Chainable\Sentinel;
 
 class ChainTransformValidateTest extends \PHPUnit_Framework_TestCase {
@@ -30,14 +29,15 @@ class ChainTransformValidateTest extends \PHPUnit_Framework_TestCase {
         $chain = Transform::Convert()->to()->booleanString()
                ->then(Validate::String()->length()->from(5));
         
+        $error = 'not found';
         $result1 = $chain->execute('error expected');
-        $result2 = $chain->execute(new Sentinel(Error::NOT_FOUND));
+        $result2 = $chain->execute(new Sentinel($error));
         
         $this->assertTrue($result1 instanceof Sentinel);
         $this->assertTrue($result2 instanceof Sentinel);
         
         $this->assertEquals('must be at least 5 characters in length', $result1->getValue());
-        $this->assertEquals('not found', $result2->getValue());
+        $this->assertEquals($error, $result2->getValue());
     }
     
     public function testChainingWithDescription() {
@@ -57,10 +57,11 @@ class ChainTransformValidateTest extends \PHPUnit_Framework_TestCase {
         $chain = Validate::String()->length()->upTo(15)
                ->then(Transform::Description()->to('Test string'));
         
-        $input = new Sentinel(Error::NOT_FOUND);
+        $error = 'not found';
+        $input = new Sentinel($error);
         $result = $chain->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('Test string not found.', $result->getValue());
+        $this->assertEquals("Test string $error.", $result->getValue());
     }
 }
   
