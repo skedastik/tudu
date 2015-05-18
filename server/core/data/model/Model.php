@@ -193,13 +193,15 @@ abstract class Model {
         $errors = [];
         
         foreach ($functors as $property => $functor) {
-            $result = $functor->execute($this->properties[$property]);
-            if ($result instanceof Sentinel) {
-                // error encountered, extract it from the sentinel
-                $errors[$property] = $result->getValue();
-            } else {
-                // property successfully normalized, so apply transform (if any)
-                $this->properties[$property] = $result;
+            if (isset($this->properties[$property])) {
+                $result = $functor->execute($this->properties[$property]);
+                if ($result instanceof Sentinel) {
+                    // error encountered, extract it from the sentinel
+                    $errors[$property] = $result->getValue();
+                } else {
+                    // property successfully normalized, so apply transform (if any)
+                    $this->properties[$property] = $result;
+                }
             }
         }
         

@@ -58,5 +58,15 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(!isset($errors['name']));
         $this->assertEquals('Email address not found.', $errors['email']);
     }
+    
+    public function testWithFewerPropertiesThanNormalizers() {
+        $fakeModel = new FakeModel([
+            'name' => 'John Doe'
+        ]);
+        $this->assertFalse($fakeModel->isNormalized());
+        $errors = $fakeModel->normalize();
+        $this->assertTrue($fakeModel->isNormalized());
+        $this->assertNull($errors);
+    }
 }
 ?>
