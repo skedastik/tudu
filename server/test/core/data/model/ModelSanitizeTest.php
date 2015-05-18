@@ -9,10 +9,11 @@ use \Tudu\Test\Fixture\FakeModel;
 class ModelSanitizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testGetSanitizedCopy() {
-        $model = new FakeModel([
+        $data = [
             'name' => '<a href="#" >John</a> Doe<br />',
             'email' => 'sooper&dooper@abc.xyz'
-        ]);
+        ];
+        $model = new FakeModel($data);
         $this->assertFalse($model->isSanitized());
         
         $errors = $model->normalize();
@@ -20,10 +21,13 @@ class ModelSanitizeTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertFalse($model->isSanitized());
         $this->assertTrue($copy->isSanitized());
-        $this->assertEquals('John Doe', $copy->get('name'));
-        $this->assertEquals('sooper&amp;dooper@abc.xyz', $copy->get('email'));
-        $this->assertEquals('<a href="#" >John</a> Doe<br />', $model->get('name'));
-        $this->assertEquals('sooper&dooper@abc.xyz', $model->get('email'));
+        
+        $expected = [
+            'name' => 'John Doe',
+            'email' => 'sooper&amp;dooper@abc.xyz'
+        ];
+        $this->assertSame($expected, $copy->asArray());
+        $this->assertSame($data, $model->asArray());
     }
     
     public function testSanitizeWithUnnormalizedData() {

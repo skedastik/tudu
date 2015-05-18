@@ -67,7 +67,7 @@ final class String extends Transformer {
     }
     
     protected function processTrim($data) {
-        return preg_replace('/^[\n\r\t ]*([^\n\r\t ]+)[\n\r\t ]*$/', '$1', $data);
+        return preg_replace('/^[\n\r\t ]*(.+?)[\n\r\t ]*$/', '$1', $data);
     }
     
     protected function process($data) {

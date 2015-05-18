@@ -8,7 +8,8 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
     
     protected function getNormalizers() {
         return [
-            'name'  => Validate::String()->length()->from(5)->upTo(35)
+            'name'  => Transform::String()->trim()
+                    -> then(Validate::String()->length()->from(5)->upTo(35))
                     -> then(Transform::Description()->to('Name')),
             'email' => Validate::String()->is()->validEmail()
                     -> then(Transform::Description()->to('Email address'))

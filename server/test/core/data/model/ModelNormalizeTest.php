@@ -9,14 +9,33 @@ use \Tudu\Test\Fixture\FakeModel;
 class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
     
     public function testAllValidData() {
-        $fakeModel = new FakeModel([
+        $data = [
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
-        ]);
+        ];
+        $fakeModel = new FakeModel($data);
         $this->assertFalse($fakeModel->isNormalized());
         $errors = $fakeModel->normalize();
         $this->assertTrue($fakeModel->isNormalized());
         $this->assertNull($errors);
+        $this->assertSame($data, $fakeModel->asArray());
+    }
+    
+    public function testAllValidDataButUnnormalized() {
+        $data = [
+            'name' => "   John Doe   \t",
+            'email' => 'sooperdooper@abc.xyz'
+        ];
+        $fakeModel = new FakeModel($data);
+        $this->assertFalse($fakeModel->isNormalized());
+        $errors = $fakeModel->normalize();
+        $this->assertTrue($fakeModel->isNormalized());
+        $this->assertNull($errors);
+        $expected = [
+            'name' => 'John Doe',
+            'email' => 'sooperdooper@abc.xyz'
+        ];
+        $this->assertSame($expected, $fakeModel->asArray());
     }
     
     public function testMixedData() {
