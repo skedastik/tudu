@@ -50,5 +50,10 @@ abstract class DbConnection {
      * each row is a key/value array. Otherwise, returns FALSE.
      */
     abstract function query($queryString, array $params = [], $queryName = '');
+    
+    /**
+     * Return the last database error.
+     */
+    abstract function getLastError();
 }
 ?>

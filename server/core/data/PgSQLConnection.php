@@ -35,5 +35,9 @@ final class PgSQLConnection extends DbConnection {
         
         return $result ? pg_fetch_all($result) : FALSE;
     }
+    
+    public function getLastError() {
+        return pg_last_error($this->connection);
+    }
 }
 ?>
