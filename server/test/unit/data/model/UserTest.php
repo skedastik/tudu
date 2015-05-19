@@ -6,11 +6,6 @@ use \Tudu\Data\Model\User;
 
 class UserTest extends \PHPUnit_Framework_TestCase {
     
-    protected function setUp() {
-        $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
-        $this->repo = new Repository\User($this->db);
-    }
-    
     public function testNormalizeUser() {
         $data = [
             'user_id' => '123',
