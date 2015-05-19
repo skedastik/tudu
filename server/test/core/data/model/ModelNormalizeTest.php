@@ -105,5 +105,11 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
         $mockModel = $mockModel->getSanitizedCopy();
         $this->assertEquals(1, MockModel::getSanitizersMethodCallCount());
     }
+    
+    public function testRepeatedNormalize() {
+        $mockModel = new MockModel([]);
+        $mockModel->normalize();
+        $this->assertNull($mockModel->normalize());
+    }
 }
 ?>
