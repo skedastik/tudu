@@ -23,6 +23,7 @@
             <exclude>
                 <directory>./server/test/</directory>
                 <file>./server/conf/Conf-template.php</file>
+                <file>./server/core/delegate/Slim.php</file>
             </exclude>
         </whitelist>
     </filter>
