@@ -6,7 +6,11 @@ use \Tudu\Core\Data\Validate\Validate;
 
 class FakeModel extends \Tudu\Core\Data\Model\Model {
     
+    protected static $getNormalizersCallCount = 0;
+    protected static $getSanitizersCallCount = 0;
+    
     protected function getNormalizers() {
+        self::$getNormalizersCallCount++;
         return [
             'name'  => Transform::String()->trim()
                     -> then(Validate::String()->length()->from(5)->upTo(35))
@@ -17,10 +21,19 @@ class FakeModel extends \Tudu\Core\Data\Model\Model {
     }
     
     protected function getSanitizers() {
+        self::$getSanitizersCallCount++;
         return [
             'name'  => Transform::String()->stripTags(),
             'email' => Transform::String()->escapeForHTML()
         ];
+    }
+    
+    public static function getNormalizersMethodCallCount() {
+        return self::$getNormalizersCallCount;
+    }
+    
+    public static function getSanitizersMethodCallCount() {
+        return self::$getSanitizersCallCount;
     }
 }
 ?>

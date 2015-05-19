@@ -87,5 +87,23 @@ class ModelNormalizeTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($fakeModel->isNormalized());
         $this->assertNull($errors);
     }
+    
+    public function testNormalizerCaching() {
+        $fakeModel = new FakeModel([]);
+        $errors = $fakeModel->normalize();
+        $fakeModel = new FakeModel([]);
+        $errors = $fakeModel->normalize();
+        $this->assertEquals(1, FakeModel::getNormalizersMethodCallCount());
+    }
+    
+    public function testSanitizerCaching() {
+        $fakeModel = new FakeModel([]);
+        $errors = $fakeModel->normalize();
+        $fakeModel = $fakeModel->getSanitizedCopy();
+        $fakeModel = new FakeModel([]);
+        $errors = $fakeModel->normalize();
+        $fakeModel = $fakeModel->getSanitizedCopy();
+        $this->assertEquals(1, FakeModel::getSanitizersMethodCallCount());
+    }
 }
 ?>
