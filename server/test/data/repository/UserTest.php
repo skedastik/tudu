@@ -1,8 +1,9 @@
 <?php
-namespace Tudu\Test\Core\Data\Repository;
+namespace Tudu\Test\Data\Repository;
 
-use \Tudu\Core\Data\Repository;
-use \Tudu\Core\Data\Model\User;
+use \Tudu\Core;
+use \Tudu\Data\Repository;
+use \Tudu\Data\Model\User;
 
 class UserTest extends \PHPUnit_Framework_TestCase {
     
@@ -28,7 +29,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $id = 123;
         $error = $this->repo->getByID($id);
         $this->assertTrue($error instanceof \Tudu\Core\Error);
-        $expected = Repository\Error::ResourceNotFound([ 'user_id' => $id ]);
+        $expected = Core\Data\Repository\Error::ResourceNotFound([ 'user_id' => $id ]);
         $this->assertSame($expected->asArray(), $error->asArray());
     }
 }

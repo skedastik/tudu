@@ -1,9 +1,10 @@
 <?php
-namespace Tudu\Core\Data\Repository;
+namespace Tudu\Data\Repository;
 
-use \Tudu\Core\Data\Model;
+use \Tudu\Core;
+use \Tudu\Data\Model;
 
-final class User extends Repository {
+final class User extends Core\Data\Repository\Repository {
     
     public function getByID($id) {
         $result = $this->db->query(
@@ -12,7 +13,7 @@ final class User extends Repository {
         );
         
         if ($result === false) {
-            return Error::ResourceNotFound([ 'user_id' => $id ]);
+            return Core\Data\Repository\Error::ResourceNotFound([ 'user_id' => $id ]);
         }
         
         return $this->prenormalize(new Model\User($result[0]));
