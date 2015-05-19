@@ -134,10 +134,10 @@ abstract class Model {
      * that has not been normalized first.
      */
     final private function sanitize() {
-        if (!$this->isNormalized) {
-            throw new TuduException('Attempt to sanitize Model object that has not been normalized first.');
-        }
         if (!$this->isSanitized) {
+            if (!$this->isNormalized) {
+                throw new TuduException('Attempt to sanitize Model object that has not been normalized first.');
+            }
             $sanitizers = self::getCachedSanitizers();
             $this->applyPropertyFunctors($sanitizers);
             $this->isSanitized = true;
