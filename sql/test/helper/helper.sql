@@ -65,7 +65,7 @@ declare
     _id bigint;
 begin
     _id := currval('tudu_user_seq');
-    perform tudu.signup_user('user' || _id || '@foo.xyz', tudu.random_string(), tudu.random_string(), '127.0.0.1');
+    perform tudu.signup_user('user' || _id || '@foo.xyz', tudu.random_string(), '127.0.0.1');
     return tudu.latest_user();
 end;
 $$ language plpgsql;

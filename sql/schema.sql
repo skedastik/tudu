@@ -14,7 +14,6 @@ create sequence tudu_access_token_log_seq  increment 1 start 1 minvalue 1;
 create table tudu_user (
     user_id                 bigint primary key default nextval('tudu_user_seq'),
     email                   varchar(64) not null,
-    password_salt           varchar(64) not null,
     password_hash           varchar(256) not null,
     --                       
     kvs                     hstore not null default '',

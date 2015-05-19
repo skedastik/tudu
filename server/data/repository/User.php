@@ -11,7 +11,7 @@ final class User extends Core\Data\Repository\Repository {
     
     public function getByID($id) {
         $result = $this->db->query(
-            'select (user_id, email, password_salt, password_hash, kvs, status, edate, cdate) from tudu_user where user_id = $1;',
+            'select (user_id, email, password_hash, kvs, status, edate, cdate) from tudu_user where user_id = $1;',
             [$id]
         );
         
@@ -36,7 +36,6 @@ final class User extends Core\Data\Repository\Repository {
         
         // create or replace function tudu.signup_user(
         //     _email          varchar,
-        //     _pw_salt        varchar,
         //     _pw_hash        varchar,
         //     _ip             inet default null,
         //     _kvs            hstore default '',

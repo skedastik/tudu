@@ -6,7 +6,7 @@ declare
     _user       tudu_user%ROWTYPE;
     _user_log   tudu_user_log%ROWTYPE;
 begin
-    perform tudu.signup_user('Foo@BaR.baz', 'djiosd', 'ahdinsdjnsdkfjkul', '127.0.0.1');
+    perform tudu.signup_user('Foo@BaR.baz', 'ahdinsdjnsdkfjkul', '127.0.0.1');
     _user       := tudu.latest_user();
     _user_log   := tudu.latest_user_log();
     
@@ -17,11 +17,6 @@ begin
     
     if _user.email <> 'Foo@BaR.baz' then
         select assert.fail('should create a user with email "Foo@BaR.baz" (note that case must be preserved)') into _message;
-        return _message;
-    end if;
-    
-    if _user.password_salt <> 'djiosd' then
-        select assert.fail('should create a user with password_salt "djiosd"') into _message;
         return _message;
     end if;
     
@@ -65,10 +60,10 @@ declare
     _message    test_result;
     _result     bigint;
 begin
-    perform tudu.signup_user('baz@qux.gar', 'opiopuw', 'nasndjasnkjdASD', '127.0.0.1');
+    perform tudu.signup_user('baz@qux.gar', 'nasndjasnkjdASD', '127.0.0.1');
     
     /* simultaneously test for case insensitivity */
-    _result := tudu.signup_user('BaZ@qUx.gAr', 'ndfaksh', 'iuiowernsdlfio', '127.0.0.1');
+    _result := tudu.signup_user('BaZ@qUx.gAr', 'iuiowernsdlfio', '127.0.0.1');
     if _result <> -1 then
         select assert.fail('should fail') into _message;
         return _message;
@@ -85,7 +80,7 @@ declare
     _user       tudu_user%ROWTYPE;
     _result     bigint;
 begin
-    perform tudu.signup_user('fee@ble.yer', 'mspbneub', 'nmsabnytrbewkasd', '127.0.0.1');
+    perform tudu.signup_user('fee@ble.yer', 'nmsabnytrbewkasd', '127.0.0.1');
     
     _user   := tudu.latest_user();
     _result := tudu.confirm_user(_user.user_id, null, 'bad_signup_token', '127.0.0.1');
@@ -107,7 +102,7 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
     _result     bigint;
 begin
-    perform tudu.signup_user('super@user.win', 'biawebd', 'asduytcwfebnail', '127.0.0.1');
+    perform tudu.signup_user('super@user.win', 'asduytcwfebnail', '127.0.0.1');
     
     _user     := tudu.latest_user();
     _result   := tudu.confirm_user(_user.user_id, null, _user.kvs->'signup_token', '127.0.0.1');
@@ -140,7 +135,7 @@ declare
     _user       tudu_user%ROWTYPE;
     _result     bigint;
 begin
-    perform tudu.signup_user('iheart@turtles.gmn', 'fsdmnf', 'opoytouyi');
+    perform tudu.signup_user('iheart@turtles.gmn', 'opoytouyi');
     
     _user     := tudu.latest_user();
     /* simultaneously test for case insensitivity and normalization */
@@ -182,7 +177,7 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, 'new-unlikely-password-hash', 'new-unlikely-salt');
+    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, 'new-unlikely-password-hash');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
@@ -193,11 +188,6 @@ begin
     
     if _user.password_hash <> 'new-unlikely-password-hash' then
         select assert.fail('should set password_hash to "new-unlikely-password-hash"') into _message;
-        return _message;
-    end if;
-    
-    if _user.password_salt <> 'new-unlikely-salt' then
-        select assert.fail('should set password_salt to "new-unlikely-salt"') into _message;
         return _message;
     end if;
     
@@ -224,7 +214,7 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(-1, _user.password_hash, 'new-unlikely-password-hash', 'new-unlikely-salt');
+    _user_id  := tudu.set_user_password_hash(-1, _user.password_hash, 'new-unlikely-password-hash');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
@@ -251,7 +241,7 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, 'mismatched-password-hash', 'new-unlikely-password-hash', 'new-salt');
+    _user_id  := tudu.set_user_password_hash(_user.user_id, 'mismatched-password-hash', 'new-unlikely-password-hash');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
@@ -278,38 +268,11 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, _user.password_hash, 'new-salt');
+    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, _user.password_hash);
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
     if _user_id <> -3 then
-        select assert.fail('should fail') into _message;
-        return _message;
-    end if;
-    
-    if _user_log.operation = 'set_password_hash' then
-        select assert.fail('should NOT create a user log entry') into _message;
-        return _message;
-    end if;
-    
-    select assert.ok('End of test.') into _message;
-    return _message;
-end;
-$$ language plpgsql;
-
-create or replace function unit_tests.set_user_password_hash_using_identical_password_salt() returns test_result as $$
-declare
-    _message    test_result;
-    _user       tudu_user%ROWTYPE;
-    _user_id    bigint;
-    _user_log   tudu_user_log%ROWTYPE;
-begin
-    _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, 'new-unlikely-password-hash', _user.password_salt);
-    _user     := tudu.latest_user();
-    _user_log := tudu.latest_user_log();
-    
-    if _user_id <> -4 then
         select assert.fail('should fail') into _message;
         return _message;
     end if;
@@ -430,7 +393,7 @@ declare
     _user_id    bigint;
     _user_log   tudu_user_log%ROWTYPE;
 begin
-    perform tudu.signup_user('this.email.is.taken@ohnoes.woe', 'dsfkbn', 'mnsafdubahksdf');
+    perform tudu.signup_user('this.email.is.taken@ohnoes.woe', 'mnsafdubahksdf');
     _user     := tudu.create_random_user();
     _user_id  := tudu.set_user_email(_user.user_id, 'this.email.is.taken@ohnoes.woe');
     _user     := tudu.latest_user();
