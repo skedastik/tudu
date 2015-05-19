@@ -8,6 +8,10 @@ use \Tudu\Core\TuduException;
  * Model base class.
  */
 abstract class Model {
+    
+    private static $normalizerCache;
+    private static $sanitizerCache;
+    
     private $properties;
     private $isNormalized;
     private $isSanitized;
@@ -115,15 +119,12 @@ abstract class Model {
      * that do not validate will not have transformations applied.
      */
     final public function normalize() {
-        /**
-         * TODO: It might be worthwhile to track normalizations per-property as
-         * opposed to per-Model in order to avoid repeated normalizations.
-         * Something to consider down the road.
-         */
-        $normalizers = $this->getCachedNormalizers();
-        $errors = $this->applyPropertyFunctors($normalizers);
-        $this->isNormalized = is_null($errors);
-        return $errors;
+        if (!$this->isNormalized) {
+            $normalizers = self::getCachedNormalizers();
+            $errors = $this->applyPropertyFunctors($normalizers);
+            $this->isNormalized = is_null($errors);
+            return $errors;
+        }
     }
     
     /**
@@ -136,9 +137,11 @@ abstract class Model {
         if (!$this->isNormalized) {
             throw new TuduException('Attempt to sanitize Model object that has not been normalized first.');
         }
-        $sanitizers = $this->getCachedSanitizers();
-        $this->applyPropertyFunctors($sanitizers);
-        $this->isSanitized = true;
+        if (!$this->isSanitized) {
+            $sanitizers = self::getCachedSanitizers();
+            $this->applyPropertyFunctors($sanitizers);
+            $this->isSanitized = true;
+        }
     }
     
     /**
@@ -183,11 +186,12 @@ abstract class Model {
     /**
      * Apply an array of Validate and/or Transform functors to Model properties.
      * 
+     * Properties that validate will have transformations applied. Properties
+     * that do not validate will not have transformations applied.
+     * 
      * @param array $functors Key/value array of validators and transformers.
      * @return array|NULL Key/value array of errors where each key is a property
      * and each value is an error. If there were no errors, NULL is returned.
-     * Properties that validate will have transformations applied. Properties
-     * that do not validate will not have transformations applied.
      */
     final private function applyPropertyFunctors($functors) {
         $errors = [];
@@ -209,27 +213,27 @@ abstract class Model {
     }
     
     /**
-     * Because getNormalizers is idempotent, it can be called once and
-     * cached forever.
+     * Because getNormalizers is idempotent, it can be called once and cached
+     * forever.
      */
     final private function getCachedNormalizers() {
-        static $cachedNormalizers = null;
-        if (is_null($cachedNormalizers)) {
-            $cachedNormalizers = $this->getNormalizers();
+        $key = get_class($this);
+        if (!isset(self::$normalizerCache[$key])) {
+            self::$normalizerCache[$key] = $this->getNormalizers();
         }
-        return $cachedNormalizers;
+        return self::$normalizerCache[$key];
     }
     
     /**
-     * Because getSanitizers is idempotent, it can be called once and
-     * cached forever.
+     * Because getSanitizers is idempotent, it can be called once and cached
+     * forever.
      */
     final private function getCachedSanitizers() {
-        static $cachedSanitizers = null;
-        if (is_null($cachedSanitizers)) {
-            $cachedSanitizers = $this->getSanitizers();
+        $key = get_class($this);
+        if (!isset(self::$sanitizerCache[$key])) {
+            self::$sanitizerCache[$key] = $this->getSanitizers();
         }
-        return $cachedSanitizers;
+        return self::$sanitizerCache[$key];
     }
 }
 ?>
