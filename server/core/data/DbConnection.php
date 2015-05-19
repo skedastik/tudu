@@ -46,8 +46,8 @@ abstract class DbConnection {
      * provided, the query is executed as a prepared statement, otherwise the
      * the database is queried directly.
      * 
-     * @return array|FALSE Query result as an array of rows on success or FALSE
-     * on failure.
+     * @return array|FALSE If query succeeds, returns an array of rows where
+     * each row is a key/value array. Otherwise, returns FALSE.
      */
     abstract function query($queryString, array $params = [], $queryName = '');
 }
