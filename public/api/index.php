@@ -14,7 +14,7 @@ $db = new Core\Data\PgSQLConnection([
 ]);
 
 $app = new \Slim\Slim();
-$delegate = new Core\Delegate\Slim($app);
+$delegate = new \Tudu\Delegate\Slim($app);
 
 // User URIs -------------------------------------------------------------------
 

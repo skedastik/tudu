@@ -1,14 +1,14 @@
 <?php
 namespace Tudu\Data\Model;
 
-use \Tudu\Core;
+use \Tudu\Core\Data\Model\Model;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 
 /**
  * User model.
  */
-final class User extends Core\Data\Model\Model {
+final class User extends Model {
     
     protected function getNormalizers() {
         return [

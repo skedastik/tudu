@@ -1,6 +1,8 @@
 <?php
 namespace Tudu\Delegate;
 
+use \Tudu\Core\Delegate\App;
+
 /**
  * Slim app delegate for Slim 2.6.*
  */
