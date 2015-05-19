@@ -1,9 +1,10 @@
 <?php
 namespace Tudu\Test\Data\Repository;
 
-use \Tudu\Core;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
+use \Tudu\Core\Chainable\Sentinel;
+use \Tudu\Core\Data\Repository\Error;
 
 class UserTest extends \PHPUnit_Framework_TestCase {
     
@@ -29,7 +30,10 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $id = 123;
         $error = $this->repo->getByID($id);
         $this->assertTrue($error instanceof \Tudu\Core\Error);
-        $expected = Core\Data\Repository\Error::ResourceNotFound([ 'user_id' => $id ]);
+        $user = new User([
+            'user_id' => new Sentinel(Error::RESOURCE_NOT_FOUND_CONTEXT)
+        ]);
+        $expected = Error::ResourceNotFound($user->normalize());
         $this->assertSame($expected->asArray(), $error->asArray());
     }
 }
