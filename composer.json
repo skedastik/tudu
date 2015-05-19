@@ -10,6 +10,7 @@
     "require": {
         "php": ">=5.6.7",
         "katzgrau/klogger": "dev-master",
+        "hautelook/phpass": "dev-master",
         "slim/slim": "~2.6"
     },
     "require-dev": {
