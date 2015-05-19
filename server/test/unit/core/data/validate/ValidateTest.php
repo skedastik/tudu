@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Test\Core\Data\Validate;
+namespace Tudu\Test\Unit\Core\Data\Validate;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;

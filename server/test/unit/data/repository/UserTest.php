@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Test\Data\Repository;
+namespace Tudu\Test\Unit\Data\Repository;
 
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;

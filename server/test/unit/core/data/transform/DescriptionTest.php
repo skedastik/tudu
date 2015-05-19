@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Test\Core\Data\Transform;
+namespace Tudu\Test\Unit\Core\Data\Transform;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Chainable\Sentinel;
