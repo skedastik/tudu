@@ -3,7 +3,7 @@ namespace Tudu\Test\Core\Data\Model;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
-use \Tudu\Test\Fixture\FakeModel;
+use \Tudu\Test\Mock\MockModel;
 
 class ModelTest extends \PHPUnit_Framework_TestCase {
     
@@ -12,7 +12,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
         ];
-        $model = new FakeModel($data);
+        $model = new MockModel($data);
         $this->assertSame($data, $model->asArray());
     }
     
@@ -21,7 +21,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
         ];
-        $model = new FakeModel($data);
+        $model = new MockModel($data);
         $this->assertSame($data['name'], $model->get('name'));
         
         $newName = 'Jane Doe';
@@ -34,7 +34,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testMutation() {
-        $model = new FakeModel([
+        $model = new MockModel([
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
         ]);

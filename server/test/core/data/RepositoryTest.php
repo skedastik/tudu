@@ -4,14 +4,14 @@ namespace Tudu\Test\Core\Data\Model;
 use \Tudu\Core;
 use \Tudu\Core\Data\Repository;
 use \Tudu\Core\Data\Model\Model;
-use \Tudu\Test\Fixture\FakeModel;
-use \Tudu\Test\Fixture\FakeRepository;
+use \Tudu\Test\Mock\MockModel;
+use \Tudu\Test\Mock\MockRepository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase {
     
     public function testPrenormalize() {
-        $repo = new FakeRepository();
-        $model = new FakeModel([
+        $repo = new MockRepository();
+        $model = new MockModel([
             'name' => "   John Doe   \t",
             'email' => 'foo@bar.xyz'
         ]);
@@ -26,8 +26,8 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testPrenormalizeWithInvalidModel() {
-        $repo = new FakeRepository();
-        $model = new FakeModel([
+        $repo = new MockRepository();
+        $model = new MockModel([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',
             'email' => 'foo@bar.xyz'
         ]);

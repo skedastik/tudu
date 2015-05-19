@@ -1,10 +1,10 @@
 <?php
-namespace Tudu\Test\Fixture;
+namespace Tudu\Test\Mock;
 
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 
-class FakeModel extends \Tudu\Core\Data\Model\Model {
+class MockModel extends \Tudu\Core\Data\Model\Model {
     
     protected static $getNormalizersCallCount = 0;
     protected static $getSanitizersCallCount = 0;

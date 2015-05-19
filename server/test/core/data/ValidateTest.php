@@ -4,7 +4,7 @@ namespace Tudu\Test\Core\Data\Validate;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Chainable\Sentinel;
-use \Tudu\Test\Fixture\FakeValidator;
+use \Tudu\Test\Mock\MockValidator;
 
 class BasicTest extends \PHPUnit_Framework_TestCase {
 
@@ -20,7 +20,7 @@ class BasicTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testApplyWithoutSpecifyingOptions() {
-        $validator = new FakeValidator();
+        $validator = new MockValidator();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $validator->execute('whatever');
     }

@@ -4,7 +4,7 @@ namespace Tudu\Test\Core\Data\Model;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Data\Validate\Error as Error;
-use \Tudu\Test\Fixture\FakeModel;
+use \Tudu\Test\Mock\MockModel;
 
 class ModelSanitizeTest extends \PHPUnit_Framework_TestCase {
     
@@ -13,7 +13,7 @@ class ModelSanitizeTest extends \PHPUnit_Framework_TestCase {
             'name' => '<a href="#" >John</a> Doe<br />',
             'email' => 'sooper&dooper@abc.xyz'
         ];
-        $model = new FakeModel($data);
+        $model = new MockModel($data);
         $this->assertFalse($model->isSanitized());
         
         $errors = $model->normalize();
@@ -31,7 +31,7 @@ class ModelSanitizeTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testSanitizeWithUnnormalizedData() {
-        $model = new FakeModel([]);
+        $model = new MockModel([]);
         $this->assertFalse($model->isSanitized());
         $this->setExpectedException('\Tudu\Core\TuduException');
         $model->getSanitizedCopy();
