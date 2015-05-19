@@ -1,14 +1,33 @@
 <?php
 namespace Tudu\Core\Data\Repository;
 
+use \Tudu\Core;
+
 /**
  * Special repository error strings.
- * 
- * These strings should match the format specified in the documentation for the
- * Validator class.
  */
 class Error {
     
-    const NOT_FOUND = 'is not valid';
+    // Repository error strings
+    const VALIDATION = 'Validation Error';
+    const RESOURCE_NOT_FOUND = 'Resource Not Found Error';
+    
+    /**
+     * Shorthand factory function for validation errors.
+     * 
+     * @param array $context Key/value array describing the resource
+     */
+    public static function Validation($context = null) {
+        return new Core\Error(Error::VALIDATION, 'Invalid resource descriptor.', $context);
+    }
+    
+    /**
+     * Shorthand factory function for "resource not found" errors.
+     * 
+     * @param array $context Key/value array describing the resource
+     */
+    public static function ResourceNotFound($context = null) {
+        return new Core\Error(Error::RESOURCE_NOT_FOUND, 'The specified resource could not be found.', $context);
+    }
 }
 ?>
