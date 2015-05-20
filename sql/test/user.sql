@@ -355,13 +355,10 @@ $$ language plpgsql;
 create or replace function unit_tests.set_user_email_using_invalid_user_id() returns test_result as $$
 declare
     _message    test_result;
-    _user       tudu_user%ROWTYPE;
     _user_id    bigint;
     _user_log   tudu_user_log%ROWTYPE;
 begin
-    _user     := tudu.create_random_user();
     _user_id  := tudu.set_user_email(-1, 'new@email.set');
-    _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
     if _user_id <> -1 then
@@ -425,6 +422,74 @@ begin
     end if;
     
     if _user_log.operation = 'set_email' then
+        select assert.fail('should NOT create a user log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.add_kvs() returns test_result as $$
+declare
+    _message    test_result;
+    _kvs        hstore;
+    _user       tudu_user%ROWTYPE;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user     := tudu.create_random_user();
+    _kvs      := '"a"=>"foo", "b"=>"bar"'::hstore;
+    _user_id  := tudu.add_kvs(_user.user_id, _kvs, '127.0.0.1');
+    _user     := tudu.latest_user();
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> _user.user_id then
+        select assert.fail('should succeed') into _message;
+        return _message;
+    end if;
+    
+    if not (_user.kvs @> _kvs) then
+        select assert.fail('should add specified keys/values to to KVS') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.user_id <> _user_id then
+        select assert.fail('should create a user log entry with matching user_id') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation <> 'add_kvs' then
+        select assert.fail('should create a user log entry with operation "add_kvs"') into _message;
+        return _message;
+    end if;
+    
+    if not (_user_log.kvs @> _kvs) then
+        select assert.fail('should create a user log entry containing matching KVS') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.add_kvs_using_invalid_user_id() returns test_result as $$
+declare
+    _message    test_result;
+    _user_id    bigint;
+    _user_log   tudu_user_log%ROWTYPE;
+begin
+    _user_id  := tudu.add_kvs(-1, '"a"=>"foo", "b"=>"bar"'::hstore, '127.0.0.1');
+    _user_log := tudu.latest_user_log();
+    
+    if _user_id <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _user_log.operation = 'add_kvs' then
         select assert.fail('should NOT create a user log entry') into _message;
         return _message;
     end if;

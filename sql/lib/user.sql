@@ -163,7 +163,7 @@ $$ language plpgsql security definer;
  * Returns
  *   ID of user on success
  *   -1 if user ID is invalid
- *   -2 if email address is identical to existing one
+ *   -2 if email address is identical to current one
  *   -3 if email address is already linked to another user
  */
 create or replace function tudu.set_user_email(
@@ -202,6 +202,47 @@ begin
             ['old_email', _email],
             ['new_email', _new_email]
         ])
+    );
+    
+    return _user_id;
+end;
+$$ language plpgsql security definer;
+
+/**
+ * Add (or update) a key/value data to an existing user's KVS data.
+ * 
+ * Arguments
+ *   _user_id       ID of existing user
+ *   _kvs           Key/value data
+ *   _ip            Optional IP address
+ * 
+ * Returns
+ *   ID of user on success
+ *   -1 if user ID is invalid
+ */
+create or replace function tudu.add_kvs(
+    _user_id    bigint,
+    _kvs        hstore,
+    _ip         inet
+) returns bigint as $$
+declare
+    _email      varchar;
+begin
+    select user_id into _user_id from tudu_user where user_id = _user_id;
+    
+    if _user_id is null then
+        return -1;
+    end if;
+    
+    update tudu_user
+    set kvs = kvs || _kvs
+    where user_id = _user_id;
+    
+    perform tudu.user_log_add(
+        _user_id,
+        'add_kvs',
+        _ip,
+        _kvs
     );
     
     return _user_id;
