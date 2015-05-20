@@ -26,5 +26,12 @@ abstract class Transform extends \Tudu\Core\Chainable\OptionsChainable {
     public static function Description() {
         return new Description();
     }
+    
+    /**
+     * Shorthand factory function for Transform\HStore.
+     */
+    public static function HStore() {
+        return new HStore();
+    }
 }
 ?>
