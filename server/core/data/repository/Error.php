@@ -9,6 +9,7 @@ use \Tudu\Core;
 class Error {
     
     // Repository error strings
+    const GENERIC = 'Error';
     const VALIDATION = 'Validation Error';
     const RESOURCE_NOT_FOUND = 'Resource Not Found';
     const ALREADY_IN_USE = 'Already In Use';
@@ -17,8 +18,18 @@ class Error {
      * Contextual error strings. These match the format described in the
      * Validator class documentation.
      */
-    const RESOURCE_NOT_FOUND_CONTEXT = 'does not exist';
+    const RESOURCE_NOT_FOUND_CONTEXT = 'was not found';
     const ALREADY_IN_USE_CONTEXT = 'is already in use';
+    
+    /**
+     * Shorthand factory function for generic errors.
+     * 
+     * @param string $description (optional)
+     * @param array $context Key/value array describing the resource
+     */
+    public static function Generic($description = null, $context = null) {
+        return new Core\Error(Error::GENERIC, $description, $context);
+    }
     
     /**
      * Shorthand factory function for validation errors.

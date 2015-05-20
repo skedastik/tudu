@@ -57,5 +57,29 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertTrue($error instanceof Core\Error);
         $this->assertEquals(Repository\Error::ALREADY_IN_USE, $error->getError());
     }
+    
+    public function testConfirmUserShouldFailGivenNonexistentEmailAddress() {
+        $error = $this->repo->confirmUser('foo@bar.com', 'kjsdfjksnba', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::RESOURCE_NOT_FOUND, $error->getError());
+    }
+    
+    public function testConfirmUserShouldFailGivenInvalidSignupToken() {
+        $email = 'foo@bar.com';
+        $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->confirmUser($email, 'kjsdfjksnba', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+    }
+    
+    public function testConfirmUserShouldFailForAlreadyConfirmedUser() {
+        $email = 'foo@bar.com';
+        $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
+        $user = $this->repo->getByID($id);
+        // TODO: Extract signup token from kvs HSTORE.
+        // $error = $this->repo->confirmUser($email, 'kjsdfjksnba', '127.0.0.1');
+        // $this->assertTrue($error instanceof Core\Error);
+        // $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+    }
 }
 ?>

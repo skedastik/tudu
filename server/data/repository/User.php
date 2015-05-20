@@ -34,11 +34,10 @@ final class User extends Core\Data\Repository\Repository {
     /**
      * Sign up a new user.
      * 
-     * @param string $email User's email address.
+     * @param string $email Email address.
      * @param string $passwordHash A secure password hash.
-     * @param string $ip User's IP address.
-     * @return int|\Tudu\Core\Error New user's ID on success, otherwise an Error
-     * object.
+     * @param string $ip IP address.
+     * @return int|\Tudu\Core\Error New user's ID on success, Error otherwise.
      */
     public function signupUser($email, $passwordHash, $ip) {
         $user = new Model\User([
@@ -66,6 +65,42 @@ final class User extends Core\Data\Repository\Repository {
         
         $logger = Logger::getInstance();
         $logger->info("Signed up user [$email] with ID $result.");
+        
+        return $result;
+    }
+    
+    /**
+     * Confirm an existing user's email address.
+     * 
+     * @param string $email Email address.
+     * @param string $signupToken Signup token.
+     * @param string $ip IP address.
+     * @return int|Tudu\Core\Error User's ID on success, Error otherwise.
+     */
+    public function confirmUser($email, $signupToken, $ip) {
+        $result = $this->db->query(
+            'select tudu.confirm_user(null, $1, $2, $3) as result;',
+            [$email, $signupToken, $ip]
+        );
+        $result = (int)$result[0]['result'];
+        
+        switch ($result) {
+            case -1:
+                $user = new Model\User([
+                    'email' => new Sentinel(Error::RESOURCE_NOT_FOUND_CONTEXT)
+                ]);
+                return Error::ResourceNotFound($user->normalize());
+                break;
+            case -2:
+                return Error::Generic(null, [ 'signup_token' => 'Signup token does not match.' ]);
+                break;
+            case -3:
+                return Error::Generic('User has already been confirmed.');
+                break;
+        }
+        
+        $logger = Logger::getInstance();
+        $logger->info("Confirmed user [$email] with ID $result.");
         
         return $result;
     }
