@@ -57,6 +57,15 @@ abstract class DbConnection {
     abstract function query($queryString, array $params = [], $queryName = '');
     
     /**
+     * Like query, but automatically fetches a single-valued result.
+     * 
+     * This is useful for "select"-ing PLSQL functions that return a single-row,
+     * single-column result where you are only interested in the value of the
+     * column.
+     */
+    abstract function queryValue($queryString, array $params = [], $queryName = '');
+    
+    /**
      * Return the last database error.
      */
     abstract function getLastError();

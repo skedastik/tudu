@@ -44,6 +44,11 @@ final class PgSQLConnection extends DbConnection {
         return $result ? pg_fetch_all($result) : FALSE;
     }
     
+    public function queryValue($queryString, array $params = [], $queryName = '') {
+        $result = $this->query($queryString, $params, $queryName);
+        return $result ? array_values($result[0])[0] : FALSE;
+    }
+    
     public function getLastError() {
         return pg_last_error($this->connection);
     }
