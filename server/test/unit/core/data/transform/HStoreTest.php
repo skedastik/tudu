@@ -49,6 +49,14 @@ class HStoreTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $result);
     }
     
+    public function testShouldProcessQuotedNullAsString() {
+        $transformer = Transform::HStore()->to()->keyValueArray();
+        $input = '"a"=>"NULL"';
+        $expected = ['a' => 'NULL'];
+        $result = $transformer->execute($input);
+        $this->assertSame($expected, $result);
+    }
+    
     public function testShouldWorkForUTF8() {
         $transformer = Transform::HStore()->to()->keyValueArray();
         $input = '"a"=>"ﾀﾁﾂﾃ", "b"=>"سلام", "c"=>NULL';
