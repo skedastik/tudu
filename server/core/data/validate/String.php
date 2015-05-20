@@ -60,7 +60,7 @@ final class String extends Validator {
     ];
     
     protected function processCheckLength($data) {
-        $length = strlen($data);
+        $length = mb_strlen($data);
         $minLen = $this->getOption(self::OPT_MIN_LENGTH);
         $maxLen = $this->getOption(self::OPT_MAX_LENGTH);
         
