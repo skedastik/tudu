@@ -20,14 +20,9 @@ final class User extends Core\Data\Repository\Repository {
             'select user_id, email, password_hash, kvs, status, edate, cdate from tudu_user where user_id = $1;',
             [$id]
         );
-        
         if ($result === false) {
-            $user = new Model\User([
-                'user_id' => new Sentinel(Error::RESOURCE_NOT_FOUND_CONTEXT)
-            ]);
-            return Error::ResourceNotFound($user->normalize());
+            return Error::ResourceNotFound('User ID not found.');
         }
-        
         return $this->prenormalize(new Model\User($result[0]));
     }
     
@@ -57,10 +52,7 @@ final class User extends Core\Data\Repository\Repository {
         $result = (int)$result[0]['result'];
         
         if ($result == -1) {
-            $user = new Model\User([
-                'email' => new Sentinel(Error::ALREADY_IN_USE_CONTEXT)
-            ]);
-            return Error::AlreadyInUse($user->normalize());
+            return Error::AlreadyInUse(null, ['email' => 'Email address already in use.']);
         }
         
         $logger = Logger::getInstance();
@@ -86,13 +78,10 @@ final class User extends Core\Data\Repository\Repository {
         
         switch ($result) {
             case -1:
-                $user = new Model\User([
-                    'email' => new Sentinel(Error::RESOURCE_NOT_FOUND_CONTEXT)
-                ]);
-                return Error::ResourceNotFound($user->normalize());
+                return Error::ResourceNotFound('Email address not found.');
                 break;
             case -2:
-                return Error::Generic(null, [ 'signup_token' => 'Signup token does not match.' ]);
+                return Error::Generic('Signup token does not match.');
                 break;
             case -3:
                 return Error::Generic('User has already been confirmed.');
