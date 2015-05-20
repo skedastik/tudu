@@ -3,12 +3,20 @@ namespace Tudu\Core\Data;
 
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Logger;
+use \Tudu\Core\TuduException;
 
 final class PgSQLConnection extends DbConnection {
     
     public function connect() {
         if ($this->connection === null) {
             $this->connection = pg_connect("host={$this->options['host']} port={$this->options['port']} dbname={$this->options['database']} user={$this->options['username']} password={$this->options['password']}");
+        }
+    }
+    
+    public function close() {
+        if ($this->connection !== null) {
+            pg_close($this->connection);
+            $this->connection = null;
         }
     }
     

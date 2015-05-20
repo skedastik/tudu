@@ -36,6 +36,11 @@ abstract class DbConnection {
     abstract public function connect();
     
     /**
+     * Close the database connection.
+     */
+    abstract public function close();
+    
+    /**
      * Query the database using a parameterized query string.
      * 
      * @param string $queryString A parameterized query string. Parameters are
