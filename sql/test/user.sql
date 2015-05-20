@@ -169,6 +169,26 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function unit_tests.confirm_active_user() returns test_result as $$
+declare
+    _message    test_result;
+    _user       tudu_user%ROWTYPE;
+    _result     bigint;
+begin
+    _user   := tudu.create_random_user();
+    perform tudu.confirm_user(null, _user.email, _user.kvs->'signup_token');
+    _result := tudu.confirm_user(null, _user.email, _user.kvs->'signup_token');
+    
+    if _result <> -3 then
+        select assert.fail('should fail.') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
 create or replace function unit_tests.set_user_password_hash() returns test_result as $$
 declare
     _message    test_result;

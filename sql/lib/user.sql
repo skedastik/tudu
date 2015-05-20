@@ -59,6 +59,7 @@ $$ language plpgsql security definer;
  *   User ID on success.
  *   -1 if user does not exist
  *   -2 if signup token does not match
+ *   -3 if user is already confirmed
  */
 create or replace function tudu.confirm_user(
     _user_id            bigint,
@@ -73,19 +74,20 @@ begin
     _email := util.btrim_whitespace(_email);
     
     select user_id, status, kvs into _user_id, _status, _kvs from tudu_user
-    where case when _user_id is null then lower(email) = lower(_email)
+    where case when _user_id is null
+               then lower(email) = lower(_email)
                else user_id = _user_id end;
     
     if _user_id is null then
         return -1;
     end if;
     
-    if _status = 'active' then
-        return _user_id;
-    end if;
-    
     if _signup_token is distinct from (_kvs->'signup_token') then
         return -2;
+    end if;
+    
+    if _status <> 'init' then
+        return -3;
     end if;
     
     update tudu_user
