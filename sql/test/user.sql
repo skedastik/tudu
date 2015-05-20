@@ -197,7 +197,7 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, 'new-unlikely-password-hash');
+    _user_id  := tudu.set_user_password_hash(_user.user_id, 'new-unlikely-password-hash');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
@@ -234,38 +234,11 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(-1, _user.password_hash, 'new-unlikely-password-hash');
+    _user_id  := tudu.set_user_password_hash(-1, 'new-unlikely-password-hash');
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
     if _user_id <> -1 then
-        select assert.fail('should fail') into _message;
-        return _message;
-    end if;
-    
-    if _user_log.operation = 'set_password_hash' then
-        select assert.fail('should NOT create a user log entry') into _message;
-        return _message;
-    end if;
-    
-    select assert.ok('End of test.') into _message;
-    return _message;
-end;
-$$ language plpgsql;
-
-create or replace function unit_tests.set_user_password_hash_using_mismatched_old_password_hash() returns test_result as $$
-declare
-    _message    test_result;
-    _user       tudu_user%ROWTYPE;
-    _user_id    bigint;
-    _user_log   tudu_user_log%ROWTYPE;
-begin
-    _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, 'mismatched-password-hash', 'new-unlikely-password-hash');
-    _user     := tudu.latest_user();
-    _user_log := tudu.latest_user_log();
-    
-    if _user_id <> -2 then
         select assert.fail('should fail') into _message;
         return _message;
     end if;
@@ -288,11 +261,11 @@ declare
     _user_log   tudu_user_log%ROWTYPE;
 begin
     _user     := tudu.create_random_user();
-    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash, _user.password_hash);
+    _user_id  := tudu.set_user_password_hash(_user.user_id, _user.password_hash);
     _user     := tudu.latest_user();
     _user_log := tudu.latest_user_log();
     
-    if _user_id <> -3 then
+    if _user_id <> -2 then
         select assert.fail('should fail') into _message;
         return _message;
     end if;

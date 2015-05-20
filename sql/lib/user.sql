@@ -106,19 +106,16 @@ $$ language plpgsql security definer;
  * 
  * Arguments
  *   _user_id       ID of existing user
- *   _old_pw_hash   Old password hash
  *   _new_pw_hash   New password hash
  *   _ip            Optional IP address
  * 
  * Returns
  *   ID of user on success
  *   -1 if user ID is invalid
- *   -2 if old password hash does not match
- *   -3 if new password hash is identical to the old one
+ *   -2 if new password hash is identical to the old one
  */
 create or replace function tudu.set_user_password_hash(
     _user_id        bigint,
-    _old_pw_hash    varchar,
     _new_pw_hash    varchar,
     _ip             inet        default null
 ) returns bigint as $$
@@ -133,12 +130,8 @@ begin
         return -1;
     end if;
     
-    if _pw_hash <> _old_pw_hash then
-        return -2;
-    end if;
-    
     if _pw_hash = _new_pw_hash then
-        return -3;
+        return -2;
     end if;
     
     update tudu_user
