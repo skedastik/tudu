@@ -12,8 +12,11 @@
          bootstrap="server/tudu_autoload.php"
 >
     <testsuites>
-        <testsuite name="Tudu Test Suite">
-            <directory phpVersion="5.6.7" phpVersionOperator=">=">./server/test/</directory>
+        <testsuite name="Tudu Unit Test Suite">
+            <directory phpVersion="5.6.7" phpVersionOperator=">=">./server/test/unit/</directory>
+        </testsuite>
+        <testsuite name="Tudu Integration Test Suite">
+            <directory phpVersion="5.6.7" phpVersionOperator=">=">./server/test/integration/</directory>
         </testsuite>
     </testsuites>
     

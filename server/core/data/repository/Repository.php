@@ -4,10 +4,8 @@ namespace Tudu\Core\Data\Repository;
 /**
  * Data repository base class.
  * 
- * All repository methods either fetch or create/update data. Fetch methods
- * should either return \Tudu\Core\Data\Model object(s) or a \Tudu|Core\Error
- * object if an error occurred.  Modify methods should return NULL on success,
- * or a \Tudu\Core\Error object if an error occurred.
+ * All repository methods should return a \Tudu|Core\Error object if an error
+ * occurs.
  */
 abstract class Repository {
     protected $db;
