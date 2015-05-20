@@ -13,7 +13,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $this->repo = new Repository\User($this->db);
     }
     
-    public function testGetByID() {
+    public function testGetByIDShouldWorkGivenValidID() {
         $mockResult = [[
             'user_id' => 123,
             'email'   => 'foo@bar.xyz'
@@ -25,7 +25,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($mockResult[0], $user->asArray());
     }
     
-    public function testGetByIDWithFailedQuery() {
+    public function testGetByIDShouldGenerateResourceNotFoundErrorIfQueryFails() {
         $this->db->method('query')->willReturn(false);
         $id = 123;
         $error = $this->repo->getByID($id);

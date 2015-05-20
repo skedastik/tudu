@@ -8,7 +8,7 @@ use \Tudu\Test\Mock\MockValidator;
 
 class ValidateTest extends \PHPUnit_Framework_TestCase {
 
-    public function testBasicValidator() {
+    public function testBasicValidatorShouldGenerateValidationErrorsGivenSentinelInput() {
         $validator = Validate::Basic();
 
         $error = 'not found';
@@ -19,13 +19,13 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($input, $validator->execute($input));
     }
     
-    public function testApplyWithoutSpecifyingOptions() {
+    public function testApplyingOptionsWithoutSpecifyingOptionsShouldThrowAnException() {
         $validator = new MockValidator();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $validator->execute('whatever');
     }
     
-    public function testSentinel() {
+    public function testSentinelInputShouldGenerateValidationError() {
         $validator = Validate::String()->is()->validEmail();
 
         $error = 'not found';
@@ -33,7 +33,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($error, $validator->execute($input)->getValue());
     }
 
-    public function testSentinelWithChaining() {
+    public function testSentinelInputShouldBePassedDownValidationChain() {
         $error = 'not found';
         $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->upTo(5));
@@ -46,7 +46,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($error, $validator->execute($input)->getValue());
     }
     
-    public function testChainTwoValidators() {
+    public function testChainingTwoValidatorsShouldWork() {
         $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->upTo(15));
 
@@ -64,7 +64,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be at most 15 characters in length', $result->getValue());
     }
 
-    public function testChainThreeValidators() {
+    public function testChainingThreeValidatorsShouldWork() {
         $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->from(15))
                    ->then(Validate::String()->length()->upTo(20));
@@ -88,7 +88,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be at least 15 characters in length', $result->getValue());
     }
     
-    public function testTransformThenValidate() {
+    public function testTransformThenValidateShouldTransformThenValidateInput() {
         $chain = Transform::Convert()->to()->booleanString()
                ->then(Validate::String()->length()->upTo(1));
         
@@ -96,7 +96,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('t', $chain->execute($input));
     }
 
-    public function testValidateThenTransform() {
+    public function testValidateThenTransformShouldValidateThenTransformInput() {
         $chain = Validate::String()->length()->upTo(1)
                ->then(Transform::Convert()->to()->booleanString());
         
@@ -106,7 +106,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be at most 1 character in length', $result->getValue());
     }
 
-    public function testTransformThenValidateWithSentinel() {
+    public function testTransformThenValidateWithSentinelShouldGenerateAValidationError() {
         $chain = Transform::Convert()->to()->booleanString()
                ->then(Validate::String()->length()->from(5));
         
@@ -121,7 +121,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($error, $result2->getValue());
     }
     
-    public function testChainingWithDescription() {
+    public function testDescriptionTransformShouldWorkWithValidationChain() {
         $chain = Validate::String()->length()->upTo(15)
                ->then(Transform::Description()->to('Test string'));
         
@@ -134,7 +134,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('Test string must be at most 15 characters in length.', $result->getValue());
     }
     
-    public function testChainingOfSentinels() {
+    public function testValidationChainGivenSentinelInputShouldGenerateValidationError() {
         $chain = Validate::String()->length()->upTo(15)
                ->then(Transform::Description()->to('Test string'));
         

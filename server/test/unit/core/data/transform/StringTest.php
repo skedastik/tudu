@@ -6,12 +6,12 @@ use \Tudu\Core\Chainable\Sentinel;
 
 class StringTest extends \PHPUnit_Framework_TestCase {
 
-    public function testEscapeForHTML() {
+    public function testEscapeForHTMLShouldEscapeSpecialCharacters() {
         $transformer = Transform::String()->escapeForHTML();
         $this->assertEquals('this &amp; that', $transformer->execute('this & that'));
     }
     
-    public function testStripTags() {
+    public function testStripTagsShouldStripTags() {
         $transformer = Transform::String()->stripTags();
         $this->assertEquals(
             'this and that',
@@ -19,7 +19,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         );
     }
     
-    public function testTrim() {
+    public function testTrimShouldTrimTrailingAndLeadingWhitespace() {
         $transformer = Transform::String()->trim();
         $this->assertEquals('foo', $transformer->execute('foo'));
         $this->assertEquals('foo', $transformer->execute("foo \n\t\r"));
@@ -27,7 +27,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo bar', $transformer->execute("\n\t\r      foo bar      \n\t\r"));
     }
 
-    public function testStringTransformerWithNonStringInput() {
+    public function testPassingNonStringInputToStringTransformerShouldThrowAnException() {
         $transformer = Transform::String();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $transformer->execute(1);

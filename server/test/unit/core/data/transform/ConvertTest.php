@@ -5,20 +5,20 @@ use \Tudu\Core\Data\Transform\Transform;
 
 class ConvertTest extends \PHPUnit_Framework_TestCase {
     
-    public function testConvertWithoutSpecifyingOutputType() {
+    public function testConvertingWithoutSpecifyingOutputTypeShouldThrowAnException() {
         $transformer = Transform::Convert();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $transformer->execute('whatever');
     }
     
-    public function testConvertNumericToString() {
+    public function testConvertNumericToStringShouldWork() {
         $transformer = Transform::Convert()->to()->string();
         $this->assertSame('1', $transformer->execute(1));
         $this->assertSame('1.5', $transformer->execute(1.5));
         $this->assertSame('1.034E-15', $transformer->execute(10.34e-16));
     }
 
-    public function testConvertToInteger() {
+    public function testConvertToIntegerShouldWork() {
         $transformer = Transform::Convert()->to()->integer();
         $this->assertSame(42, $transformer->execute(42));
         $this->assertSame(4, $transformer->execute(4.2));
@@ -32,7 +32,7 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(26, $transformer->execute(0x1A));
     }
     
-    public function testConvertToFloat() {
+    public function testConvertToFloatShouldWork() {
         $transformer = Transform::Convert()->to()->float();
         $this->assertSame(42.0, $transformer->execute(42));
         $this->assertSame(4.2, $transformer->execute(4.2));

@@ -7,13 +7,13 @@ use \Tudu\Core\Chainable\Sentinel;
 
 class NumberTest extends \PHPUnit_Framework_TestCase {
 
-    public function testNonNumericInput() {
+    public function testPassingNonNumericInputToNumberValidatorShouldThrowAnException() {
         $validator = Validate::Number();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $validator->execute('this is not a number');
     }
     
-    public function testIsPositive() {
+    public function testIsPositiveShouldGenerateAnErrorGivenNegativeInput() {
         $validator = Validate::Number()->is()->positive();
         $result = $validator->execute(-135);
         $this->assertTrue($result instanceof Sentinel);

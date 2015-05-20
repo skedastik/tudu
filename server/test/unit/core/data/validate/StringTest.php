@@ -7,7 +7,7 @@ use \Tudu\Core\Chainable\Sentinel;
 
 class StringTest extends \PHPUnit_Framework_TestCase {
 
-    public function testLengthLowerBound() {
+    public function testLengthLowerBoundShouldGenerateAnErrorGivenInputThatIsTooShort() {
         $validator = Validate::String()->length()->from(10);
 
         $input = 'this string is valid even if it is rather long';
@@ -20,7 +20,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be at least 1 character in length', $result->getValue());
     }
 
-    public function testLengthUpperBound() {
+    public function testLengthUpperBoundShouldGenerateAnErrorGivenInputThatIsTooLong() {
         $validator = Validate::String()->length()->upTo(5);
 
         $input = 'valid';
@@ -33,7 +33,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be at most 1 character in length', $result->getValue());
     }
 
-    public function testLengthRange() {
+    public function testLengthRangeShouldGenerateAnErrorGivenInputWithLengthOutsideRange() {
         $validator = Validate::String()->length()->from(10)->upTo(15);
 
         $input = 'valid string';
@@ -50,7 +50,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
     }
     
-    public function testValidEmail() {
+    public function testValidateEmailShouldAcceptValidEmailAddresses() {
         $validator = Validate::String()->is()->validEmail();
 
         $input = 'valid@email.xyz';
@@ -81,7 +81,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('is invalid', $result->getValue());
     }
     
-    public function testWithDescription() {
+    public function testChainingStringValidatorWithDescriptionTransformShouldWork() {
         $validator = Validate::String()->length()->from(10)
                    ->then(Transform::Description()->to('String'));
 
@@ -91,7 +91,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
     }
     
-    public function testValidateNonStringInput() {
+    public function testPassingNonStringInputToStringValidatorShouldThrowAnException() {
         $validator = Validate::String();
         $this->setExpectedException('\Tudu\Core\TuduException');
         $validator->execute([]);

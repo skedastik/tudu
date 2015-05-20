@@ -8,7 +8,7 @@ use \Tudu\Test\Mock\MockModel;
 
 class ModelTest extends \PHPUnit_Framework_TestCase {
     
-    public function testArrayConversion() {
+    public function testModelToArrayConversionShouldWorkBothWays() {
         $data = [
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
@@ -17,7 +17,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($data, $model->asArray());
     }
     
-    public function testGetSet() {
+    public function testGettersAndSettersShouldWork() {
         $data = [
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
@@ -34,7 +34,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $model->asArray());
     }
     
-    public function testMutation() {
+    public function testMutationShouldInvalidateModel() {
         $model = new MockModel([
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
@@ -64,7 +64,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($model->isSanitized());
     }
     
-    public function testAllValidData() {
+    public function testNormalizingValidDataShouldProduceNoErrors() {
         $data = [
             'name' => 'John Doe',
             'email' => 'sooperdooper@abc.xyz'
@@ -77,7 +77,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($data, $mockModel->asArray());
     }
     
-    public function testAllValidDataButUnnormalized() {
+    public function testValidDataShouldBeNormalizedAfterNormalization() {
         $data = [
             'name' => "   John Doe   \t",
             'email' => 'sooperdooper@abc.xyz'
@@ -94,7 +94,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $mockModel->asArray());
     }
     
-    public function testMixedData() {
+    public function testNormalizingMixedValidAndInvalidDataShouldProduceSomeErrors() {
         $mockModel = new MockModel([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',
             'email' => 'sooperdooper@abc.xyz'
@@ -107,7 +107,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('Name must be 5 to 35 characters in length.', $errors['name']);
     }
 
-    public function testAllInvalidData() {
+    public function testNormalizingInvalidDataShouldProduceOnlyErrors() {
         $mockModel = new MockModel([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',
             'email' => 'sooperdooper@abc'
@@ -120,7 +120,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('Email address is invalid.', $errors['email']);
     }
     
-    public function testDataWithSentinelValue() {
+    public function testNormalizingSentinelsShouldProduceAnError() {
         $error = 'not found';
         $mockModel = new MockModel([
             'name' => 'John Doe',
@@ -134,7 +134,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("Email address $error.", $errors['email']);
     }
     
-    public function testWithFewerPropertiesThanNormalizers() {
+    public function testNormalizingWithFewerPropertiesThanNormalizersShouldWork() {
         $mockModel = new MockModel([
             'name' => 'John Doe'
         ]);
@@ -144,7 +144,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($errors);
     }
     
-    public function testNormalizerCaching() {
+    public function testNormalizersShouldBeCached() {
         $mockModel = new MockModel([]);
         $errors = $mockModel->normalize();
         $mockModel = new MockModel([]);
@@ -152,7 +152,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, MockModel::getNormalizersMethodCallCount());
     }
     
-    public function testSanitizerCaching() {
+    public function testSanitizersShouldBeCached() {
         $mockModel = new MockModel([]);
         $errors = $mockModel->normalize();
         $mockModel = $mockModel->getSanitizedCopy();
@@ -162,13 +162,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, MockModel::getSanitizersMethodCallCount());
     }
     
-    public function testRepeatedNormalize() {
+    public function testNormalizationShouldBeIdempotent() {
         $mockModel = new MockModel([]);
-        $mockModel->normalize();
+        $this->assertNull($mockModel->normalize());
         $this->assertNull($mockModel->normalize());
     }
     
-    public function testGetSanitizedCopy() {
+    public function testSanitizedCopyShouldHaveSanitizedData() {
         $data = [
             'name' => '<a href="#" >John</a> Doe<br />',
             'email' => 'sooper&dooper@abc.xyz'
@@ -190,7 +190,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($data, $model->asArray());
     }
     
-    public function testSanitizeWithUnnormalizedData() {
+    public function testSanitizingAModelThatHasNotBeenNormalizedShouldThrowAnException() {
         $model = new MockModel([]);
         $this->assertFalse($model->isSanitized());
         $this->setExpectedException('\Tudu\Core\TuduException');

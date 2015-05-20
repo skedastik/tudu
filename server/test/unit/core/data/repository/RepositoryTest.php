@@ -9,7 +9,7 @@ use \Tudu\Test\Mock\MockRepository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase {
     
-    public function testPrenormalize() {
+    public function testPrenormalizeShouldNormalizeModelData() {
         $repo = new MockRepository();
         $model = new MockModel([
             'name' => "   John Doe   \t",
@@ -25,7 +25,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $model->asArray());
     }
     
-    public function testPrenormalizeWithInvalidModel() {
+    public function testPrenormalizingAnInvalidModelShouldGenerateValidationErrors() {
         $repo = new MockRepository();
         $model = new MockModel([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',

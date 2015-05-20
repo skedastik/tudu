@@ -6,7 +6,7 @@ use \Tudu\Data\Model\User;
 
 class UserTest extends \PHPUnit_Framework_TestCase {
     
-    public function testNormalizeUser() {
+    public function testNormalizedUserShouldHaveNormalizedData() {
         $data = [
             'user_id' => '123',
             'email' => "   foo@bar.xyz   \t"
@@ -21,7 +21,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $user->asArray());
     }
     
-    public function testSanitizeUser() {
+    public function testSanitizedUserShouldHaveSanitizedData() {
         $data = [
             'user_id' => '123',
             'email' => 'foo&baz@bar.xyz'
