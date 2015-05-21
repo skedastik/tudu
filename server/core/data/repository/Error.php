@@ -9,9 +9,26 @@ use \Tudu\Core;
 class Error {
     
     // Repository error types
+    const NOTICE = 'Notice';
     const GENERIC = 'Error';
     const VALIDATION = 'Validation Error';
     const FATAL = 'Fatal Error';
+    
+    /**
+     * Shorthand factory function for notices.
+     * 
+     * Notices are purely informational. They do not indicate errors.
+     * 
+     * @param string $description (optional)
+     * @param array $context (optional) Key/value array containing contextual
+     * error info.
+     */
+    public static function Notice(
+        $description = null,
+        $context = null
+    ) {
+        return new Core\Error(Error::NOTICE, $description, $context);
+    }
     
     /**
      * Shorthand factory function for generic errors.
