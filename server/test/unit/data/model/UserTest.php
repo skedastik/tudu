@@ -12,7 +12,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
             'email' => "   foo@bar.xyz   \t"
         ];
         $user = new User($data);
-        $errors = $user->normalize();
+        $user->normalize();
         $this->assertTrue($user->isNormalized());
         $expected = [
             'user_id' => 123,

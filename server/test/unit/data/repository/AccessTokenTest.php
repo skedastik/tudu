@@ -2,32 +2,32 @@
 namespace Tudu\Test\Unit\Data\Repository;
 
 use \Tudu\Data\Repository;
-use \Tudu\Data\Model\User;
+use \Tudu\Data\Model\AccessToken;
 use \Tudu\Core\Data\Repository\Error;
 
-class UserTest extends \PHPUnit_Framework_TestCase {
-    
+class AccessTokenTest extends \PHPUnit_Framework_TestCase {
+
     protected function setUp() {
         $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
-        $this->repo = new Repository\User($this->db);
+        $this->repo = new Repository\AccessToken($this->db);
     }
-    
+
     public function testGetByIDShouldProduceNormalizedModel() {
         $mockResult = [[
-            'user_id' => '123',
-            'email'   => "  foo@bar.xyz  \t"
+            'token_id' => '123',
+            'user_id'  => '456'
         ]];
         $expected = [
-            'user_id' => 123,
-            'email'   => 'foo@bar.xyz'
+            'token_id' => 123,
+            'user_id'  => 456
         ];
         $this->db->method('query')->willReturn($mockResult);
-        $user = $this->repo->getByID(123);
-        $this->assertTrue($user instanceof User);
-        $this->assertTrue($user->isNormalized());
-        $this->assertSame($expected, $user->asArray());
+        $accessToken = $this->repo->getByID(123);
+        $this->assertTrue($accessToken instanceof AccessToken);
+        $this->assertTrue($accessToken->isNormalized());
+        $this->assertSame($expected, $accessToken->asArray());
     }
-    
+
     public function testGetByIDShouldGenerateResourceNotFoundErrorIfQueryFails() {
         $this->db->method('query')->willReturn(false);
         $id = 123;

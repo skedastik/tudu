@@ -2,7 +2,6 @@
 namespace Tudu\Data\Repository;
 
 use \Tudu\Core;
-use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Data\Model;
 use \Tudu\Core\Data\Repository\Error;
 
