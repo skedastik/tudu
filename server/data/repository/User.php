@@ -106,10 +106,8 @@ final class User extends Core\Data\Repository\Repository {
             [$id, $newPasswordHash, $ip]
         );
         
-        switch ($result) {
-            case -1:
-                return Error::Generic('User ID not found.');
-                break;
+        if ($result == -1) {
+            return Error::Generic('User ID not found.');
         }
         
         $logger = Logger::getInstance();

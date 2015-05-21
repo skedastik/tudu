@@ -112,26 +112,17 @@ $$ language plpgsql security definer;
  * Returns
  *   ID of user on success
  *   -1 if user ID is invalid
- *   -2 if new password hash is identical to the old one
  */
 create or replace function tudu.set_user_password_hash(
     _user_id        bigint,
     _new_pw_hash    varchar,
     _ip             inet        default null
 ) returns bigint as $$
-declare
-    _pw_hash        varchar;
 begin
-    select user_id, password_hash
-    into _user_id, _pw_hash
-    from tudu_user where user_id = _user_id;
+    select user_id into _user_id from tudu_user where user_id = _user_id;
     
     if _user_id is null then
         return -1;
-    end if;
-    
-    if _pw_hash = _new_pw_hash then
-        return -2;
     end if;
     
     update tudu_user
