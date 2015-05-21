@@ -3,7 +3,7 @@ begin;
 \ir helper/helper.sql
 \ir util.sql
 \ir user.sql
-\ir login.sql
+\ir token.sql
 \ir task.sql
 /**
  * plpgunit has been amended to automatically roll back individual functions in

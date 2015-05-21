@@ -1,58 +1,55 @@
 /**
- * Create an access token for a given user. If a valid access token already
- * exists, it is revoked before creating a new one. You should generate a new
- * access token whenever the user logs in.
+ * Create an access token for a given user.
  * 
  * Arguments
  *   _user_id       ID of existing user
- *   _pw_hash       User's password hash
  *   _token_string  A non-NULL, access token string. Token strings can never be
  *                  reused per individual user.
+ *   _token_type    Type of access token.
  *   _ttl           Access token time to live. A token is considered expired if
  *                  (now() - cdate >= ttl).
+ *   _auto_revoke   Optional. Automatically revoke existing active tokens of
+ *                  same type. Defaults to FALSE.
  *   _ip            Optional IP address
  *   _kvs           Optional KVS data
  * 
  * Returns
  *   Token ID on success.
  *   -1 if user does not exist
- *   -2 if password hash does not match
- *   -3 if access token is not unique for the given user
+ *   -2 if access token is not unique for the given user
  */
 create or replace function tudu.create_access_token(
     _user_id            bigint,
-    _pw_hash            varchar,
     _token_string       text,
+    _token_type         varchar,
     _ttl                interval,
-    _ip                 inet default null,
-    _kvs                hstore default ''
+    _auto_revoke        boolean     default false,
+    _ip                 inet        default null,
+    _kvs                hstore      default ''
 ) returns bigint as $$
 declare
     _token_id           bigint;
-    _pw_hash_current    varchar;
     _constraint         text;
 begin
-    select user_id, password_hash into _user_id, _pw_hash_current from tudu_user where user_id = _user_id;
+    select user_id into _user_id from tudu_user where user_id = _user_id;
     
     if _user_id is null then
         return -1;
     end if;
     
-    if _pw_hash is distinct from _pw_hash_current then
+    if exists (select 1 from tudu_access_token where user_id = _user_id and token_string = _token_string) then
         return -2;
     end if;
     
-    if exists (select 1 from tudu_access_token where user_id = _user_id and token_string = _token_string) then
-        return -3;
+    if _auto_revoke then
+        perform tudu.revoke_active_access_tokens(_user_id, _token_type, _ip);
     end if;
-    
-    perform tudu.revoke_active_access_token(_user_id, _ip);
     
     _token_id := nextval('tudu_access_token_seq');
     _kvs      := _kvs || hstore('ttl', _ttl::text);
     
-    insert into tudu_access_token (token_id, user_id, token_string, kvs)
-    values (_token_id, _user_id, _token_string, _kvs);
+    insert into tudu_access_token (token_id, user_id, token_string, token_type, kvs)
+    values (_token_id, _user_id, _token_string, _token_type, _kvs);
     
     perform tudu.access_token_log_add(_token_id, 'create', _ip);
     
@@ -61,39 +58,46 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Revoke given user's currently active access token.
+ * Revoke user's active access tokens of given type.
  * 
  * Arguments
  *   _user_id       ID of existing user
+ *   _token_type    Type of access token.
  *   _ip            Optional IP address
  * 
  * Returns
- *   ID of access token on success
- *   -1 if no active access token exists
+ *   The number of tokens revoked on success
+ *   -1 if no active access tokens of same type exist
  */
-create or replace function tudu.revoke_active_access_token(
+create or replace function tudu.revoke_active_access_tokens(
     _user_id        bigint,
-    _ip             inet default null
-) returns bigint as $$
+    _token_type     varchar,
+    _ip             inet        default null
+) returns int as $$
 declare
+    _token_ids      bigint[];
     _token_id       bigint;
+    _count          int         default 0;
 begin
-    with updated_row as (
+    with updated_rows as (
         update tudu_access_token
         set status = 'revoked',
             edate  = now()
-        where user_id = _user_id and status = 'active'
+        where user_id = _user_id and status = 'active' and token_type = _token_type
         returning token_id
     )
-    select token_id into _token_id from updated_row;
+    select array_agg(token_id) into _token_ids from updated_rows;
     
-    if _token_id is null then
+    if _token_ids is null then
         return -1;
     end if;
     
-    perform tudu.access_token_log_add(_token_id, 'revoke', _ip);
+    foreach _token_id in array _token_ids loop
+        perform tudu.access_token_log_add(_token_id, 'revoke', _ip);
+        _count := _count + 1;
+    end loop;
     
-    return _token_id;
+    return _count;
 end;
 $$ language plpgsql security definer;
 

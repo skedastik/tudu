@@ -74,18 +74,21 @@ $$ language plpgsql;
  * Create a random access token for the given user.
  * 
  * Arguments
- *   _user_id   User ID
- *   _pw_hash   Valid password hash for given user
- *   _ttl       Optional TTL value (default is 1 week)
+ *   _user_id       User ID
+ *   _token_type    Type of access token.
+ *   _ttl           Optional TTL value (default is 1 week)
+ *   _auto_revoke   Optional. Automatically revoke existing active tokens of
+ *                  same type. Defaults to FALSE.
  */
 drop function if exists tudu.create_random_access_token(bigint, varchar, interval);
 create function tudu.create_random_access_token(
-    _user_id    bigint,
-    _pw_hash    varchar,
-    _ttl        interval    default '1 week'
+    _user_id        bigint,
+    _token_type     varchar,
+    _ttl            interval    default '1 week',
+    _auto_revoke    boolean     default false
 ) returns tudu_access_token as $$
 begin
-    perform tudu.create_access_token(_user_id, _pw_hash, tudu.random_string(), _ttl, '127.0.0.1');
+    perform tudu.create_access_token(_user_id, tudu.random_string(), _token_type, _ttl, _auto_revoke, '127.0.0.1');
     return tudu.latest_access_token();
 end;
 $$ language plpgsql;

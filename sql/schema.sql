@@ -79,16 +79,19 @@ create table tudu_access_token (
     token_id                bigint primary key default nextval('tudu_access_token_seq'),
     user_id                 bigint references tudu_user,
     token_string            text not null,
+    token_type              varchar(32) not null,
     --
     kvs                     hstore not null default '',
     status                  varchar(32) not null default 'active',
     edate                   timestamptz not null default current_timestamp,
     cdate                   timestamptz not null default current_timestamp,
     --
-    check (status in ('deleted', 'active', 'revoked'))
+    constraint check_token_type check (token_type in ('login', 'password_reset')),
+    constraint check_token_status check (status in ('deleted', 'active', 'revoked'))
 );
 create unique index tudu_access_token_uniq_idx on tudu_access_token (user_id, token_string);
-create unique index tudu_access_token_status_idx on tudu_access_token (user_id, status) where status = 'active';
+create unique index tudu_access_token_status_idx on tudu_access_token (user_id, token_type, status)
+       where status = 'active' and token_type in ('login', 'password_reset');
 create index tudu_access_token_cdate_idx on tudu_access_token using btree (cdate);
 create index tudu_access_token_kvs_idx on tudu_access_token using gin (kvs);
 
