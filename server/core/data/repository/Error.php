@@ -8,24 +8,17 @@ use \Tudu\Core;
  */
 class Error {
     
-    // Repository error strings
+    // Repository error types
     const GENERIC = 'Error';
     const VALIDATION = 'Validation Error';
-    const RESOURCE_NOT_FOUND = 'Resource Not Found';
-    const ALREADY_IN_USE = 'Already In Use';
-    
-    /**
-     * Contextual error strings. These match the format described in the
-     * Validator class documentation.
-     */
-    const RESOURCE_NOT_FOUND_CONTEXT = 'was not found';
-    const ALREADY_IN_USE_CONTEXT = 'is already in use';
+    const FATAL = 'Fatal Error';
     
     /**
      * Shorthand factory function for generic errors.
      * 
      * @param string $description (optional)
-     * @param array $context Key/value array describing the resource
+     * @param array $context (optional) Key/value array containing contextual
+     * error info.
      */
     public static function Generic(
         $description = null,
@@ -37,40 +30,36 @@ class Error {
     /**
      * Shorthand factory function for validation errors.
      * 
+     * Useful for validation errors that may have resulted from user input. Such
+     * errors should provide a key/value array as context, where each key is an
+     * indentifier (possibly corresponding to form field names), and each value
+     * is a human-readable validation error string.
+     * 
      * @param string $description (optional)
-     * @param array $context Key/value array describing the resource
+     * @param array $context (optional) Key/value array containing contextual
+     * error info.
      */
     public static function Validation(
-        $description = 'Invalid resource descriptor.',
+        $description = null,
         $context = null
     ) {
         return new Core\Error(Error::VALIDATION, $description, $context);
     }
     
     /**
-     * Shorthand factory function for "already in use" errors.
+     * Shorthand factory function for fatal errors.
+     * 
+     * Fatal errors indicate an unrecoverable error condition.
      * 
      * @param string $description (optional)
-     * @param array $context Key/value array describing the resource
+     * @param array $context (optional) Key/value array containing contextual
+     * error info.
      */
-    public static function AlreadyInUse(
+    public static function Fatal(
         $description = null,
         $context = null
     ) {
-        return new Core\Error(Error::ALREADY_IN_USE, null, $context);
-    }
-    
-    /**
-     * Shorthand factory function for "resource not found" errors.
-     * 
-     * @param string $description (optional)
-     * @param array $context Key/value array describing the resource
-     */
-    public static function ResourceNotFound(
-        $description = 'The specified resource could not be found.',
-        $context = null
-    ) {
-        return new Core\Error(Error::RESOURCE_NOT_FOUND, $description, $context);
+        return new Core\Error(Error::FATAL, null, $context);
     }
 }
 ?>

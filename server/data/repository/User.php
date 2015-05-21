@@ -21,7 +21,7 @@ final class User extends Core\Data\Repository\Repository {
             [$id]
         );
         if ($result === false) {
-            return Error::ResourceNotFound('User ID not found.');
+            return Error::Generic('User ID not found.');
         }
         return $this->prenormalize(new Model\User($result[0]));
     }
@@ -41,22 +41,21 @@ final class User extends Core\Data\Repository\Repository {
             
         $errors = $user->normalize();
         if (!is_null($errors)) {
-            return Error::Validation($errors);
+            return Error::Validation(null, $errors);
         }
         
         $email = $user->get('email');
-        $result = $this->db->query(
-            'select tudu.signup_user($1, $2, $3) as result;',
+        $result = $this->db->queryValue(
+            'select tudu.signup_user($1, $2, $3);',
             [$email, $passwordHash,  $ip]
         );
-        $result = (int)$result[0]['result'];
         
         if ($result == -1) {
-            return Error::AlreadyInUse(null, ['email' => 'Email address already in use.']);
+            return Error::Validation(null, ['email' => 'Email address already in use.']);
         }
         
         $logger = Logger::getInstance();
-        $logger->info("Signed up user [$email] with ID $result.");
+        $logger->info("Signed up user $result <$email>.");
         
         return $result;
     }
@@ -70,15 +69,14 @@ final class User extends Core\Data\Repository\Repository {
      * @return int|Tudu\Core\Error User's ID on success, Error otherwise.
      */
     public function confirmUser($email, $signupToken, $ip) {
-        $result = $this->db->query(
-            'select tudu.confirm_user(null, $1, $2, $3) as result;',
+        $result = $this->db->queryValue(
+            'select tudu.confirm_user(null, $1, $2, $3);',
             [$email, $signupToken, $ip]
         );
-        $result = (int)$result[0]['result'];
         
         switch ($result) {
             case -1:
-                return Error::ResourceNotFound('Email address not found.');
+                return Error::Generic('Email address not found.');
                 break;
             case -2:
                 return Error::Generic('Signup token does not match.');
@@ -89,7 +87,33 @@ final class User extends Core\Data\Repository\Repository {
         }
         
         $logger = Logger::getInstance();
-        $logger->info("Confirmed user [$email] with ID $result.");
+        $logger->info("Confirmed user $result <$email>.");
+        
+        return $result;
+    }
+    
+    /**
+     * Update a user's password hash.
+     * 
+     * @param int $id User ID.
+     * @param string $newPasswordHash New password hash.
+     * @param string $ip IP address.
+     * @return int|Tudu\Core\Error User's ID on success, Error otherwise.
+     */
+    public function setUserPasswordHash($id, $newPasswordHash, $ip) {
+        $result = $this->db->queryValue(
+            'select tudu.set_user_password_hash($1, $2, $3);',
+            [$id, $newPasswordHash, $ip]
+        );
+        
+        switch ($result) {
+            case -1:
+                return Error::Generic('User ID not found.');
+                break;
+        }
+        
+        $logger = Logger::getInstance();
+        $logger->info("Changed password hash for user $result.");
         
         return $result;
     }

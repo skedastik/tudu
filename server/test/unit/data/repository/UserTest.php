@@ -30,7 +30,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         $id = 123;
         $error = $this->repo->getByID($id);
         $this->assertTrue($error instanceof \Tudu\Core\Error);
-        $this->assertEquals(Error::RESOURCE_NOT_FOUND, $error->getError());
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
 }
 ?>

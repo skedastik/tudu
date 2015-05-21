@@ -22,7 +22,7 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertTrue($user_id >= 0);
     }
     
-    public function testSignupUserShouldFailGivenInvalidEmail() {
+    public function testSignupUserShouldFailGivenMalformedEmail() {
         $email = 'foo@bar';
         $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
@@ -34,13 +34,13 @@ class UserRepositoryTest extends DatabaseTest {
         $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::ALREADY_IN_USE, $error->getError());
+        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
     }
 
     public function testGetByIDShouldFailGivenNonexistentID() {
         $error = $this->repo->getByID(1);
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::RESOURCE_NOT_FOUND, $error->getError());
+        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
     }
     
     public function testGetByIDShouldSucceedGivenValidID() {
@@ -61,7 +61,7 @@ class UserRepositoryTest extends DatabaseTest {
     public function testConfirmUserShouldFailGivenNonexistentEmailAddress() {
         $error = $this->repo->confirmUser('foo@bar.com', 'unlikely_signup_token', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::RESOURCE_NOT_FOUND, $error->getError());
+        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
     }
     
     public function testConfirmUserShouldFailGivenInvalidSignupToken() {
@@ -81,6 +81,12 @@ class UserRepositoryTest extends DatabaseTest {
         $error = $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
         $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+    }
+    
+    public function testSetUserPasswordHashShouldSucceedGivenValidInputs() {
+        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $result_id = $this->repo->setUserPasswordHash($user_id, 'new_pw_hash', '127.0.0.1');
+        $this->assertEquals($user_id, $result_id);
     }
 }
 ?>
