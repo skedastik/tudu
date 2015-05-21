@@ -12,9 +12,7 @@ final class User extends Model {
     
     protected function getNormalizers() {
         return [
-            'user_id' => Transform::Convert()->to()->integer()
-                      -> then(Validate::Number()->is()->positive())
-                      -> then(Transform::Description()->to('User ID')),
+            'user_id' => Transform::Convert()->to()->integer(),
             
             'email' => Transform::String()->trim()
                     -> then(Validate::String()->is()->validEmail()->with()->length()->upTo(64))
