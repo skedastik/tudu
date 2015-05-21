@@ -2,20 +2,12 @@
 namespace Tudu\Handler\Api;
 
 /**
- * Request handler for GET /users/:user_id/tasks/
+ * Request handler for /users/:user_id/tasks/:task_id
  */
 final class Task extends \Tudu\Core\Handler\API {
     
     protected function getAllowedMethods() {
-        return 'GET, POST, PUT, DELETE';
-    }
-    
-    protected function get() {
-        echo 'Tasks->get()';
-    }
-    
-    protected function post() {
-        echo 'Tasks->post()';
+        return 'PUT, DELETE';
     }
     
     protected function put() {
