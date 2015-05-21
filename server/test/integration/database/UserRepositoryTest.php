@@ -22,6 +22,14 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertTrue($user_id >= 0);
     }
     
+    public function testSignupUserShouldCreateUserWithNormalizedData() {
+        $pwHash = 'unlikely_pw_hash';
+        $user_id = $this->repo->signupUser("   foo@bar.com   \t", $pwHash, '127.0.0.1');
+        $user = $this->repo->getByID($user_id);
+        $this->assertSame('foo@bar.com', $user->get('email'));
+        $this->assertSame($pwHash, $user->get('password_hash'));
+    }
+    
     public function testSignupUserShouldFailGivenMalformedEmail() {
         $email = 'foo@bar';
         $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
@@ -80,13 +88,60 @@ class UserRepositoryTest extends DatabaseTest {
         $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
         $error = $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertEquals(Repository\Error::NOTICE, $error->getError());
     }
     
     public function testSetUserPasswordHashShouldSucceedGivenValidInputs() {
         $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
         $result_id = $this->repo->setUserPasswordHash($user_id, 'new_pw_hash', '127.0.0.1');
         $this->assertEquals($user_id, $result_id);
+    }
+    
+    public function testSetUserPasswordHashShouldFailGivenInvalidUserId() {
+        $error = $this->repo->setUserPasswordHash(-1, 'new_pw_hash', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+    }
+    
+    public function testSetUserEmailShouldSucceedGivenValidInput() {
+        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $user_id_out = $this->repo->setUserEmail($user_id_in, 'baz@qux.xyz', '127.0.0.1');
+        $this->assertEquals($user_id_in, $user_id_out);
+    }
+    
+    public function testSetUserEmailShouldNormalizeEmail() {
+        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $user_id_out = $this->repo->setUserEmail($user_id_in, " \n  baz@qux.xyz   ", '127.0.0.1');
+        $user = $this->repo->getByID($user_id_in);
+        $this->assertSame('baz@qux.xyz', $user->get('email'));
+    }
+    
+    public function testSetUserEmailShouldFailGivenInvalidUserId() {
+        $error = $this->repo->setUserEmail(-1, 'baz@qux.xyz', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+    }
+    
+    public function testSetUserEmailToMalformedEmailShouldFail() {
+        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->setUserEmail($user_id_in, 'foo@bar', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
+    }
+    
+    public function testSetUserEmailToSameEmailShouldFail() {
+        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->setUserEmail($user_id_in, 'foo@bar.com', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::NOTICE, $error->getError());
+    }
+    
+    public function testSetUserEmailToAlreadyUsedEmailShouldFail() {
+        $this->repo->signupUser('baz@qux.xyz', 'unlikely_pw_hash', '127.0.0.1');
+        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->setUserEmail($user_id_in, 'baz@qux.xyz', '127.0.0.1');
+        $this->assertTrue($error instanceof Core\Error);
+        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
     }
 }
 ?>
