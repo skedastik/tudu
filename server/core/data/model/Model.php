@@ -182,11 +182,11 @@ abstract class Model implements Arrayable {
     /**
      * Check if the model has given properties.
      * 
-     * @param mixed ...$properties A list of property keys.
+     * @param array $properties An array of property keys.
      * @return bool TRUE if model has all of supplied properties, FALSE
      * otherwise.
      */
-    final public function hasProperties(...$properties) {
+    final public function hasProperties(array $properties) {
         foreach ($properties as $property) {
             if (!array_key_exists($property, $this->properties)) {
                 return false;
