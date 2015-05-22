@@ -10,8 +10,8 @@ class PHPasswordTest extends \PHPUnit_Framework_TestCase {
         $transformer = Transform::Password()->with()->delegate(new PHPass());
         $password = 'foo';
         $hash = $transformer->execute($password);
-        $mockPass = new PHPass();
-        $this->assertTrue($mockPass->compare($password, $hash));
+        $phpass = new PHPass();
+        $this->assertTrue($phpass->compare($password, $hash));
     }
 }
 ?>
