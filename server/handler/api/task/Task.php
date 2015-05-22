@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Handler\Api;
+namespace Tudu\Handler\Api\Task;
 
 /**
  * Request handler for /users/:user_id/tasks/:task_id

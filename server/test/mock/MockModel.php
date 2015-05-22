@@ -4,7 +4,7 @@ namespace Tudu\Test\Mock;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 
-class MockModel extends \Tudu\Core\Data\Model\Model {
+class MockModel extends \Tudu\Core\Data\Model {
     
     protected static $getNormalizersCallCount = 0;
     protected static $getSanitizersCallCount = 0;

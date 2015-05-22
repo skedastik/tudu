@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Data\Repository;
 
-use \Tudu\Core\Data\Repository\Repository;
+use \Tudu\Core\Data\Repository;
 use \Tudu\Core\Error;
 use \Tudu\Data\Model;
 

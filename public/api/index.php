@@ -25,11 +25,11 @@ $delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
 }, 'PUT');
 
 $delegate->map('/users/', function () use ($delegate, $db) {
-    (new Handler\Api\Users($delegate, $db))->process();
+    (new Handler\Api\User\Users($delegate, $db))->process();
 });
 
 $delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
-    (new Handler\Api\User($delegate, $db, [
+    (new Handler\Api\User\User($delegate, $db, [
         'user_id' => $user_id
     ]))->process();
 });
@@ -44,13 +44,13 @@ $delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id 
 });
 
 $delegate->map('/users/:user_id/tasks/', function ($user_id) use ($delegate, $db) {
-    (new Handler\Api\Tasks($delegate, $db, [
+    (new Handler\Api\Task\Tasks($delegate, $db, [
         'user_id' => $user_id
     ]))->process();
 });
 
 $delegate->map('/users/:user_id/tasks/:task_id', function ($user_id, $task_id) use ($delegate, $db) {
-    (new Handler\Api\Task($delegate, $db, [
+    (new Handler\Api\Task\Task($delegate, $db, [
         'user_id' => $user_id,
         'task_id' => $task_id
     ]))->process();

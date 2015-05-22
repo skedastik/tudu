@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Data\Model;
 
-use \Tudu\Core\Data\Model\Model;
+use \Tudu\Core\Data\Model;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 

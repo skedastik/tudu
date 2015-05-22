@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Core\Data\Model;
+namespace Tudu\Core\Data;
 
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Chainable\Sentinel;

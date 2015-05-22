@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Core\Data\Repository;
+namespace Tudu\Core\Data;
 
 use \Tudu\Core\TuduException;
 use \Tudu\Core\Error;
@@ -17,7 +17,7 @@ use \Tudu\Core\Error;
 abstract class Repository {
     protected $db;
     
-    public function __construct(\Tudu\Core\Data\DbConnection $db) {
+    public function __construct(DbConnection $db) {
         $this->db = $db;
     }
     

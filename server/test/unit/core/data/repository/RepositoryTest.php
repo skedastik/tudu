@@ -2,8 +2,6 @@
 namespace Tudu\Test\Unit\Core\Data\Model;
 
 use \Tudu\Core\Error;
-use \Tudu\Core\Data\Repository;
-use \Tudu\Core\Data\Model\Model;
 use \Tudu\Test\Mock\MockModel;
 use \Tudu\Test\Mock\MockRepository;
 
@@ -16,7 +14,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
             'email' => 'foo@bar.xyz'
         ]);
         $model = $repo->publicPrenormalize($model);
-        $this->assertTrue($model instanceof Model);
+        $this->assertTrue($model instanceof MockModel);
         $this->assertTrue($model->isNormalized());
         $expected = [
             'name' => 'John Doe',

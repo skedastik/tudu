@@ -1,6 +1,10 @@
 <?php
 namespace Tudu\Core\Handler;
 
+use \Tudu\Core\Arrayable;
+use \Tudu\Core\Error;
+use \Tudu\Core\Data\Model\Model;
+
 require_once __DIR__.'/Handler.php';
 
 /**
@@ -20,21 +24,21 @@ abstract class API extends Handler {
     /**
      * Handle POST requests on this endpoint. Override for custom behavior.
      */
-    protected function post() {
+    protected function post(Model $model) {
         $this->rejectMethod();
     }
     
     /**
      * Handle PUT requests on this endpoint. Override for custom behavior.
      */
-    protected function put() {
+    protected function put(Model $model) {
         $this->rejectMethod();
     }
     
     /**
      * Handle PATCH requests on this endpoint. Override for custom behavior.
      */
-    protected function patch() {
+    protected function patch(Model $model) {
         $this->rejectMethod();
     }
     
@@ -44,6 +48,15 @@ abstract class API extends Handler {
     protected function delete() {
         $this->rejectMethod();
     }
+    
+    /**
+     * Get an empty Model object. Override this.
+     * 
+     * Subclasses should return an empty instance of a Model subclass. The Model
+     * subclass should correspond to the type of resource described by the API
+     * endpoint.
+     */
+    abstract protected function getModel();
     
     /**
      * Handle OPTIONS requests on this endpoint.
@@ -83,9 +96,62 @@ abstract class API extends Handler {
         $this->delegate->send();
     }
     
+    /**
+     * If request method is POST, PUT, or PATCH, the request body is
+     * automatically decoded and transformed into a normalized Model object. If
+     * validation fails, processing halts and an error response is automatically
+     * generated.
+     */
     final public function process() {
+        $method = strtolower($this->delegate->getRequestMethod());
+        $model = null;
+        
+        if ($method == 'post' || $method == 'put' || $method == 'patch') {
+            // TODO: Do not assume JSON content type.
+            $data = json_decode($this->delegate->getRequestBody(), true);
+            $model = $this->getModel()->fromArray($data);
+            $errors = $model->normalize();
+            if (!is_null($errors)) {
+                $this->renderError(Error::Validation(null, $errors, 400));
+                return;
+            }
+        }
+        
         // invoke method corresponding to HTTP request method
-        $this->{strtolower($this->delegate->getRequestMethod())}();
+        $this->{$method}($model);
+    }
+    
+    /**
+     * Render error response.
+     * 
+     * This method sets the HTTP status code and translates an error object into
+     * a response body.
+     * 
+     * @param \Tudu\Core\Error $error Error object.
+     */
+    final protected function renderError($error) {
+        $statusCode = $data->getHttpStatusCode();
+        $this->delegate->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
+        $this->renderBody($data->asArray());
+    }
+    
+    /**
+     * Render response body.
+     * 
+     * Input data must either be an Arrayable object, an array, or a string. If
+     * one of the former, data is encoded as a string before being rendered.
+     * 
+     * @param mixed $data Either an Arrayable object, an array, or a string.
+     */
+    final protected function renderBody($data) {
+        if ($data instanceof Arrayable) {
+            $data = $data->asArray();
+        }
+        if (is_array($data)) {
+            // TODO: Do not assume JSON content type.
+            $data = json_encode($data);
+        }
+        echo $data;
     }
 }
 

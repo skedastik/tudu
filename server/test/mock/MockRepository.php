@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Test\Mock;
 
-use \Tudu\Core\Data\Repository\Repository;
+use \Tudu\Core\Data\Repository;
 
 final class MockRepository extends Repository {
     
