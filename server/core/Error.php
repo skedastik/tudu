@@ -4,7 +4,7 @@ namespace Tudu\Core;
 /**
  * Tudu application error class.
  */
-class Error {
+class Error implements Arrayable {
     
     // Error types
     const NOTICE = 'Notice';

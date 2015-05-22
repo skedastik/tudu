@@ -1,13 +1,14 @@
 <?php
 namespace Tudu\Core\Data\Model;
 
+use \Tudu\Core\Arrayable;
 use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Core\TuduException;
 
 /**
  * Model base class.
  */
-abstract class Model {
+abstract class Model implements Arrayable {
     
     private static $normalizerCache;
     private static $sanitizerCache;
