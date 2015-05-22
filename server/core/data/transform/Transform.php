@@ -33,5 +33,12 @@ abstract class Transform extends \Tudu\Core\Chainable\OptionsChainable {
     public static function HStore() {
         return new HStore();
     }
+    
+    /**
+     * Shorthand factory function for Transform\Password.
+     */
+    public static function Password() {
+        return new Password();
+    }
 }
 ?>
