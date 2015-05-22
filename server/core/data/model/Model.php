@@ -35,6 +35,7 @@ abstract class Model implements Arrayable {
         $this->properties = $properties;
         $this->isNormalized = false;
         $this->isSanitized = false;
+        return $this;
     }
     
     /**
