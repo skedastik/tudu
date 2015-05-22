@@ -1,6 +1,7 @@
 <?php
 namespace Tudu\Core\Data\Repository;
 
+use \Tudu\Core\TuduException;
 use \Tudu\Core\Error;
 
 /**
@@ -8,6 +9,10 @@ use \Tudu\Core\Error;
  * 
  * All repository methods should return a \Tudu|Core\Error object if an error
  * occurs.
+ * 
+ * Repository subclasses should not normalize input data. This is the
+ * responsibility of the input provider. Output data, however, should be
+ * normalized.
  */
 abstract class Repository {
     protected $db;
@@ -17,20 +22,18 @@ abstract class Repository {
     }
     
     /**
-     * Call this function from fetch methods to automatically normalize Model
-     * objects prior to returning them.
+     * Call this function from fetch methods to normalize Model objects prior to
+     * returning them.
      * 
-     * @param \Tudu\Core\Data\Model $model Model to validate.
-     * @return \Tudu\Core\Data\Model|\Tudu\Core\Error If no validation errors
-     * occurred, a normalized model object is returned. Otherwise an error
-     * object is returned.
+     * @param \Tudu\Core\Data\Model $model Model to normalize.
+     * @return \Tudu\Core\Data\Model A normalized Model object.
      */
     final protected function prenormalize($model) {
         $errors = $model->normalize();
         if (is_null($errors)) {
             return $model;
         }
-        return Error::Validation(null, $errors, 400);
+        throw new TuduException('Model exported from repository has validation errors.');
     }
     
     /**

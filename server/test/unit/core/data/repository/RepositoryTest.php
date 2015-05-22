@@ -25,16 +25,13 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $model->asArray());
     }
     
-    public function testPrenormalizingAnInvalidModelShouldGenerateValidationErrors() {
+    public function testPrenormalizingAnInvalidModelShouldThrowAnException() {
         $repo = new MockRepository();
         $model = new MockModel([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',
             'email' => 'foo@bar.xyz'
         ]);
+        $this->setExpectedException('\Tudu\Core\TuduException');
         $error = $repo->publicPrenormalize($model);
-        $this->assertTrue($error instanceof Error);
-        
-        $expected = Error::Validation(null, $model->normalize());
-        $this->assertSame($expected->asArray(), $error->asArray());
     }
 }
