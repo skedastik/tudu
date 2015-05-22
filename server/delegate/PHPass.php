@@ -1,5 +1,5 @@
 <?php
-namespace \Tudu\Core\Delegate;
+namespace Tudu\Core\Delegate;
 
 use Hautelook\Phpass\PasswordHash;
 

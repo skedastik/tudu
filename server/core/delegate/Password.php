@@ -1,5 +1,5 @@
 <?php
-namespace \Tudu\Core\Delegate;
+namespace Tudu\Core\Delegate;
 
 /**
  * Password hashing delegate.
