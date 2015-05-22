@@ -25,9 +25,10 @@ class Error {
      */
     public static function Notice(
         $description = null,
-        $context = null
+        $context = null,
+        $httpStatusCode = null
     ) {
-        return new Core\Error(Error::NOTICE, $description, $context);
+        return new Core\Error(Error::NOTICE, $description, $context, $httpStatusCode);
     }
     
     /**
@@ -39,9 +40,10 @@ class Error {
      */
     public static function Generic(
         $description = null,
-        $context = null
+        $context = null,
+        $httpStatusCode = null
     ) {
-        return new Core\Error(Error::GENERIC, $description, $context);
+        return new Core\Error(Error::GENERIC, $description, $context, $httpStatusCode);
     }
     
     /**
@@ -58,9 +60,10 @@ class Error {
      */
     public static function Validation(
         $description = null,
-        $context = null
+        $context = null,
+        $httpStatusCode = null
     ) {
-        return new Core\Error(Error::VALIDATION, $description, $context);
+        return new Core\Error(Error::VALIDATION, $description, $context, $httpStatusCode);
     }
     
     /**
@@ -74,9 +77,10 @@ class Error {
      */
     public static function Fatal(
         $description = null,
-        $context = null
+        $context = null,
+        $httpStatusCode = null
     ) {
-        return new Core\Error(Error::FATAL, null, $context);
+        return new Core\Error(Error::FATAL, null, $context, $httpStatusCode);
     }
 }
 ?>
