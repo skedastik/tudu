@@ -20,9 +20,9 @@ abstract class Model implements Arrayable {
     /**
      * Constructor.
      * 
-     * @param array $properties Key/value properties array.
+     * @param array $properties (optional) Key/value properties array.
      */
-    final public function __construct($properties) {
+    final public function __construct($properties = []) {
         $this->fromArray($properties);
     }
     
