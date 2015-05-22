@@ -6,6 +6,9 @@ use \Hautelook\Phpass\PasswordHash;
 
 /**
  * PHPass password hashing delegate.
+ * 
+ * Uses Hautelook's modernized version of Openwall's PHPass password hashing
+ * library.
  */
 final class PHPass extends Password {
     
