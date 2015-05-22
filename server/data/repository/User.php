@@ -48,7 +48,7 @@ final class User extends Core\Data\Repository\Repository {
         );
         
         if ($result == -1) {
-            return Error::Validation(null, ['email' => 'This email address is already in use.']);
+            return Error::GENERIC(null, ['email' => 'Email address is already in use.'], 409);
         }
         
         return $result;
@@ -126,7 +126,7 @@ final class User extends Core\Data\Repository\Repository {
             case -2:
                 return Error::Notice('Provided email address is identical to current email address.');
             case -3:
-                return Error::Validation(null, ['email' => 'This email address is already in use.']);
+                return Error::Generic(null, ['email' => 'Email address is already in use.']);
         }
         
         return $result;

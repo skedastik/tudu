@@ -28,7 +28,7 @@ abstract class Repository {
         if (is_null($errors)) {
             return $model;
         }
-        return Error::Validation($errors);
+        return Error::Validation(null, $errors, 400);
     }
     
     /**

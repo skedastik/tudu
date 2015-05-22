@@ -11,10 +11,6 @@ class Error {
     protected $context;
     protected $httpStatusCode;
     
-    const KEY_ERROR = 'error';
-    const KEY_DESCRIPTION = 'description';
-    const KEY_CONTEXT = 'context';
-    
     /**
      * Constructor.
      * 
@@ -39,12 +35,12 @@ class Error {
      * The HTTP status code will NOT be included in the key/value array.
      */
     public function asArray() {
-        $error = [ Error::KEY_ERROR => $this->error ];
+        $error = ['error' => $this->error];
         if (!is_null($this->description)) {
-            $error[Error::KEY_DESCRIPTION] = $this->description;
+            $error['description'] = $this->description;
         }
         if (!is_null($this->context)) {
-            $error[Error::KEY_CONTEXT] = $this->context;
+            $error['context'] = $this->context;
         }
         return $error;
     }

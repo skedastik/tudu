@@ -34,7 +34,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
         $error = $repo->publicPrenormalize($model);
         $this->assertTrue($error instanceof \Tudu\Core\Error);
         
-        $expected = Repository\Error::Validation($model->normalize());
+        $expected = Repository\Error::Validation(null, $model->normalize());
         $this->assertSame($expected->asArray(), $error->asArray());
     }
 }
