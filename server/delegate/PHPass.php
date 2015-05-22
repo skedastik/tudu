@@ -1,26 +1,26 @@
 <?php
-namespace Tudu\Core\Delegate;
+namespace Tudu\Delegate;
 
-use Hautelook\Phpass\PasswordHash;
+use \Tudu\Core\Delegate\Password;
+use \Hautelook\Phpass\PasswordHash;
 
 /**
  * PHPass password hashing delegate.
  */
-final class PHPass {
+final class PHPass extends Password {
     
     protected $phpass;
     
-    public function __construct($password) {
-        parent::__construct($password);
+    public function __construct() {
         $this->phpass = new PasswordHash(8, false);
     }
     
-    function computeHash($password) {
+    protected function computeHash($password) {
         return $this->phpass->HashPassword($password);
     }
     
-    function compare(\Tudu\Core\Delegate\Password $password) {
-        return $this->phpass->CheckPassword($this->getHash(), $password->getHash());
+    public function compare($password, $hash) {
+        return $this->phpass->CheckPassword($password, $hash);
     }
 }
 ?>

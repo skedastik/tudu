@@ -6,40 +6,31 @@ namespace Tudu\Core\Delegate;
  */
 abstract class Password {
     
-    private $hash;
-    
     /**
-     * Constructor.
-     * 
-     * @param string $password Plain-text password. The password is hashed
-     * immediately and then discarded.
-     */
-    public function __construct($password) {
-        $this->hash = $this->computeHash($password);
-    }
-    
-    /**
-     * Compute the password hash.
+     * Compute the hash of a plain text password.
      * 
      * @param string $password Plain-text password.
      * @return string Computed password hash.
      */
-    abstract function computeHash($password);
-    
-    /**
-     * Compare Password against another Password.
-     * 
-     * @param \Tudu\Core\Delegate\Password $password Input password.
-     * @return bool TRUE if hashes resolve to the same password, FALSE
-     * otherwise.
-     */
-    abstract function compare(\Tudu\Core\Delegate\Password $password);
-    
-    /**
-     * Get calculated password hash.
-     */
-    final public function getHash() {
-        return $this->hash;
+    final public function getHash($password) {
+        return $this->computeHash($password);
     }
+    
+    /**
+     * Perform the actual hash computation.
+     * 
+     * @param string $password Plain-text password.
+     * @return string Computed password hash.
+     */
+    abstract protected function computeHash($password);
+    
+    /**
+     * Compare password against computed hash.
+     * 
+     * @param string $password Plain text password.
+     * @param string $hash Computed hash.
+     * @return bool TRUE if computed hash resolves to password, FALSE otherwise.
+     */
+    abstract public function compare($password, $hash);
 }
 ?>
