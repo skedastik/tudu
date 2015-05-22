@@ -6,7 +6,7 @@ namespace Tudu\Core;
  */
 class Error {
     
-    // Repository error types
+    // Error types
     const NOTICE = 'Notice';
     const GENERIC = 'Error';
     const VALIDATION = 'Validation Error';
