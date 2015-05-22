@@ -18,12 +18,6 @@ abstract class Model implements Arrayable {
     private $isSanitized;
     
     /**
-     * TODO: Right now, the Model constructor accepts any old array passed in.
-     * Maybe each Model subclass should have a static $descriptor array which
-     * lists required keys.
-     */
-    
-    /**
      * Constructor.
      * 
      * @param array $properties Key/value properties array.
