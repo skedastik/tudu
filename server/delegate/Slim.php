@@ -30,6 +30,14 @@ final class Slim implements App {
         return $this->slim->request->headers;
     }
     
+    public function getRequestBody() {
+        return $this->slim->request->getBody();
+    }
+    
+    public function getRequestIp() {
+        return $this->slim->request->getIp();
+    }
+    
     public function setResponseHeaders($headers) {
         $this->slim->response->headers->replace($headers);
     }

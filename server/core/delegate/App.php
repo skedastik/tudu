@@ -25,6 +25,16 @@ interface App {
     public function getRequestHeaders();
     
     /**
+     * Get request body.
+     */
+    public function getRequestBody();
+    
+    /**
+     * Get request IP.
+     */
+    public function getRequestIp();
+    
+    /**
      * Set the specified response headers.
      * 
      * @param array $headers Associative array of HTTP header key/value pairs.
