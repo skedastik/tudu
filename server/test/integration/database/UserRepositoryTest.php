@@ -42,7 +42,7 @@ class UserRepositoryTest extends DatabaseTest {
         $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
     }
 
     public function testGetByIDShouldFailGivenNonexistentID() {
@@ -141,7 +141,7 @@ class UserRepositoryTest extends DatabaseTest {
         $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
         $error = $this->repo->setUserEmail($user_id_in, 'baz@qux.xyz', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
     }
 }
 ?>

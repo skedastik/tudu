@@ -48,7 +48,7 @@ final class User extends Core\Data\Repository\Repository {
         );
         
         if ($result == -1) {
-            return Error::GENERIC(null, ['email' => 'Email address is already in use.'], 409);
+            return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
         }
         
         return $result;
@@ -69,11 +69,11 @@ final class User extends Core\Data\Repository\Repository {
         );
         switch ($result) {
             case -1:
-                return Error::Generic('Email address not found.');
+                return Error::Generic('Email address not found.', null, 404);
             case -2:
-                return Error::Generic('Signup token does not match.');
+                return Error::Generic('Signup token does not match.', null, 409);
             case -3:
-                return Error::Notice('User has already been confirmed.');
+                return Error::Notice('User has already been confirmed.', null, 409);
         }
         return $result;
     }
@@ -92,7 +92,7 @@ final class User extends Core\Data\Repository\Repository {
             [$id, $newPasswordHash, $ip]
         );
         if ($result == -1) {
-            return Error::Generic('User ID not found.');
+            return Error::Generic('User ID not found.', null, 404);
         }
         return $result;
     }
@@ -122,11 +122,11 @@ final class User extends Core\Data\Repository\Repository {
         
         switch ($result) {
             case -1:
-                return Error::Generic('User ID not found.');
+                return Error::Generic('User ID not found.', null, 404);
             case -2:
-                return Error::Notice('Provided email address is identical to current email address.');
+                return Error::Notice('Provided email address is identical to current email address.', null, 409);
             case -3:
-                return Error::Generic(null, ['email' => 'Email address is already in use.']);
+                return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
         }
         
         return $result;
