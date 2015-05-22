@@ -145,7 +145,7 @@ class Error implements Arrayable {
      * Return the HTTP status code.
      */
     public function getHttpStatusCode() {
-        return $this->context;
+        return $this->httpStatusCode;
     }
 }
 ?>
