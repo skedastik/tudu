@@ -30,13 +30,6 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertSame($pwHash, $user->get('password_hash'));
     }
     
-    public function testSignupUserShouldFailGivenMalformedEmail() {
-        $email = 'foo@bar';
-        $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
-    }
-    
     public function testSignupUserShouldFailGivenEmailThatIsAlreadyTaken() {
         $email = 'foo@bar.com';
         $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
@@ -127,13 +120,6 @@ class UserRepositoryTest extends DatabaseTest {
         $error = $this->repo->setUserEmail($user_id_in, 'foo@bar', '127.0.0.1');
         $this->assertTrue($error instanceof Core\Error);
         $this->assertEquals(Repository\Error::VALIDATION, $error->getError());
-    }
-    
-    public function testSetUserEmailToSameEmailShouldFail() {
-        $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->setUserEmail($user_id_in, 'foo@bar.com', '127.0.0.1');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::NOTICE, $error->getError());
     }
     
     public function testSetUserEmailToAlreadyUsedEmailShouldFail() {

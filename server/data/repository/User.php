@@ -33,24 +33,13 @@ final class User extends Core\Data\Repository\Repository {
      * @return int|\Tudu\Core\Error New user's ID on success, Error otherwise.
      */
     public function signupUser($email, $passwordHash, $ip) {
-        $user = new Model\User([
-            'email' => $email
-        ]);
-        $errors = $user->normalize();
-        if (!is_null($errors)) {
-            return Error::Validation(null, $errors);
-        }
-        
-        $email = $user->get('email');
         $result = $this->db->queryValue(
             'select tudu.signup_user($1, $2, $3);',
             [$email, $passwordHash,  $ip]
         );
-        
         if ($result == -1) {
             return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
         }
-        
         return $result;
     }
     
@@ -106,20 +95,10 @@ final class User extends Core\Data\Repository\Repository {
      * @return int|Tudu\Core\Error User's ID on success, Error otherwise.
      */
     public function setUserEmail($id, $email, $ip) {
-        $user = new Model\User([
-            'email' => $email
-        ]);
-        $errors = $user->normalize();
-        if (!is_null($errors)) {
-            return Error::Validation(null, $errors);
-        }
-        
-        $email = $user->get('email');
         $result = $this->db->queryValue(
             'select tudu.set_user_email($1, $2, $3);',
             [$id, $email, $ip]
         );
-        
         switch ($result) {
             case -1:
                 return Error::Generic('User ID not found.', null, 404);
@@ -128,7 +107,6 @@ final class User extends Core\Data\Repository\Repository {
             case -3:
                 return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
         }
-        
         return $result;
     }
 }
