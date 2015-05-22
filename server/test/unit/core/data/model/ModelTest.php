@@ -34,6 +34,25 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $model->asArray());
     }
     
+    public function testHasPropertiesShouldReturnTrueGivenExistingProperties() {
+        $model = new MockModel([
+            'name' => 'John Doe',
+            'email' => 'sooperdooper@abc.xyz'
+        ]);
+        $this->assertTrue($model->hasProperties('name'));
+        $this->assertTrue($model->hasProperties('email'));
+        $this->assertTrue($model->hasProperties('name', 'email'));
+    }
+    
+    public function testHasPropertiesShouldReturnFalseGivenNonexistentProperties() {
+        $model = new MockModel([
+            'name' => 'John Doe',
+            'email' => 'sooperdooper@abc.xyz'
+        ]);
+        $this->assertFalse($model->hasProperties('foo'));
+        $this->assertFalse($model->hasProperties('name', 'foo'));
+    }
+    
     public function testMutationShouldInvalidateModel() {
         $model = new MockModel([
             'name' => 'John Doe',

@@ -180,6 +180,22 @@ abstract class Model implements Arrayable {
     }
     
     /**
+     * Check if the model has given properties.
+     * 
+     * @param mixed ...$properties A list of property keys.
+     * @return bool TRUE if model has all of supplied properties, FALSE
+     * otherwise.
+     */
+    final public function hasProperties(...$properties) {
+        foreach ($properties as $property) {
+            if (!array_key_exists($property, $this->properties)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Apply an array of Validate and/or Transform functors to Model properties.
      * 
      * Properties that validate will have transformations applied. Properties
