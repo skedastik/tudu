@@ -17,7 +17,7 @@ final class Password extends Transformer {
      * @param \Tudu\Core\Delegate\Password $instance An instance of a Password
      * delegate subclass.
      */
-    public function delegate(\Tudu\Core\Delegate\Password $delegate) {
+    public function with(\Tudu\Core\Delegate\Password $delegate = null) {
         $this->setOption('delegate', $delegate);
         return $this;
     }

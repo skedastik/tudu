@@ -7,7 +7,7 @@ use \Tudu\Core\Data\Transform\Transform;
 class PHPasswordTest extends \PHPUnit_Framework_TestCase {
     
     public function testShouldGenerateHashThatResolvesToInputPassword() {
-        $transformer = Transform::Password()->with()->delegate(new PHPass());
+        $transformer = Transform::Password()->with(new PHPass());
         $password = 'foo';
         $hash = $transformer->execute($password);
         $phpass = new PHPass();
