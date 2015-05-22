@@ -3,8 +3,7 @@ namespace Tudu\Handler\Api;
 
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model;
-use \Tudu\Core;
-use \Tudu\Core\Data\Repository\Error;
+use \Tudu\Core\Error;
 
 /**
  * Request handler for /users/
@@ -42,7 +41,7 @@ final class Users extends \Tudu\Core\Handler\API {
             $this->delegate->getRequestIp()
         );
         
-        if ($result instanceof Core\Error) {
+        if ($result instanceof Error) {
             $statusCode = $result->getHttpStatusCode();
             $this->delegate->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
             $responseBody = json_encode($result->asArray());

@@ -1,6 +1,8 @@
 <?php
 namespace Tudu\Core\Data\Repository;
 
+use \Tudu\Core\Error;
+
 /**
  * Data repository base class.
  * 

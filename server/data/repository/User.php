@@ -1,11 +1,11 @@
 <?php
 namespace Tudu\Data\Repository;
 
-use \Tudu\Core;
+use \Tudu\Core\Data\Repository\Repository;
+use \Tudu\Core\Error;
 use \Tudu\Data\Model;
-use \Tudu\Core\Data\Repository\Error;
 
-final class User extends Core\Data\Repository\Repository {
+final class User extends Repository {
     
     /**
      * Fetch a single user with the given ID.

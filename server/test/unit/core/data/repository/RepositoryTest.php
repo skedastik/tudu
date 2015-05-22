@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Test\Unit\Core\Data\Model;
 
-use \Tudu\Core;
+use \Tudu\Core\Error;
 use \Tudu\Core\Data\Repository;
 use \Tudu\Core\Data\Model\Model;
 use \Tudu\Test\Mock\MockModel;
@@ -32,9 +32,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
             'email' => 'foo@bar.xyz'
         ]);
         $error = $repo->publicPrenormalize($model);
-        $this->assertTrue($error instanceof \Tudu\Core\Error);
+        $this->assertTrue($error instanceof Error);
         
-        $expected = Repository\Error::Validation(null, $model->normalize());
+        $expected = Error::Validation(null, $model->normalize());
         $this->assertSame($expected->asArray(), $error->asArray());
     }
 }

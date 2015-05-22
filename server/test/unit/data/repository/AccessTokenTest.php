@@ -3,7 +3,7 @@ namespace Tudu\Test\Unit\Data\Repository;
 
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\AccessToken;
-use \Tudu\Core\Data\Repository\Error;
+use \Tudu\Core\Error;
 
 class AccessTokenTest extends \PHPUnit_Framework_TestCase {
 
@@ -32,7 +32,7 @@ class AccessTokenTest extends \PHPUnit_Framework_TestCase {
         $this->db->method('query')->willReturn(false);
         $id = 123;
         $error = $this->repo->getByID($id);
-        $this->assertTrue($error instanceof \Tudu\Core\Error);
+        $this->assertTrue($error instanceof Error);
         $this->assertEquals(Error::GENERIC, $error->getError());
     }
 }

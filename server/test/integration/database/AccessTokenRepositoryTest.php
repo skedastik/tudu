@@ -6,8 +6,7 @@ use \Tudu\Data\Model\User;
 use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Repository\User as UserRepo;
 use \Tudu\Data\Repository\AccessToken as AccessTokenRepo;
-use \Tudu\Core;
-use \Tudu\Core\Data\Repository;
+use \Tudu\Core\Error;
 
 class AccessTokenRepositoryTest extends DatabaseTest {
     
@@ -30,15 +29,15 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     
     public function testCreateAccessTokenShouldFailGivenInvalidUserId() {
         $error = $this->tokenRepo->createAccessToken(-1, 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testCreateAccessTokenShouldFailGivenNonUniqueTokenString() {
         $this->tokenRepo->createAccessToken($this->user->get('user_id'), 'token_string', 'login', '1 week', false, '127.0.0.1');
         $error = $this->tokenRepo->createAccessToken($this->user->get('user_id'), 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testRevokeActiveAccessTokensShouldSucceedGivenValidInputs() {
@@ -49,8 +48,8 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     
     public function testRevokeActiveAccessTokensShouldFailIfNoActiveTokensExist() {
         $error = $this->tokenRepo->revokeActiveAccessTokens($this->user->get('user_id'), 'login', '127.0.0.1');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testValidateAccessTokenShouldSucceedGivenValidInputs() {
@@ -62,23 +61,23 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     public function testValidateAccessTokenShouldFailGivenInvalidTokenString() {
         $this->tokenRepo->createAccessToken($this->user->get('user_id'), 'token_string', 'login', '1 week', false, '127.0.0.1');
         $error = $this->tokenRepo->validateAccessToken($this->user->get('user_id'), 'invalid_token_string');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testValidateAccessTokenShouldFailGivenRevokedToken() {
         $this->tokenRepo->createAccessToken($this->user->get('user_id'), 'token_string', 'login', '1 week', false, '127.0.0.1');
         $this->tokenRepo->revokeActiveAccessTokens($this->user->get('user_id'), 'login', '127.0.0.1');
         $error = $this->tokenRepo->validateAccessToken($this->user->get('user_id'), 'token_string');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testValidateAccessTokenShouldFailGivenExpiredToken() {
         $this->tokenRepo->createAccessToken($this->user->get('user_id'), 'token_string', 'login', '0 seconds', false, '127.0.0.1');
         $error = $this->tokenRepo->validateAccessToken($this->user->get('user_id'), 'token_string');
-        $this->assertTrue($error instanceof Core\Error);
-        $this->assertEquals(Repository\Error::GENERIC, $error->getError());
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
     }
 }
 ?>
