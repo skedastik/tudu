@@ -50,6 +50,13 @@ abstract class API extends Handler {
     }
     
     /**
+     * Handle HEAD requests on this endpoint. Override for custom behavior.
+     */
+    protected function head() {
+        $this->rejectMethod();
+    }
+    
+    /**
      * Get an empty Model object. Override this.
      * 
      * Subclasses should return an empty instance of a Model subclass. The Model

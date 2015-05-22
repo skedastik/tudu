@@ -52,7 +52,7 @@ final class Slim implements App {
     
     public function map($route, $callback, ...$methods) {
         if (empty($methods)) {
-            $methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'];
+            $methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'];
         }
         $this->slim->map($route, $callback)->via(...$methods);
     }

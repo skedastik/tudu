@@ -68,7 +68,7 @@ interface App {
      * @param mixed $methods Any number of string arguments, each an HTTP
      * request method. If no method arguments are supplied, the route applies to
      * all methods. The following methods are supported: GET, POST, PUT, DELETE,
-     * OPTIONS, PATCH.
+     * OPTIONS, PATCH, HEAD.
      */
     public function map($route, $callback, ...$methods);
     
