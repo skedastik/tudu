@@ -68,11 +68,11 @@ final class String extends Validator {
             || $length > ($maxLen ?: INF))
         {
             if (is_null($minLen)) {
-                return new Sentinel("must be at most $maxLen character".($maxLen == 1 ? '' : 's').' in length');
+                return new Sentinel("must be at most $maxLen character".($maxLen == 1 ? '' : 's').' long');
             } else if (is_null($maxLen)) {
-                return new Sentinel("must be at least $minLen character".($minLen == 1 ? '' : 's').' in length');
+                return new Sentinel("must be at least $minLen character".($minLen == 1 ? '' : 's').' long');
             } else {
-                return new Sentinel("must be $minLen to $maxLen character".($maxLen == 1 ? '' : 's').' in length');
+                return new Sentinel("must be $minLen to $maxLen character".($maxLen == 1 ? '' : 's').' long');
             }
         }
         
