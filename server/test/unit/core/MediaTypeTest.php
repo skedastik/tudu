@@ -76,5 +76,10 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase {
         $mediaType2 = new MediaType('application/json; charset=utf-8');
         $this->assertFalse($mediaType1->compareStrict($mediaType2));
     }
+    
+    public function testAsStringShouldReturnAnAppropriateMediaTypeString() {
+        $mediaType = new MediaType('application/json; charset=utf-8');
+        $this->assertSame('application/json; charset=utf-8', $mediaType->asString());
+    }
 }
 ?>

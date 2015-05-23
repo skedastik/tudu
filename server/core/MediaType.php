@@ -96,5 +96,12 @@ final class MediaType {
         return $mediaType->getType() === $this->getType()
             && $mediaType->getSubtype() === $this->getSubtype();
     }
+    
+    /**
+     * Return the media type as a string.
+     */
+    public function asString() {
+        return $this->type.'/'.$this->subtype.'; '.$this->parameterAttribute.'='.$this->parameterValue;
+    }
 }
 ?>
