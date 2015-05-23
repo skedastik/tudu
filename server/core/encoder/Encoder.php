@@ -27,6 +27,23 @@ interface Encoder {
     public function getSupportedMediaTypes();
     
     /**
+     * Set the default media type used by this encoder.
+     * 
+     * This will be a no-op for encoder subclasses that support only one media
+     * type. For subclasses that support multiple media types, use the default
+     * media type in calls to encode() and decode() that do not supply a media
+     * type argument.
+     * 
+     * @param \Tudu\Core\MediaType $mediaType
+     */
+    public function setDefaultMediaType(MediaType $mediaType);
+    
+    /**
+     * Get the default media type used by this encoder.
+     */
+    public function getDefaultMediaType();
+    
+    /**
      * Encode an array.
      * 
      * Implementers may accept a second parameter specifying a media type.
