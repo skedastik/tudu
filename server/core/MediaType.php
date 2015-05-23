@@ -21,12 +21,12 @@ final class MediaType {
         
         $mediaType = strtolower($mediaType);
         
-        // this regex is intentionally lax
-        $pattern = '/^\s*([^\/\s]+)\s*\/\s*([^\s;]+)(\s*;\s*([^\s=]+)\s*=\s*\"?\s*([^\s]+)\s*\"?\s*)?\s*$/';
+        // this regex is intentionally lax to minimize false negatives
+        $pattern = '/^\s*([^\/\s]+)\s*\/\s*([^\s;]+)(\s*;\s*([^\s=]+)\s*=\s*\"?\s*([^\s]+)\s*\"?\s*)?.*$/';
         if (preg_match($pattern, $mediaType, $matches) === 1) {
             $this->type = $matches[1];
             $this->subtype = $matches[2];
-            if (isset($matches[3])) {
+            if (isset($matches[4])) {
                 $this->parameterAttribute = $matches[4];
                 $this->parameterValue = $matches[5];
             }
@@ -70,19 +70,31 @@ final class MediaType {
     }
     
     /**
-     * Compare this media type against another.
+     * Strictly compare this media type against another.
      * 
      * @param \Tudu\Core\MediaType $mediaType
      * @return bool TRUE if input media type matches, FALSE otherwise. In order
-     * to match, input media types must have same type and subtype, and must
-     * have equivalent specificity. In other words, both media types must
+     * to match, input media type must have same type and subtype, and must have
+     * equivalent specificity. In other words, both media types must also
      * specify equivalent parameters, or both media types must omit parameters.
      */
-    public function compare(MediaType $mediaType) {
+    public function compareStrict(MediaType $mediaType) {
         return $mediaType->getType() === $this->getType()
             && $mediaType->getSubtype() === $this->getSubtype()
             && $mediaType->getParameterAttribute() === $this->getParameterAttribute()
             && $mediaType->getParameterValue() === $this->getParameterValue();
+    }
+    
+    /**
+     * Loosely compare this media type against another.
+     * 
+     * @param \Tudu\Core\MediaType $mediaType
+     * @return bool TRUE if input media type matches, FALSE otherwise. In order
+     * to match, input media type need only have same type and subtype.
+     */
+    public function compare(MediaType $mediaType) {
+        return $mediaType->getType() === $this->getType()
+            && $mediaType->getSubtype() === $this->getSubtype();
     }
 }
 ?>

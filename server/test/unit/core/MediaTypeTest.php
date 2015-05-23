@@ -11,6 +11,12 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('json', $mediaType->getSubtype());
         $this->assertNull($mediaType->getParameterAttribute());
         $this->assertNull($mediaType->getParameterValue());
+        
+        $mediaType = new MediaType('application/json   ;  ');
+        $this->assertSame('application', $mediaType->getType());
+        $this->assertSame('json', $mediaType->getSubtype());
+        $this->assertNull($mediaType->getParameterAttribute());
+        $this->assertNull($mediaType->getParameterValue());
 
         $mediaType = new MediaType('application/json; charset=utf-8');
         $this->assertSame('application', $mediaType->getType());
@@ -23,9 +29,15 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('json', $mediaType->getSubtype());
         $this->assertSame('charset', $mediaType->getParameterAttribute());
         $this->assertSame('utf-8', $mediaType->getParameterValue());
+        
+        $mediaType = new MediaType('   Application  /  JSON   ; Charset =     "   UTF-8  "         ;  ');
+        $this->assertSame('application', $mediaType->getType());
+        $this->assertSame('json', $mediaType->getSubtype());
+        $this->assertSame('charset', $mediaType->getParameterAttribute());
+        $this->assertSame('utf-8', $mediaType->getParameterValue());
     }
     
-    public function testShouldCompareEquallySpecificContentTypesCorrectly() {
+    public function testLooseComparisonShouldCompareContentTypesLoosely() {
         $mediaType1 = new MediaType('application/json');
         $mediaType2 = new MediaType('application/json');
         $this->assertTrue($mediaType1->compare($mediaType2));
@@ -40,13 +52,29 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase {
         
         $mediaType1 = new MediaType('application/json; charset=utf-8');
         $mediaType2 = new MediaType('application/json; charset=iso-8859-1');
-        $this->assertFalse($mediaType1->compare($mediaType2));
+        $this->assertTrue($mediaType1->compare($mediaType2));
     }
     
-    public function testShouldReturnFalseWhenComparingContentTypesOfDifferentSpecificity() {
+    public function testStrictComparisonShouldCompareContentTypesStrictly() {
+        $mediaType1 = new MediaType('application/json');
+        $mediaType2 = new MediaType('application/json');
+        $this->assertTrue($mediaType1->compareStrict($mediaType2));
+        
+        $mediaType1 = new MediaType('application/json');
+        $mediaType2 = new MediaType('application/xml');
+        $this->assertFalse($mediaType1->compareStrict($mediaType2));
+        
+        $mediaType1 = new MediaType('application/json; charset=utf-8');
+        $mediaType2 = new MediaType('application/json; charset=utf-8');
+        $this->assertTrue($mediaType1->compareStrict($mediaType2));
+        
+        $mediaType1 = new MediaType('application/json; charset=utf-8');
+        $mediaType2 = new MediaType('application/json; charset=iso-8859-1');
+        $this->assertFalse($mediaType1->compareStrict($mediaType2));
+        
         $mediaType1 = new MediaType('application/json');
         $mediaType2 = new MediaType('application/json; charset=utf-8');
-        $this->assertFalse($mediaType1->compare($mediaType2));
+        $this->assertFalse($mediaType1->compareStrict($mediaType2));
     }
 }
 ?>
