@@ -20,6 +20,13 @@ interface Encoder {
     public function supportsMediaType(MediaType $mediaType);
     
     /**
+     * Get supported media types.
+     * 
+     * @return array An array of media type strings.
+     */
+    public function getSupportedMediaTypes();
+    
+    /**
      * Encode an array.
      * 
      * Implementers may accept a second parameter specifying a media type.

@@ -14,6 +14,10 @@ final class JSON implements Encoder {
         return $mediaType->compare(new MediaType(self::MEDIA_TYPE));
     }
     
+    public function getSupportedMediaTypes() {
+        return [self::MEDIA_TYPE];
+    }
+    
     public function encode(array $data, MediaType $mediaType = null) {
         $encoded = json_encode($data);
         return $encoded === false ? null : $encoded;

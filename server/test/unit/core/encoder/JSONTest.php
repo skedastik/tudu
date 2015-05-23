@@ -18,6 +18,12 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($encoder->supportsMediaType($jsonMediaType));
     }
     
+    public function testGetSupportedMediaTypesShouldReturnOnlyJSON() {
+        $encoder = new Encoder\JSON();
+        $supportedMediaTypes = $encoder->getSupportedMediaTypes();
+        $this->assertSame(['application/json; charset=utf-8'], $supportedMediaTypes);
+    }
+    
     public function testShouldEncodeArrayAsValidJSON() {
         $encoder = new Encoder\JSON();
         $data = [
