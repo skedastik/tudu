@@ -18,25 +18,19 @@ final class Users extends UserEndpoint {
     /**
      * POST to "/users/" to sign up a new user.
      */
-    protected function post(Core\Data\Model $model) {
-        $requiredProperties = ['email', 'password'];
-        if (!$model->hasProperties($requiredProperties)) {
-            $missingProperties = array_values(array_diff($requiredProperties, $model->asArray()));
-            $this->renderError(Error::Validation('Resource descriptor is missing required properties.', $missingProperties, 400));
-        }
+    protected function post() {
+        $data = $this->translateRequestBody([
+            'email',
+            'password'
+        ]);
         
-        // TODO: Return error if extraneous data is provided?
-        
-        $repo = new Repository\User($this->db);
-        
-        $result = $repo->signupUser(
-            $model->get('email'),
-            $model->get('password'),
+        $result = $this->userRepo->signupUser(
+            $data['email'],
+            $data['password'],
             $this->delegate->getRequestIp()
         );
         if ($result instanceof Error) {
-            $this->renderError($result);
-            return;
+            $this->sendError($result);
         }
         
         $this->delegate->setResponseStatus(201);

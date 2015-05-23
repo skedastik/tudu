@@ -3,7 +3,7 @@ namespace Tudu\Core\Handler;
 
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Error;
-use \Tudu\Core\Data\Model\Model;
+use \Tudu\Core\Data\Model;
 
 require_once __DIR__.'/Handler.php';
 
@@ -24,21 +24,21 @@ abstract class API extends Handler {
     /**
      * Handle POST requests on this endpoint. Override for custom behavior.
      */
-    protected function post(Model $model) {
+    protected function post() {
         $this->rejectMethod();
     }
     
     /**
      * Handle PUT requests on this endpoint. Override for custom behavior.
      */
-    protected function put(Model $model) {
+    protected function put() {
         $this->rejectMethod();
     }
     
     /**
      * Handle PATCH requests on this endpoint. Override for custom behavior.
      */
-    protected function patch(Model $model) {
+    protected function patch() {
         $this->rejectMethod();
     }
     
@@ -95,6 +95,41 @@ abstract class API extends Handler {
     }
     
     /**
+     * Translate the request body into normalized model data.
+     * 
+     * If the request body is valid, its data is normalized and returned as a
+     * key/value array.
+     * 
+     * The request body is considered invalid if the resource it represents is
+     * missing any of the given properties, or if the properties themselves fail
+     * to validate. In such cases, processing halts and an error response is
+     * automatically generated.
+     * 
+     * @param array $requiredProperties Array of normalized data.
+     */
+    protected function translateRequestBody($requiredProperties) {
+        $data = json_decode($this->delegate->getRequestBody(), true);
+        if (is_null($data)) {
+            $description = 'Badly formatted request body. Expected a resource descriptor with the listed properties.';
+            $this->sendError(Error::Generic($description, $requiredProperties, 400));
+        }
+        
+        $model = $this->getModel()->fromArray($data);
+        
+        if (!$model->hasProperties($requiredProperties)) {
+            $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
+            $this->sendError(Error::Generic('Resource descriptor is missing listed properties.', $missingProperties, 400));
+        }
+        
+        $errors = $model->normalize();
+        if (!is_null($errors)) {
+            $this->sendError(Error::Validation(null, $errors, 400));
+        }
+        
+        return $model->asArray();
+    }
+    
+    /**
      * Default behavior for rejecting unsupported request methods.
      */
     protected function rejectMethod() {
@@ -103,43 +138,31 @@ abstract class API extends Handler {
         $this->delegate->send();
     }
     
-    /**
-     * If request method is POST, PUT, or PATCH, the request body is
-     * automatically decoded and transformed into a normalized Model object. If
-     * validation fails, processing halts and an error response is automatically
-     * generated.
-     */
     final public function process() {
         $method = strtolower($this->delegate->getRequestMethod());
         $model = null;
         
-        if ($method == 'post' || $method == 'put' || $method == 'patch') {
-            // TODO: Do not assume JSON content type.
-            $data = json_decode($this->delegate->getRequestBody(), true);
-            $model = $this->getModel()->fromArray($data);
-            $errors = $model->normalize();
-            if (!is_null($errors)) {
-                $this->renderError(Error::Validation(null, $errors, 400));
-                return;
-            }
-        }
+        // TODO: Do not assume JSON content type.
+        // TODO: Sanitize all output.
+        
+        $this->delegate->setResponseHeaders([
+            'Content-Type' => 'application/json; charset=utf-8'
+        ]);
         
         // invoke method corresponding to HTTP request method
-        $this->{$method}($model);
+        $this->{$method}();
     }
     
     /**
-     * Render error response.
-     * 
-     * This method sets the HTTP status code and translates an error object into
-     * a response body.
+     * Halt processing immediately and send an error response.
      * 
      * @param \Tudu\Core\Error $error Error object.
      */
-    final protected function renderError($error) {
-        $statusCode = $data->getHttpStatusCode();
+    final protected function sendError($error) {
+        $statusCode = $error->getHttpStatusCode();
         $this->delegate->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
-        $this->renderBody($data->asArray());
+        $this->renderBody($error->asArray());
+        $this->delegate->send();
     }
     
     /**

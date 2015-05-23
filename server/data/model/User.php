@@ -23,6 +23,7 @@ final class User extends Model {
             'password' => Transform::Convert()->to()->string()
                        -> then(Validate::String()->length()->from(8))
                        -> then(Transform::Password()->with(new PHPass()))
+                       -> then(Transform::Description()->to('Password'))
         ];
     }
     

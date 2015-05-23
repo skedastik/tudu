@@ -12,7 +12,11 @@ final class User extends UserEndpoint {
         return 'PUT';
     }
     
-    protected function put(Model\Model $user) {
+    protected function getRequiredResourceFormat() {
+        return [];
+    }
+    
+    protected function put() {
         echo 'Users->put()';
     }
 }
