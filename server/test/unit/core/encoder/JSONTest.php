@@ -4,9 +4,6 @@ namespace Tudu\Test\Unit\Core\Encoder;
 use \Tudu\Core\Encoder;
 use \Tudu\Core\MediaType;
 
-/**
- * @group todo
- */
 class JSONTest extends \PHPUnit_Framework_TestCase {
     
     public function testSupportsJSONMediaType() {
