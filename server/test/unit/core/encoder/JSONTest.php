@@ -9,10 +9,16 @@ use \Tudu\Core\MediaType;
  */
 class JSONTest extends \PHPUnit_Framework_TestCase {
     
-    public function testGetMediaTypeShouldReturnJSONMediaType() {
+    public function testSupportsJSONMediaType() {
         $encoder = new Encoder\JSON();
-        $jsonMediaType = new MediaType('application/json; charset=utf-8');
-        $this->assertTrue($jsonMediaType->compare($encoder->getMediaType()));
+        $jsonMediaType = new MediaType('application/json');
+        $this->assertTrue($encoder->supportsMediaType($jsonMediaType));
+    }
+    
+    public function testDoesNotSupportOtherMediaType() {
+        $encoder = new Encoder\JSON();
+        $jsonMediaType = new MediaType('application/xml');
+        $this->assertFalse($encoder->supportsMediaType($jsonMediaType));
     }
     
     public function testShouldEncodeArrayAsValidJSON() {

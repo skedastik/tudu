@@ -10,8 +10,8 @@ final class JSON implements Encoder {
     
     const MEDIA_TYPE = 'application/json; charset=utf-8';
     
-    public function getMediaType() {
-        return new MediaType(self::MEDIA_TYPE);
+    public function supportsMediaType(MediaType $mediaType) {
+        return $mediaType->compare(new MediaType(self::MEDIA_TYPE));
     }
     
     /**

@@ -1,17 +1,23 @@
 <?php
 namespace Tudu\Core\Encoder;
 
+use \Tudu\Core\MediaType;
+
 /**
- * An encoder encodes and decodes PHP arrays from data of some media type.
+ * An encoder encodes or decodes PHP arrays into or from data of a given media
+ * type.
  */
 interface Encoder {
     
     /**
-     * Get the media type of the encoder.
+     * Check if encoder supports a given media type.
      * 
-     * @return \Tudu\Core\MediaType
+     * @param \Tudu\Core\MediaType $mediaType
+     * @return bool TRUE is media type is supported, FALSE otherwise. Media type
+     * is supported if media type and subtype match, regardless of media type
+     * parameter.
      */
-    public function getMediaType();
+    public function supportsMediaType(MediaType $mediaType);
     
     /**
      * Encode an array.
