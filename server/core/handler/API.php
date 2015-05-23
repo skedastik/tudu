@@ -4,6 +4,7 @@ namespace Tudu\Core\Handler;
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Error;
 use \Tudu\Core\Data\Model;
+use \Tudu\Core\MediaType;
 
 require_once __DIR__.'/Handler.php';
 
@@ -95,6 +96,22 @@ abstract class API extends Handler {
     abstract protected function getModel();
     
     /**
+     * Require a request entity content type.
+     * 
+     * If the request content type does not match, processing halts immediately
+     * and an error response is sent.
+     * 
+     * @param string $contentTypeString
+     */
+    protected function requireRequestContentType($contentTypeString) {
+        $contentType = new MediaType($contentTypeString);
+        $requestContentType = new MediaType($this->delegate->getRequestHeaders()['Content-Type']);
+        if (!$contentType->compare($requestContentType)) {
+            $this->sendError(Error::Generic("Request entity media type must be: $contentTypeString", null, 415));
+        }
+    }
+    
+    /**
      * Translate the request body into normalized model data.
      * 
      * If the request body is valid, its data is normalized and returned as a
@@ -141,7 +158,7 @@ abstract class API extends Handler {
     final public function process() {
         $method = strtolower($this->delegate->getRequestMethod());
         
-        // TODO: Do not assume JSON content type.
+        // TODO: Do not assume JSON content type accepted.
         // TODO: Sanitize all output.
         
         $this->delegate->setResponseHeaders([
