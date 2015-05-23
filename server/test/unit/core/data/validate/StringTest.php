@@ -17,7 +17,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $input = '';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at least 1 character in length', $result->getValue());
+        $this->assertEquals('must be at least 1 character long', $result->getValue());
     }
 
     public function testLengthUpperBoundShouldGenerateAnErrorGivenInputThatIsTooLong() {
@@ -30,7 +30,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $input = 'toooooooooooooooooo long';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at most 1 character in length', $result->getValue());
+        $this->assertEquals('must be at most 1 character long', $result->getValue());
     }
 
     public function testLengthRangeShouldGenerateAnErrorGivenInputWithLengthOutsideRange() {
@@ -42,12 +42,12 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $input = 'too short';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
+        $this->assertEquals('must be 10 to 15 characters long', $result->getValue());
 
         $input = 'toooooooooooooooooo long';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be 10 to 15 characters in length', $result->getValue());
+        $this->assertEquals('must be 10 to 15 characters long', $result->getValue());
     }
     
     public function testValidateEmailShouldAcceptValidEmailAddresses() {
@@ -88,7 +88,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $input = 'too short';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('String must be at least 10 characters in length.', $result->getValue());
+        $this->assertEquals('String must be at least 10 characters long.', $result->getValue());
     }
     
     public function testPassingNonStringInputToStringValidatorShouldThrowAnException() {

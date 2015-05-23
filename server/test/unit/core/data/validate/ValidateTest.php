@@ -61,7 +61,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $input = 'this_email_is@too_long.xyz';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at most 15 characters in length', $result->getValue());
+        $this->assertEquals('must be at most 15 characters long', $result->getValue());
     }
 
     public function testChainingThreeValidatorsShouldWork() {
@@ -80,12 +80,12 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $input = 'this_email_is@too_long.xyz';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at most 20 characters in length', $result->getValue());
+        $this->assertEquals('must be at most 20 characters long', $result->getValue());
 
         $input = 'too@short.xyz';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at least 15 characters in length', $result->getValue());
+        $this->assertEquals('must be at least 15 characters long', $result->getValue());
     }
     
     public function testTransformThenValidateShouldTransformThenValidateInput() {
@@ -103,7 +103,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $input = 'truthy';
         $result = $chain->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('must be at most 1 character in length', $result->getValue());
+        $this->assertEquals('must be at most 1 character long', $result->getValue());
     }
 
     public function testTransformThenValidateWithSentinelShouldGenerateAValidationError() {
@@ -117,7 +117,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($result1 instanceof Sentinel);
         $this->assertTrue($result2 instanceof Sentinel);
         
-        $this->assertEquals('must be at least 5 characters in length', $result1->getValue());
+        $this->assertEquals('must be at least 5 characters long', $result1->getValue());
         $this->assertEquals($error, $result2->getValue());
     }
     
@@ -131,7 +131,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
         $input = 'this string is invalid';
         $result = $chain->execute($input);
         $this->assertTrue($result instanceof Sentinel);
-        $this->assertEquals('Test string must be at most 15 characters in length.', $result->getValue());
+        $this->assertEquals('Test string must be at most 15 characters long.', $result->getValue());
     }
     
     public function testValidationChainGivenSentinelInputShouldGenerateValidationError() {

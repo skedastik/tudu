@@ -123,7 +123,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($mockModel->isNormalized());
         $this->assertNotNull($errors);
         $this->assertTrue(!isset($errors['email']));
-        $this->assertEquals('Name must be 5 to 35 characters in length.', $errors['name']);
+        $this->assertTrue(isset($errors['name']));
     }
 
     public function testNormalizingInvalidDataShouldProduceOnlyErrors() {
@@ -135,8 +135,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $errors = $mockModel->normalize();
         $this->assertFalse($mockModel->isNormalized());
         $this->assertNotNull($errors);
-        $this->assertEquals('Name must be 5 to 35 characters in length.', $errors['name']);
-        $this->assertEquals('Email address is invalid.', $errors['email']);
+        $this->assertTrue(isset($errors['name']));
+        $this->assertTrue(isset($errors['email']));
     }
     
     public function testNormalizingSentinelsShouldProduceAnError() {
