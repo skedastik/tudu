@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../tudu_autoload.php';
+include __DIR__.'/../autoload.php';
 
 use \Tudu\Test\Mock\MockLogger;
 use \Tudu\Core\Logger;

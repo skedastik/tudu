@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../server/tudu_autoload.php';
+require_once __DIR__.'/../../server/autoload.php';
 
 use \Tudu\Core;
 use \Tudu\Conf\Conf;
