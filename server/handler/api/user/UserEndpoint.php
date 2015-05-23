@@ -7,7 +7,7 @@ use \Tudu\Core\Delegate;
 use \Tudu\Core\Data\DbConnection;
 
 /**
- * Request handler for user resource endpoints.
+ * Request handler base class for user resource endpoints.
  */
 abstract class UserEndpoint extends \Tudu\Core\Handler\API {
     
