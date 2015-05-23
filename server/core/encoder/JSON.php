@@ -14,23 +14,12 @@ final class JSON implements Encoder {
         return $mediaType->compare(new MediaType(self::MEDIA_TYPE));
     }
     
-    /**
-     * Encode an array.
-     * 
-     * @return string|null JSON-encoded array data on success, NULL on failure.
-     */
-    public function encode(array $data) {
+    public function encode(array $data, MediaType $mediaType = null) {
         $encoded = json_encode($data);
         return $encoded === false ? null : $encoded;
     }
     
-    /**
-     * Decode an encoded array.
-     * 
-     * @param string $data JSON-encoded array data.
-     * @return array|null Array on success, NULL on failure.
-     */
-    public function decode($data) {
+    public function decode($data, MediaType $mediaType = null) {
         return json_decode($data, true);
     }
 }

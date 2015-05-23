@@ -22,18 +22,24 @@ interface Encoder {
     /**
      * Encode an array.
      * 
+     * Implementers may accept a second parameter specifying a media type.
+     * 
      * @param array $data Array.
+     * @param \Tudu\Core\MediaType $mediaType (optional)
      * @return mixed Encoded array data.
      */
-    public function encode(array $data);
+    public function encode(array $data, MediaType $mediaType = null);
     
     /**
      * Decode an encoded array.
      * 
+     * Implementers may accept a second parameter specifying a media type.
+     * 
      * @param mixed $data Encoded array data.
+     * @param \Tudu\Core\MediaType $mediaType (optional)
      * @return array|null Array on success, NULL on failure.
      */
-    public function decode($data);
+    public function decode($data, MediaType $mediaType = null);
 }
 
 ?>
