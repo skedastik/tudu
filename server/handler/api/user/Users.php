@@ -29,14 +29,14 @@ final class Users extends UserEndpoint {
         $result = $this->userRepo->signupUser(
             $data['email'],
             $data['password'],
-            $this->delegate->getRequestIp()
+            $this->app->getRequestIp()
         );
         if ($result instanceof Error) {
             $this->sendError($result);
         }
         
-        $this->delegate->setResponseStatus(201);
-        $this->delegate->setResponseHeaders([
+        $this->app->setResponseStatus(201);
+        $this->app->setResponseHeaders([
             'Location' => '/users/'.$result
         ]);
         $this->renderBody(new Model\User([

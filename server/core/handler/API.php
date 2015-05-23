@@ -62,9 +62,9 @@ abstract class API extends Handler {
      */
     final private function options() {
         /* TODO: Provide a more descriptive response */
-        $this->delegate->setResponseHeaders(['Allow' => $this->_getAllowedMethods()]);
-        $this->delegate->setResponseStatus(200);
-        $this->delegate->send();
+        $this->app->setResponseHeaders(['Allow' => $this->_getAllowedMethods()]);
+        $this->app->setResponseStatus(200);
+        $this->app->send();
     }
     
     /**
@@ -105,7 +105,7 @@ abstract class API extends Handler {
      */
     protected function requireRequestContentType($contentTypeString) {
         $contentType = new MediaType($contentTypeString);
-        $requestContentType = new MediaType($this->delegate->getRequestHeaders()['Content-Type']);
+        $requestContentType = new MediaType($this->app->getRequestHeaders()['Content-Type']);
         if (!$contentType->compare($requestContentType)) {
             $this->sendError(Error::Generic("Request entity media type must be: $contentTypeString", null, 415));
         }
@@ -125,7 +125,7 @@ abstract class API extends Handler {
      * @param array $requiredProperties Array of normalized data.
      */
     protected function translateRequestBody($requiredProperties) {
-        $data = json_decode($this->delegate->getRequestBody(), true);
+        $data = json_decode($this->app->getRequestBody(), true);
         if (is_null($data)) {
             $description = 'Badly formatted request body. Expected a resource descriptor with the listed properties.';
             $this->sendError(Error::Generic($description, $requiredProperties, 400));
@@ -150,18 +150,18 @@ abstract class API extends Handler {
      * Default behavior for rejecting unsupported request methods.
      */
     protected function rejectMethod() {
-        $this->delegate->setResponseHeaders(['Allow' => $this->_getAllowedMethods()]);
-        $this->delegate->setResponseStatus(405);
-        $this->delegate->send();
+        $this->app->setResponseHeaders(['Allow' => $this->_getAllowedMethods()]);
+        $this->app->setResponseStatus(405);
+        $this->app->send();
     }
     
     final public function process() {
-        $method = strtolower($this->delegate->getRequestMethod());
+        $method = strtolower($this->app->getRequestMethod());
         
         // TODO: Do not assume JSON content type accepted.
         // TODO: Sanitize all output.
         
-        $this->delegate->setResponseHeaders([
+        $this->app->setResponseHeaders([
             'Content-Type' => 'application/json; charset=utf-8'
         ]);
         
@@ -176,9 +176,9 @@ abstract class API extends Handler {
      */
     final protected function sendError($error) {
         $statusCode = $error->getHttpStatusCode();
-        $this->delegate->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
+        $this->app->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
         $this->renderBody($error->asArray());
-        $this->delegate->send();
+        $this->app->send();
     }
     
     /**

@@ -60,5 +60,9 @@ final class Slim implements App {
     public function pass() {
         $this->slim->pass();
     }
+    
+    public function run() {
+        $this->slim->run();
+    }
 }
 ?>

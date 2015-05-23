@@ -77,5 +77,10 @@ interface App {
      * router callback.
      */
     public function pass();
+    
+    /**
+     * Run the application.
+     */
+    public function run();
 }
 ?>

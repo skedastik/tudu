@@ -13,44 +13,43 @@ $db = new Core\Data\PgSQLConnection([
     'password' => Conf::DB_PASSWORD
 ]);
 
-$app = new \Slim\Slim();
-$delegate = new \Tudu\Delegate\Slim($app);
+$app = new \Tudu\Delegate\Slim(new \Slim\Slim());
 
 // User URIs -------------------------------------------------------------------
 
-$delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
-    (new Core\Handler\Auth\Basic($delegate, $db, [
+$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+    (new Core\Handler\Auth\Basic($app, $db, [
         'user_id' => $user_id
     ]))->process();
 }, 'PUT');
 
-$delegate->map('/users/', function () use ($delegate, $db) {
-    (new Handler\Api\User\Users($delegate, $db))->process();
+$app->map('/users/', function () use ($app, $db) {
+    (new Handler\Api\User\Users($app, $db))->process();
 });
 
-$delegate->map('/users/:user_id', function ($user_id) use ($delegate, $db) {
-    (new Handler\Api\User\User($delegate, $db, [
+$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+    (new Handler\Api\User\User($app, $db, [
         'user_id' => $user_id
     ]))->process();
 });
 
 // Task URIs -------------------------------------------------------------------
 
-$delegate->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($delegate, $db) {
-    (new Core\Handler\Auth\HMAC($delegate, $db, [
+$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($app, $db) {
+    (new Core\Handler\Auth\HMAC($app, $db, [
         'user_id' => $user_id,
         'task_id' => $task_id
     ]))->process();
 });
 
-$delegate->map('/users/:user_id/tasks/', function ($user_id) use ($delegate, $db) {
-    (new Handler\Api\Task\Tasks($delegate, $db, [
+$app->map('/users/:user_id/tasks/', function ($user_id) use ($app, $db) {
+    (new Handler\Api\Task\Tasks($app, $db, [
         'user_id' => $user_id
     ]))->process();
 });
 
-$delegate->map('/users/:user_id/tasks/:task_id', function ($user_id, $task_id) use ($delegate, $db) {
-    (new Handler\Api\Task\Task($delegate, $db, [
+$app->map('/users/:user_id/tasks/:task_id', function ($user_id, $task_id) use ($app, $db) {
+    (new Handler\Api\Task\Task($app, $db, [
         'user_id' => $user_id,
         'task_id' => $task_id
     ]))->process();

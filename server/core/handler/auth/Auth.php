@@ -12,7 +12,7 @@ abstract class Auth extends \Tudu\Core\Handler\Handler {
      * Accept a successfully authenticated request.
      */
     protected function acceptAuthentication() {
-        $this->delegate->pass();
+        $this->app->pass();
     }
     
     /**
@@ -23,9 +23,9 @@ abstract class Auth extends \Tudu\Core\Handler\Handler {
          * TODO: Produce the authentication scheme via an overridable method
          * rather than hard-coding it.
          */
-        $this->delegate->setResponseHeaders(['WWW-Authenticate' => 'tudu realm="api"']);
-        $this->delegate->setResponseStatus(401);
-        $this->delegate->send();
+        $this->app->setResponseHeaders(['WWW-Authenticate' => 'tudu realm="api"']);
+        $this->app->setResponseStatus(401);
+        $this->app->send();
     }
     
     /**
