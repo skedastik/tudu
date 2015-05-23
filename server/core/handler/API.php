@@ -57,15 +57,6 @@ abstract class API extends Handler {
     }
     
     /**
-     * Get an empty Model object. Override this.
-     * 
-     * Subclasses should return an empty instance of a Model subclass. The Model
-     * subclass should correspond to the type of resource described by the API
-     * endpoint.
-     */
-    abstract protected function getModel();
-    
-    /**
      * Handle OPTIONS requests on this endpoint.
      */
     final private function options() {
@@ -93,6 +84,15 @@ abstract class API extends Handler {
         }
         return $methods;
     }
+    
+    /**
+     * Get an empty Model object. Override this.
+     * 
+     * Subclasses should return an empty instance of a Model subclass. The Model
+     * subclass should correspond to the type of resource described by the API
+     * endpoint.
+     */
+    abstract protected function getModel();
     
     /**
      * Translate the request body into normalized model data.
@@ -140,7 +140,6 @@ abstract class API extends Handler {
     
     final public function process() {
         $method = strtolower($this->delegate->getRequestMethod());
-        $model = null;
         
         // TODO: Do not assume JSON content type.
         // TODO: Sanitize all output.
