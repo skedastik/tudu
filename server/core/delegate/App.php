@@ -1,57 +1,90 @@
 <?php
 namespace Tudu\Core\Delegate;
 
+use \Tudu\Core\Encoder\Encoder;
+
 /**
- * An interface between Tudu and any application framework. The interface
- * describes a contract for various common methods.
+ * An interface between Tudu and any application framework.
+ * 
+ * The class describes a contract for various common methods and also adds some
+ * of its own functionality.
  */
-interface App {
+abstract class App {
+    
+    private $encoder;
+    
+    public function __construct() {
+        $this->encoder = null;
+    }
+    
+    /**
+     * Set HTTP encoder.
+     * 
+     * The encoder can be used to encode and decode HTTP request and response
+     * entities.
+     * 
+     * @param \Tudu\Core\Data\Encoder\Encoder $encoder
+     */
+    public function setEncoder(Encoder $encoder) {
+        $this->encoder = $encoder;
+    }
+    
+    /**
+     * Get HTTP encoder.
+     * 
+     * @return \Tudu\Core\Data\Encoder\Encoder|null Encoder, or NULL if app does
+     * not have an encoder.
+     */
+    public function getEncoder() {
+        return $this->encoder;
+    }
+    
     /**
      * Immediately send redirect headers.
      * 
      * @param string $url Redirect URL.
      * @param int $status Redirect status code.
      */
-    public function redirect($url, $status);
+    abstract public function redirect($url, $status);
     
     /**
      * Get the HTTP request method.
      */
-    public function getRequestMethod();
+    abstract public function getRequestMethod();
     
     /**
      * Get all request headers as an associative-array-like object.
      */
-    public function getRequestHeaders();
+    abstract public function getRequestHeaders();
     
     /**
      * Get request body.
      */
-    public function getRequestBody();
+    abstract public function getRequestBody();
     
     /**
      * Get request IP.
      */
-    public function getRequestIp();
+    abstract public function getRequestIp();
     
     /**
      * Set the specified response headers.
      * 
      * @param array $headers Associative array of HTTP header key/value pairs.
      */
-    public function setResponseHeaders($headers);
+    abstract public function setResponseHeaders($headers);
     
     /**
      * Set the response status code.
      * 
      * @param int $status HTTP response status code.
      */
-    public function setResponseStatus($status);
+    abstract public function setResponseStatus($status);
     
     /**
      * Immediately send an HTTP response as currently formed and end processing.
      */
-    public function send();
+    abstract public function send();
     
     /**
      * Request router.
@@ -70,17 +103,17 @@ interface App {
      * all methods. The following methods are supported: GET, POST, PUT, DELETE,
      * OPTIONS, PATCH, HEAD.
      */
-    public function map($route, $callback, ...$methods);
+    abstract public function map($route, $callback, ...$methods);
     
     /**
      * Immediately halt processing and pass control to the next applicable
      * router callback.
      */
-    public function pass();
+    abstract public function pass();
     
     /**
      * Run the application.
      */
-    public function run();
+    abstract public function run();
 }
 ?>

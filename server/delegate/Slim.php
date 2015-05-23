@@ -6,7 +6,7 @@ use \Tudu\Core\Delegate\App;
 /**
  * Slim app delegate for Slim 2.6.*
  */
-final class Slim implements App {
+final class Slim extends App {
     protected $slim;
     
     /**
@@ -15,6 +15,7 @@ final class Slim implements App {
      * @param \Slim\Slim $slim A Slim app instance.
      */
     public function __construct(\Slim\Slim $slim) {
+        parent::__construct();
         $this->slim = $slim;
     }
     
