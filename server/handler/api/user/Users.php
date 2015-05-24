@@ -19,9 +19,7 @@ final class Users extends UserEndpoint {
      * POST to "/users/" to sign up a new user.
      */
     protected function post() {
-        $this->requireRequestContentType('application/json; charset=utf-8');
-        
-        $data = $this->translateRequestBody([
+        $data = $this->decodeRequestBody([
             'email',
             'password'
         ]);

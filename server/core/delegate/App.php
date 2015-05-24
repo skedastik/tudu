@@ -53,9 +53,9 @@ abstract class App {
     abstract public function getRequestMethod();
     
     /**
-     * Get all request headers as an associative-array-like object.
+     * Get the specified request header (e.g., 'Accept', 'Content-Type').
      */
-    abstract public function getRequestHeaders();
+    abstract public function getRequestHeader($header);
     
     /**
      * Get request body.
@@ -66,6 +66,11 @@ abstract class App {
      * Get request IP.
      */
     abstract public function getRequestIp();
+    
+    /**
+     * Get the specified response header (e.g., 'Accept', 'Content-Type').
+     */
+    abstract public function getResponseHeader($header);
     
     /**
      * Set the specified response headers.

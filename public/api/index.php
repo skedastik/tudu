@@ -5,6 +5,7 @@ require_once __DIR__.'/../../server/autoload.php';
 use \Tudu\Core;
 use \Tudu\Conf\Conf;
 use \Tudu\Handler;
+use \Tudu\Core\Encoder;
 
 $db = new Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
@@ -14,6 +15,7 @@ $db = new Core\Data\PgSQLConnection([
 ]);
 
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
+$app->setEncoder(new Encoder\JSON());
 
 // User URIs -------------------------------------------------------------------
 

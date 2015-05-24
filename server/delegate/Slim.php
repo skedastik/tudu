@@ -27,8 +27,8 @@ final class Slim extends App {
         return $this->slim->request->getMethod();
     }
     
-    public function getRequestHeaders() {
-        return $this->slim->request->headers;
+    public function getRequestHeader($header) {
+        return $this->slim->request->headers->get($header);
     }
     
     public function getRequestBody() {
@@ -37,6 +37,10 @@ final class Slim extends App {
     
     public function getRequestIp() {
         return $this->slim->request->getIp();
+    }
+    
+    public function getResponseHeader($header) {
+        return $this->slim->response->headers->get($header);
     }
     
     public function setResponseHeaders($headers) {

@@ -8,12 +8,13 @@ namespace Tudu\Core\Encoder;
 interface Encoder {
     
     /**
-     * Check if encoder supports a given media type.
+     * Check if encoder supports a given media type (possibily a media type wild
+     * card or range like 'application/*')/
      * 
      * @param string $mediaType
-     * @return bool TRUE is media type is supported, FALSE otherwise. Media type
-     * is supported if media type and subtype match, regardless of media type
-     * parameter.
+     * @return string|false If the input media type is supported, a matching
+     * output media type is returned (this is to facilitate wildcard media type
+     * queries). Otherwise FALSE is returned.
      */
     public function supportsMediaType($mediaType);
     
