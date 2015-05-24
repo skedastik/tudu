@@ -1,8 +1,6 @@
 <?php
 namespace Tudu\Core\Handler\Auth;
 
-require_once __DIR__.'/Auth.php';
-
 /**
  * Request handler with HMAC-inspired authentication.
  */

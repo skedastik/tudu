@@ -6,8 +6,6 @@ use \Tudu\Core\Error;
 use \Tudu\Core\Data\Model;
 use \Tudu\Core\MediaType;
 
-require_once __DIR__.'/Handler.php';
-
 /**
  * Request handler base class for all API endpoints. This class can be
  * instantiated if you need an API handler that simply rejects all HTTP methods
