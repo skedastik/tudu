@@ -8,6 +8,9 @@ final class MediaType {
     protected $parameterAttribute;
     protected $parameterValue;
     
+    protected $isTypeWildcard;
+    protected $isSubtypeWildcard;
+    
     /**
      * Constructor.
      * 
@@ -29,6 +32,13 @@ final class MediaType {
             if (isset($matches[4])) {
                 $this->parameterAttribute = $matches[4];
                 $this->parameterValue = $matches[5];
+            }
+            
+            $this->isTypeWildcard = $this->isSubtypeWildcard = false;
+            if ($this->type == '*') {
+                $this->isTypeWildcard = $this->isSubtypeWildcard = true;
+            } else if ($this->subtype == '*') {
+                $this->isSubtypeWildcard = true;
             }
         }
     }
@@ -70,7 +80,25 @@ final class MediaType {
     }
     
     /**
+     * Return TRUE if this is a type wildcard, FALSE otherwise.
+     */
+    public function isTypeWildcard() {
+        return $this->isTypeWildcard;
+    }
+    
+    /**
+     * Return TRUE if this is a subtype wildcard, FALSE otherwise.
+     */
+    public function isSubtypeWildcard() {
+        return $this->isSubtypeWildcard;
+    }
+    
+    /**
      * Strictly compare this media type against another.
+     * 
+     * '*' can be used as a wildcard for both type and subtype to indicate any
+     * possible media type. It can also be used in place of the subtype alone,
+     * to indicate any possible subtype.
      * 
      * @param \Tudu\Core\MediaType $mediaType
      * @return bool TRUE if input media type matches, FALSE otherwise. In order
@@ -79,6 +107,9 @@ final class MediaType {
      * specify equivalent parameters, or both media types must omit parameters.
      */
     public function compareStrict(MediaType $mediaType) {
+        if ($this->isTypeWildcard || $this->isSubtypeWildcard || $mediaType->isTypeWildcard || $mediaType->isSubtypeWildcard) {
+            return $this->compareWildcard($mediaType);
+        }
         return $mediaType->getType() === $this->getType()
             && $mediaType->getSubtype() === $this->getSubtype()
             && $mediaType->getParameterAttribute() === $this->getParameterAttribute()
@@ -88,13 +119,33 @@ final class MediaType {
     /**
      * Loosely compare this media type against another.
      * 
+     * '*' can be used as a wildcard for both type and subtype to indicate any
+     * possible media type. It can also be used in place of the subtype alone,
+     * to indicate any possible subtype.
+     * 
      * @param \Tudu\Core\MediaType $mediaType
      * @return bool TRUE if input media type matches, FALSE otherwise. In order
      * to match, input media type need only have same type and subtype.
      */
     public function compare(MediaType $mediaType) {
+        if ($this->isTypeWildcard || $this->isSubtypeWildcard || $mediaType->isTypeWildcard || $mediaType->isSubtypeWildcard) {
+            return $this->compareWildcard($mediaType);
+        }
         return $mediaType->getType() === $this->getType()
             && $mediaType->getSubtype() === $this->getSubtype();
+    }
+    
+    /**
+     * Compare wildcard media types.
+     * 
+     * @param \Tudu\Core\MediaType $mediaType
+     * @return bool TRUE if input media type matches, FALSE otherwise.
+     */
+    public function compareWildcard(MediaType $mediaType) {
+        if ($this->isTypeWildcard() || $mediaType->isTypeWildcard()) {
+            return true;
+        }
+        return $this->type == $mediaType->type;
     }
     
     /**
