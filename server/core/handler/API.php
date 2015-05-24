@@ -121,9 +121,11 @@ abstract class API extends Handler {
     private function checkResponseAcceptable() {
         $accept = $this->app->getRequestHeader('Accept');
         if (is_null($accept)) {
+            // no accept header provided, so stick with the default media type
             return;
         }
         
+        // set response content type to first supported, accepted media type
         $encoder = $this->app->getEncoder();
         $acceptedMediaTypes = explode(',', $accept);
         foreach ($acceptedMediaTypes as $mediaType) {
