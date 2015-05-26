@@ -16,6 +16,8 @@ class Conf
     
     const LOG_PATH = __DIR__.'/../../logs';
     const LOG_LEVEL = LogLevel::DEBUG;
+    
+    const ACCESS_TOKEN_TTL = '1 year';
 }
 
 ?>

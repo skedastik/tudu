@@ -21,5 +21,14 @@ final class AccessToken extends Model {
     protected function getSanitizers() {
         return [];
     }
+    
+    /**
+     * Generate a random access token string.
+     * 
+     * @return string
+     */
+    public static function generateTokenString() {
+        return sha1(openssl_random_pseudo_bytes(20));
+    }
 }
 ?>

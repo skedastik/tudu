@@ -27,7 +27,10 @@ class UserEndpointTest extends DatabaseTest {
         $this->repo = new Repository\User($this->db);
     }
     
-    public function testPostingAValidUserShouldSignUpANewUserWithMatchingData() {
+    /**
+     * @group todo
+     */
+    public function testPostingAValidUserShouldSignUpANewUserAndReturnAppropriateData() {
         $this->handler = new Handler\Api\User\Users($this->app, $this->db);
         $this->app->setHandler($this->handler);
         
@@ -40,7 +43,8 @@ class UserEndpointTest extends DatabaseTest {
         }');
         $this->app->run();
         
-        $user_id = $this->decodeOutputBuffer()['user_id'];
+        $result = $this->decodeOutputBuffer();
+        $user_id = $result['user_id'];
         $user = $this->repo->getByID($user_id);
         $phpass = new PHPass();
         $this->assertSame('foo@bar.xyz', $user->get('email'));
@@ -48,8 +52,8 @@ class UserEndpointTest extends DatabaseTest {
     }
     
     public function tearDown() {
-        parent::tearDown();
         ob_end_clean();
+        parent::tearDown();
     }
 }
 ?>
