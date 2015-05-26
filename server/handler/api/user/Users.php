@@ -11,7 +11,7 @@ use \Tudu\Core\Error;
  */
 final class Users extends UserEndpoint {
     
-    protected function getAllowedMethods() {
+    protected function _getAllowedMethods() {
         return 'POST';
     }
     
@@ -19,6 +19,9 @@ final class Users extends UserEndpoint {
      * POST to "/users/" to sign up a new user.
      */
     protected function post() {
+        $this->checkResponseAcceptable();
+        $this->checkRequestDecodable();
+        
         $data = $this->decodeRequestBody([
             'email',
             'password'
@@ -37,9 +40,9 @@ final class Users extends UserEndpoint {
         $this->app->setResponseHeaders([
             'Location' => '/users/'.$result
         ]);
-        $this->renderBody(new Model\User([
+        $this->renderBody([
             'user_id' => $result
-        ]));
+        ]);
     }
 }
 

@@ -6,7 +6,7 @@ namespace Tudu\Handler\Api\Task;
  */
 final class Tasks extends TaskEndpoint {
     
-    protected function getAllowedMethods() {
+    protected function _getAllowedMethods() {
         return 'GET, POST';
     }
     

@@ -27,6 +27,7 @@ abstract class App {
      */
     public function setEncoder(Encoder $encoder) {
         $this->encoder = $encoder;
+        return $this;
     }
     
     /**

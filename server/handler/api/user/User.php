@@ -8,12 +8,8 @@ use \Tudu\Core\Data\Model;
  */
 final class User extends UserEndpoint {
     
-    protected function getAllowedMethods() {
+    protected function _getAllowedMethods() {
         return 'PUT';
-    }
-    
-    protected function getRequiredResourceFormat() {
-        return [];
     }
     
     protected function put() {

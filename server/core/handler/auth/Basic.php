@@ -1,5 +1,6 @@
 <?php
 namespace Tudu\Core\Handler\Auth;
+
 /**
  * Request handler with basic authentication.
  */

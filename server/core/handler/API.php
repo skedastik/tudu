@@ -7,9 +7,7 @@ use \Tudu\Core\Data\Model;
 use \Tudu\Core\MediaType;
 
 /**
- * Request handler base class for all API endpoints. This class can be
- * instantiated if you need an API handler that simply rejects all HTTP methods
- * except for OPTIONS.
+ * Request handler base class for all API endpoints.
  */
 abstract class API extends Handler {
     
@@ -59,26 +57,21 @@ abstract class API extends Handler {
      * Handle OPTIONS requests on this endpoint.
      */
     final private function options() {
-        $this->app->setResponseHeaders([
-            'Allow' => $this->_getAllowedMethods()
-        ]);
+        $this->setAllowHeader();
         $this->app->setResponseStatus(200);
         $this->app->send();
     }
     
     /**
      * Return a comma-delimited string of HTTP methods allowed on this endpoint.
-     * This method MUST be overridden by subclasses. You need not specify the
-     * OPTIONS method as this is handled automatically.
+     * You need not specify the OPTIONS method as this is handled automatically.
      * 
      * @return string Example: "GET, PUT, POST"
      */
-    protected function getAllowedMethods() {
-        return 'OPTIONS';
-    }
+    abstract protected function _getAllowedMethods();
     
-    private function _getAllowedMethods() {
-        $methods = strtoupper($this->getAllowedMethods());
+    final public function getAllowedMethods() {
+        $methods = strtoupper($this->_getAllowedMethods());
         if (strpos($methods, 'OPTIONS') === false) {
             return empty($methods) ? 'OPTIONS' : $methods.', OPTIONS';
         }
@@ -88,12 +81,19 @@ abstract class API extends Handler {
     /**
      * Default behavior for rejecting unsupported request methods.
      */
-    protected function rejectMethod() {
-        $this->app->setResponseHeaders([
-            'Allow' => $this->_getAllowedMethods()
-        ]);
+    private function rejectMethod() {
+        $this->setAllowHeader();
         $this->app->setResponseStatus(405);
         $this->app->send();
+    }
+    
+    /**
+     * Set "Allow" header.
+     */
+    private function setAllowHeader() {
+        $this->app->setResponseHeaders([
+            'Allow' => $this->getAllowedMethods()
+        ]);
     }
     
     /**
@@ -116,7 +116,7 @@ abstract class API extends Handler {
      * 
      * If no "Accept" header is provided, we are free to use any media type.
      */
-    private function checkResponseAcceptable() {
+    protected function checkResponseAcceptable() {
         $accept = $this->app->getRequestHeader('Accept');
         if (is_null($accept)) {
             // no accept header provided, so stick with the default media type
@@ -145,44 +145,24 @@ abstract class API extends Handler {
      * Check that the request's content type can be decoded.
      * 
      * If request's content type is not supported, halt processing immediately
-     * and send an error response. This is only meaningful for requests with
-     * payloads (i.e., POST, PUT, and PATCH).
+     * and send an error response. It only makes sense to call this when
+     * handling requests with payloads (i.e., POST, PUT, and PATCH).
      */
-    private function checkRequestDecodable() {
+    protected function checkRequestDecodable() {
         $method = $this->app->getRequestMethod();
-        if ($method == 'POST' || $method == 'PUT' || $method == 'PATCH') {
-            $requestContentType = $this->app->getRequestHeader('Content-Type');
-            $encoder = $this->app->getEncoder();
-            if (!$encoder->supportsMediaType($requestContentType)) {
-                $description = 'Request content type not supported. See context for a list of supported media types.';
-                $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
-            }
+        $requestContentType = $this->app->getRequestHeader('Content-Type');
+        $encoder = $this->app->getEncoder();
+        if (!$encoder->supportsMediaType($requestContentType)) {
+            $description = 'Request content type not supported. See context for a list of supported media types.';
+            $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
         }
     }
     
     final public function process() {
-        /**
-         * TODO: This base class, admittedly, has too many responsibilities. To
-         * date, it:
-         * 
-         * - Performs content negotation (even simplified content negotiation
-         *   adds a huge amount of complexity).
-         * - Performs automatic validation of request entities.
-         * - Dispatches methods based on the HTTP request method.
-         * 
-         * This is good in that almost all of the complexity is hidden from API
-         * request handler subclasses, but bad in the sense that this class will
-         * become increasingly difficult to maintain. A thoughtful refactor is
-         * in order.
-         */
-        
         $this->app->setResponseHeaders([
             // default to the first supported media type
             'Content-Type' => $this->app->getEncoder()->getSupportedMediaTypes()[0]
         ]);
-        
-        $this->checkResponseAcceptable();
-        $this->checkRequestDecodable();
         
         $method = strtolower($this->app->getRequestMethod());
         // invoke method corresponding to HTTP request method
