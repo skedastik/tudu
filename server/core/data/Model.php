@@ -91,12 +91,27 @@ abstract class Model implements Arrayable {
     abstract protected function getNormalizers();
     
     /**
-     * This function should return a key/value array of transformers for
-     * sanitizing data prior to output/display.
+     * This function should return a key/value array of sanitization schemes and
+     * corresponding transformers for sanitizing data prior to output/display.
      * 
-     * Each key should be a model property. Each value should be an appropriate
-     * Transform chain. When designing the sanitization transforms, you can
-     * assume that properties will be normalized before being sanitized.
+     * The key-value array has two dimensions. The top-level key should be the
+     * sanitization scheme, e.g., 'html' or 'email'. Each value will be another
+     * key/value array where each key is a model property. Each value therein
+     * should be an appropriate Transform chain. When designing the sanitization
+     * transforms, you can assume that properties will be normalized before
+     * being sanitized.
+     * 
+     * Example:
+     * 
+     *    [
+     *        'html' => [
+     *            'name' => Transform::String()->escapeForHtml(),
+     *        ],
+     *        
+     *        'email' => [
+     *            'name' => Transform::String()->escapeForEmail()
+     *        ]
+     *    ];
      * 
      * This method must be idempotent.
      * 
@@ -124,24 +139,30 @@ abstract class Model implements Arrayable {
     }
     
     /**
-     * Sanitize the model.
+     * Sanitize the model using the given sanitization scheme.
      * 
      * An error will be thrown if an attempt is made to sanitize a Model object
      * that has not been normalized first.
+     * 
+     * @param string $scheme Sanitization scheme (e.g., 'html', 'email').
      */
-    final private function sanitize() {
+    final private function sanitize($scheme) {
         if (!$this->isSanitized) {
             if (!$this->isNormalized) {
                 throw new TuduException('Attempt to sanitize Model object that has not been normalized first.');
             }
             $sanitizers = self::getCachedSanitizers();
-            $this->applyPropertyFunctors($sanitizers);
+            if (!isset($sanitizers[$scheme])) {
+                throw new TuduException('Attempt to sanitize Model using nonexistent scheme "'.$scheme.'".');
+            }
+            $this->applyPropertyFunctors($sanitizers[$scheme]);
             $this->isSanitized = true;
         }
     }
     
     /**
-     * Get a sanitized copy of this Model object.
+     * Get a sanitized copy of this Model object using the given sanitization
+     * scheme.
      * 
      * The original Model object is not mutated in any way.
      * 
@@ -150,11 +171,12 @@ abstract class Model implements Arrayable {
      * PHP5 documentation: "any properties that are references to other
      * variables, will remain references".
      * 
+     * @param string $scheme Sanitization scheme (e.g., 'html', 'email').
      * @return \Tudu\Core\Data\Model\Model A sanitized copy of the model.
      */
-    final public function getSanitizedCopy() {
+    final public function getSanitizedCopy($scheme) {
         $model = clone $this;
-        $model->sanitize();
+        $model->sanitize($scheme);
         return $model;
     }
     

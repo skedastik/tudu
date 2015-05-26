@@ -29,7 +29,9 @@ final class User extends Model {
     
     protected function getSanitizers() {
         return [
-            'email' => Transform::String()->escapeForHTML()
+            'html' => [
+                'email' => Transform::String()->escapeForHTML()
+            ]
         ];
     }
 }

@@ -59,7 +59,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
             'email' => 'sooperdooper@abc.xyz'
         ]);
         $model->normalize();
-        $model = $model->getSanitizedCopy();
+        $model = $model->getSanitizedCopy('name-only');
         $this->assertTrue($model->isNormalized());
         $this->assertTrue($model->isSanitized());
         
@@ -70,7 +70,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($model->isNormalized());
         $this->assertFalse($model->isSanitized());
         $model->normalize();
-        $model = $model->getSanitizedCopy();
+        $model = $model->getSanitizedCopy('name-only');
         $this->assertTrue($model->isNormalized());
         $this->assertTrue($model->isSanitized());
         
@@ -78,7 +78,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($model->isNormalized());
         $this->assertFalse($model->isSanitized());
         $model->normalize();
-        $model = $model->getSanitizedCopy();
+        $model = $model->getSanitizedCopy('name-only');
         $this->assertTrue($model->isNormalized());
         $this->assertTrue($model->isSanitized());
     }
@@ -165,19 +165,19 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
     
     public function testNormalizersShouldBeCached() {
         $mockModel = new MockModel([]);
-        $errors = $mockModel->normalize();
+        $mockModel->normalize();
         $mockModel = new MockModel([]);
-        $errors = $mockModel->normalize();
+        $mockModel->normalize();
         $this->assertEquals(1, MockModel::getNormalizersMethodCallCount());
     }
     
     public function testSanitizersShouldBeCached() {
         $mockModel = new MockModel([]);
-        $errors = $mockModel->normalize();
-        $mockModel = $mockModel->getSanitizedCopy();
+        $mockModel->normalize();
+        $mockModel = $mockModel->getSanitizedCopy('name-only');
         $mockModel = new MockModel([]);
-        $errors = $mockModel->normalize();
-        $mockModel = $mockModel->getSanitizedCopy();
+        $mockModel->normalize();
+        $mockModel = $mockModel->getSanitizedCopy('email-only');
         $this->assertEquals(1, MockModel::getSanitizersMethodCallCount());
     }
     
@@ -187,33 +187,64 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($mockModel->normalize());
     }
     
-    public function testSanitizedCopyShouldHaveSanitizedData() {
+    public function testIsSanitizedShouldReturnTrueIfSanitizedFalseOtherwise() {
         $data = [
             'name' => '<a href="#" >John</a> Doe<br />',
             'email' => 'sooper&dooper@abc.xyz'
         ];
         $model = new MockModel($data);
         $this->assertFalse($model->isSanitized());
-        
-        $errors = $model->normalize();
-        $copy = $model->getSanitizedCopy();
-        
+        $model->normalize();
+        $copy = $model->getSanitizedCopy('name-only');
         $this->assertFalse($model->isSanitized());
         $this->assertTrue($copy->isSanitized());
-        
+    }
+    
+    public function testSanitizedCopyShouldNotMutateOriginalModel() {
+        $data = [
+            'name' => '<a href="#" >John</a> Doe<br />',
+            'email' => 'sooper&dooper@abc.xyz'
+        ];
+        $model = new MockModel($data);
+        $model->normalize();
+        $model->getSanitizedCopy('name-only');
+        $this->assertSame($data, $model->asArray());
+    }
+    
+    public function testSanitizedCopyShouldUseChosenSanitizationScheme() {
+        $data = [
+            'name' => '<a href="#" >John</a> Doe<br />',
+            'email' => 'sooper&dooper@abc.xyz'
+        ];
+        $model = new MockModel($data);
+        $model->normalize();
+        $copy = $model->getSanitizedCopy('name-only');
         $expected = [
             'name' => 'John Doe',
+            'email' => 'sooper&dooper@abc.xyz'
+        ];
+        $this->assertSame($expected, $copy->asArray());
+        
+        $model = new MockModel($data);
+        $model->normalize();
+        $copy = $model->getSanitizedCopy('email-only');
+        $expected = [
+            'name' => '<a href="#" >John</a> Doe<br />',
             'email' => 'sooper&amp;dooper@abc.xyz'
         ];
         $this->assertSame($expected, $copy->asArray());
-        $this->assertSame($data, $model->asArray());
     }
     
     public function testSanitizingAModelThatHasNotBeenNormalizedShouldThrowAnException() {
         $model = new MockModel([]);
-        $this->assertFalse($model->isSanitized());
         $this->setExpectedException('\Tudu\Core\TuduException');
-        $model->getSanitizedCopy();
+        $model->getSanitizedCopy('name-only');
+    }
+    
+    public function testUsingANonexistentSanitizationSchemeShouldThrowAnException() {
+        $model = new MockModel([]);
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $model->getSanitizedCopy('nonexistent-scheme');
     }
 }
 ?>

@@ -12,9 +12,10 @@ class MockModel extends \Tudu\Core\Data\Model {
     protected function getNormalizers() {
         self::$getNormalizersCallCount++;
         return [
-            'name'  => Transform::String()->trim()
-                    -> then(Validate::String()->length()->from(5)->upTo(35))
-                    -> then(Transform::Description()->to('Name')),
+            'name' => Transform::String()->trim()
+                   -> then(Validate::String()->length()->from(5)->upTo(35))
+                   -> then(Transform::Description()->to('Name')),
+            
             'email' => Validate::String()->is()->validEmail()
                     -> then(Transform::Description()->to('Email address'))
         ];
@@ -23,8 +24,13 @@ class MockModel extends \Tudu\Core\Data\Model {
     protected function getSanitizers() {
         self::$getSanitizersCallCount++;
         return [
-            'name'  => Transform::String()->stripTags(),
-            'email' => Transform::String()->escapeForHTML()
+            'name-only' => [
+                'name' => Transform::String()->stripTags(),
+            ],
+            
+            'email-only' => [
+                'email' => Transform::String()->escapeForHTML()
+            ]
         ];
     }
     

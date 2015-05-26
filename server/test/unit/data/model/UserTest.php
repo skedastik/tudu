@@ -28,7 +28,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
         ];
         $user = new User($data);
         $user->normalize();
-        $user = $user->getSanitizedCopy();
+        $user = $user->getSanitizedCopy('html');
         $this->assertTrue($user->isSanitized());
         $expected = [
             'user_id' => 123,
