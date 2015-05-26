@@ -44,21 +44,21 @@ final class User extends Repository {
     }
     
     /**
-     * Confirm an existing user's email address.
+     * Confirm an existing user's email address using their signup token.
      * 
-     * @param string $email Email address.
+     * @param int $id User ID.
      * @param string $signupToken Signup token.
      * @param string $ip IP address.
      * @return int|Tudu\Core\Error User's ID on success, Error otherwise.
      */
-    public function confirmUser($email, $signupToken, $ip) {
+    public function confirmUser($id, $signupToken, $ip) {
         $result = $this->db->queryValue(
-            'select tudu.confirm_user(null, $1, $2, $3);',
-            [$email, $signupToken, $ip]
+            'select tudu.confirm_user($1, null, $2, $3);',
+            [$id, $signupToken, $ip]
         );
         switch ($result) {
             case -1:
-                return Error::Generic('Email address not found.', null, 404);
+                return Error::Generic('User not found.', null, 404);
             case -2:
                 return Error::Generic('Signup token does not match.', null, 409);
             case -3:

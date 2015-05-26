@@ -54,20 +54,20 @@ class UserRepositoryTest extends DatabaseTest {
         $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $user = $this->repo->getByID($id);
         $signupToken = Transform::HStore()->execute($user->get('kvs'))['signup_token'];
-        $confirmId = $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
+        $confirmId = $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
         $this->assertEquals($id, $confirmId);
     }
     
-    public function testConfirmUserShouldFailGivenNonexistentEmailAddress() {
-        $error = $this->repo->confirmUser('foo@bar.com', 'unlikely_signup_token', '127.0.0.1');
+    public function testConfirmUserShouldFailGivenNonexistentUserId() {
+        $error = $this->repo->confirmUser(-1, 'unlikely_signup_token', '127.0.0.1');
         $this->assertTrue($error instanceof Error);
         $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
     public function testConfirmUserShouldFailGivenInvalidSignupToken() {
         $email = 'foo@bar.com';
-        $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->confirmUser($email, 'unlikely_signup_token', '127.0.0.1');
+        $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->confirmUser($id, 'unlikely_signup_token', '127.0.0.1');
         $this->assertTrue($error instanceof Error);
         $this->assertEquals(Error::GENERIC, $error->getError());
     }
@@ -77,8 +77,8 @@ class UserRepositoryTest extends DatabaseTest {
         $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $user = $this->repo->getByID($id);
         $signupToken = Transform::HStore()->execute($user->get('kvs'))['signup_token'];
-        $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
-        $error = $this->repo->confirmUser($email, $signupToken, '127.0.0.1');
+        $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
+        $error = $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
         $this->assertTrue($error instanceof Error);
         $this->assertEquals(Error::NOTICE, $error->getError());
     }
