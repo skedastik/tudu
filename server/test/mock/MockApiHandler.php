@@ -15,15 +15,11 @@ final class MockApiHandler extends Handler\API {
         return 'POST';
     }
     
-    protected function getModel() {
-        return new MockModel();
-    }
-    
     protected function post() {
         $this->checkResponseAcceptable();
         $this->checkRequestDecodable();
         
-        $data = $this->getNormalizedRequestBody([
+        $data = $this->getNormalizedRequestBody(new MockModel(), [
             'name',
             'email'
         ]);

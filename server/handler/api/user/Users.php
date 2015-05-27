@@ -11,7 +11,7 @@ use \Tudu\Core\Logger;
 /**
  * Request handler for /users/
  */
-final class Users extends UserEndpoint {
+final class Users extends \Tudu\Core\Handler\API {
     
     protected function _getAllowedMethods() {
         return 'POST';
@@ -24,12 +24,14 @@ final class Users extends UserEndpoint {
         $this->checkResponseAcceptable();
         $this->checkRequestDecodable();
         
-        $data = $this->getNormalizedRequestBody([
+        $user = new Model\User();
+        $data = $this->getNormalizedRequestBody($user, [
             'email',
             'password'
         ]);
         
-        $userId = $this->userRepo->signupUser(
+        $userRepo = new Repository\User($this->db);
+        $userId = $userRepo->signupUser(
             $data['email'],
             $data['password'],
             $this->app->getRequestIp()

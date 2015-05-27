@@ -4,7 +4,7 @@ namespace Tudu\Handler\Api\Task;
 /**
  * Request handler for /users/:user_id/tasks/
  */
-final class Tasks extends TaskEndpoint {
+final class Tasks extends \Tudu\Core\Handler\API {
     
     protected function _getAllowedMethods() {
         return 'GET, POST';

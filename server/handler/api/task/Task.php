@@ -4,7 +4,7 @@ namespace Tudu\Handler\Api\Task;
 /**
  * Request handler for /users/:user_id/tasks/:task_id
  */
-final class Task extends TaskEndpoint {
+final class Task extends \Tudu\Core\Handler\API {
     
     protected function _getAllowedMethods() {
         return 'PUT, DELETE';

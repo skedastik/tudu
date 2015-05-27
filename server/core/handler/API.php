@@ -114,15 +114,6 @@ abstract class API extends Handler {
     }
     
     /**
-     * Get an empty Model object. Override this.
-     * 
-     * Subclasses should return an empty instance of a Model subclass. The Model
-     * subclass should correspond to the type of resource described by the API
-     * endpoint.
-     */
-    abstract protected function getModel();
-    
-    /**
      * Ensure that our application is capable of encoding its response payload
      * in a format specified by the request's "Accept" header.
      * 
@@ -197,10 +188,11 @@ abstract class API extends Handler {
      * to validate. In such cases, processing halts and an error response is
      * automatically generated.
      * 
+     * @param \Tudu\Core\Data\Model $model Model for normalizing data.
      * @param array $requiredProperties Array of properties.
      * @return array Key/value array of normalized model data.
      */
-    protected function getNormalizedRequestBody($requiredProperties) {
+    protected function getNormalizedRequestBody($model, $requiredProperties) {
         $mediaType = $this->app->getRequestHeader('Content-Type');
         $requestBody = $this->app->getRequestBody();
         $data = $this->app->getEncoder()->decode($requestBody, $mediaType);
@@ -209,7 +201,7 @@ abstract class API extends Handler {
             $this->sendError(Error::Generic($description, $requiredProperties, 400));
         }
         
-        $model = $this->getModel()->fromArray($data);
+        $model->fromArray($data);
         
         if (!$model->hasProperties($requiredProperties)) {
             $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
