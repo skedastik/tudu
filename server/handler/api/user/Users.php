@@ -29,12 +29,10 @@ final class Users extends UserEndpoint {
             'password'
         ]);
         
-        $ip = $this->app->getRequestIp();
-        
         $userId = $this->userRepo->signupUser(
             $data['email'],
             $data['password'],
-            $ip
+            $this->app->getRequestIp()
         );
         if ($userId instanceof Error) {
             $this->sendError($userId);

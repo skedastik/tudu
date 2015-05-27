@@ -35,6 +35,12 @@ $app->map('/users/:user_id', function ($user_id) use ($app, $db) {
     ]))->process();
 });
 
+$app->map('/users/:user_id/confirm', function ($user_id) use ($app, $db) {
+    (new Handler\Api\User\Confirm($app, $db, [
+        'user_id' => $user_id
+    ]))->process();
+});
+
 // Task URIs -------------------------------------------------------------------
 
 $app->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($app, $db) {
