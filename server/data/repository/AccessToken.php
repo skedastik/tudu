@@ -19,7 +19,25 @@ final class AccessToken extends Repository {
             [$id]
         );
         if ($result === false) {
-            return Error::Generic('Token ID not found.');
+            return Error::Generic('Token not found.');
+        }
+        return $this->prenormalize(new Model\AccessToken($result[0]));
+    }
+    
+    /**
+     * Fetch a single access token with the given user ID and token string.
+     * 
+     * @param int $userId User ID.
+     * @param string $tokenString Token string.
+     * @return mixed AccessToken model on success, otherwise an Error object.
+     */
+    public function getByUserIDAndTokenString($userId, $tokenString) {
+        $result = $this->db->query(
+            'select token_id, user_id, token_string, token_type, kvs, status, edate, cdate from tudu_access_token where user_id = $1 and token_string = $2;',
+            [$userId, $tokenString]
+        );
+        if ($result === false) {
+            return Error::Generic('Token not found.');
         }
         return $this->prenormalize(new Model\AccessToken($result[0]));
     }

@@ -19,11 +19,12 @@ $app->setEncoder(new Encoder\JSON());
 
 // User URIs -------------------------------------------------------------------
 
-$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id', $cb = function ($user_id) use ($app, $db) {
     (new Core\Handler\Auth\Basic($app, $db, [
         'user_id' => $user_id
     ]))->process();
 }, 'PUT');
+$app->map('/users/:user_id/signin', $cb, 'POST');
 
 $app->map('/users/', function () use ($app, $db) {
     (new Handler\Api\User\Users($app, $db))->process();
@@ -37,6 +38,12 @@ $app->map('/users/:user_id', function ($user_id) use ($app, $db) {
 
 $app->map('/users/:user_id/confirm', function ($user_id) use ($app, $db) {
     (new Handler\Api\User\Confirm($app, $db, [
+        'user_id' => $user_id
+    ]))->process();
+});
+
+$app->map('/users/:user_id/signin', function ($user_id) use ($app, $db) {
+    (new Handler\Api\User\Signin($app, $db, [
         'user_id' => $user_id
     ]))->process();
 });
