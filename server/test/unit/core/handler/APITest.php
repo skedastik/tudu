@@ -3,6 +3,7 @@ namespace Tudu\Test\Unit\Core\Handler;
 
 use \Tudu\Test\Mock\MockApiHandler;
 use \Tudu\Test\Mock\MockApp;
+use \Tudu\Test\Mock\MockModel;
 use \Tudu\Core\Encoder;
 use \Tudu\Core\MediaType;
 
@@ -13,10 +14,10 @@ class APITest extends \PHPUnit_Framework_TestCase {
     
     public function setUp() {
         ob_start();
-        $db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
+        $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
         $this->app = new MockApp();
         $this->app->setEncoder(new Encoder\JSON());
-        $this->handler = new MockApiHandler($this->app, $db);
+        $this->handler = new MockApiHandler($this->app, $this->db);
         $this->app->setHandler($this->handler);
     }
     
@@ -73,11 +74,6 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(405, $this->app->getResponseStatus());
         
         $this->app->setResponseStatus(null);
-        $this->app->setRequestMethod('PUT');
-        $this->app->run();
-        $this->assertEquals(405, $this->app->getResponseStatus());
-        
-        $this->app->setResponseStatus(null);
         $this->app->setRequestMethod('PATCH');
         $this->app->run();
         $this->assertEquals(405, $this->app->getResponseStatus());
@@ -94,7 +90,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testUnsupportedRequestMethodReturnsAllowHeader() {
-        $this->app->setRequestMethod('PUT');
+        $this->app->setRequestMethod('GET');
         $this->app->run();
         $this->assertEquals($this->handler->getAllowedMethods(), $this->app->getResponseHeader('Allow'));
     }
@@ -156,6 +152,27 @@ class APITest extends \PHPUnit_Framework_TestCase {
             "name": "Jonathan Mynameis Waytoolong Andwillberejected",
             "email": "bad@email"
         }');
+        $this->app->run();
+        $this->assertEquals(400, $this->app->getResponseStatus());
+    }
+    
+    public function testGetNormalizedContextReturnsNormalizedContextGivenValidProperties() {
+        $this->handler = new MockApiHandler($this->app, $this->db, [
+            'name' => '   John Doe   '
+        ]);
+        $this->app->setHandler($this->handler);
+        $this->app->setRequestMethod('PUT');
+        $this->app->run();
+        $responseBody = ob_get_contents();
+        $this->assertEquals('John Doe', $responseBody);
+    }
+    
+    public function testGetNormalizedContextReturns400GivenPropertiesThatFailToValidate() {
+        $this->handler = new MockApiHandler($this->app, $this->db, [
+            'name' => 'Jonathan Mynameis Waytoolong Andwillberejected'
+        ]);
+        $this->app->setHandler($this->handler);
+        $this->app->setRequestMethod('PUT');
         $this->app->run();
         $this->assertEquals(400, $this->app->getResponseStatus());
     }

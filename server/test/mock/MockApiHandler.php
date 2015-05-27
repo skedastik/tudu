@@ -9,6 +9,8 @@ use \Tudu\Test\Mock\MockModel;
  */
 final class MockApiHandler extends Handler\API {
     
+    protected $context;
+    
     protected function _getAllowedMethods() {
         return 'POST';
     }
@@ -27,6 +29,14 @@ final class MockApiHandler extends Handler\API {
         ]);
         
         $this->app->setResponseStatus(201);
+    }
+    
+    protected function put() {
+        $context = $this->getNormalizedContext([
+            'name' => new MockModel()
+        ]);
+        
+        echo $context['name'];
     }
 }
 

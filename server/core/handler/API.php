@@ -1,6 +1,8 @@
 <?php
 namespace Tudu\Core\Handler;
 
+use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Delegate;
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Error;
 use \Tudu\Core\Data\Model;
@@ -10,6 +12,21 @@ use \Tudu\Core\MediaType;
  * Request handler base class for all API endpoints.
  */
 abstract class API extends Handler {
+    
+    private $context;
+    
+    /**
+     * Constructor.
+     * 
+     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param array $context (optional) Associative array describing the context
+     * of this request (route parameters, query parameters, etc.).
+     */
+    public function __construct(Delegate\App $app, DbConnection $db, array $context = []) {
+        parent::__construct($app, $db);
+        $this->context = $context;
+    }
     
     /**
      * Handle GET requests on this endpoint. Override for custom behavior.
@@ -205,6 +222,36 @@ abstract class API extends Handler {
         }
         
         return $model->asArray();
+    }
+    
+    /**
+     * Similar to `getNormalizedRequestBody`, but for context data.
+     * 
+     * Context data is passed in to the request handler constructor via a
+     * key/value array. If context data is valid, it is normalized and returned
+     * as another key/value array.
+     * 
+     * Context data is considered invalid if any of its properties fail to
+     * validate by a corresponding Model object.
+     * 
+     * @param array $propertyNormalizers Key/value array where keys are
+     * properties and values are Model objects used to normalize the
+     * corresponding properties.
+     * @return array Key/value array of normalized context data.
+     */
+    protected function getNormalizedContext($propertyNormalizers) {
+        $context = [];
+        foreach ($propertyNormalizers as $property => $model) {
+            $model->fromArray([
+                $property => $this->context[$property]
+            ]);
+            $errors = $model->normalize();
+            if (!is_null($errors)) {
+                $this->sendError(Error::Validation(null, $errors, 400));
+            }
+            $context[$property] = $model->get($property);
+        }
+        return $context;
     }
     
     /**

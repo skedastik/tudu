@@ -13,20 +13,16 @@ abstract class Handler {
     
     protected $app;
     protected $db;
-    protected $context;
     
     /**
      * Constructor.
      * 
      * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
      * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
-     * @param array $context (optional) Associative array describing the context
-     * of this request (route parameters, query parameters, etc.).
      */
-    public function __construct(Delegate\App $app, DbConnection $db, array $context = []) {
+    public function __construct(Delegate\App $app, DbConnection $db) {
         $this->app = $app;
         $this->db = $db;
-        $this->context = $context;
     }
     
     /**
