@@ -4,7 +4,7 @@ namespace Tudu\Handler\Api\User;
 use \Tudu\Core\Error;
 
 /**
- * Request handler for /users/:user_id
+ * Request handler for /users/:user_id/confirm
  */
 final class Confirm extends UserEndpoint {
     
@@ -13,7 +13,6 @@ final class Confirm extends UserEndpoint {
     }
     
     protected function post() {
-        $this->checkResponseAcceptable();
         $this->checkRequestDecodable();
         
         $data = $this->decodeRequestBody([
