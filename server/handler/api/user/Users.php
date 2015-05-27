@@ -24,7 +24,7 @@ final class Users extends UserEndpoint {
         $this->checkResponseAcceptable();
         $this->checkRequestDecodable();
         
-        $data = $this->decodeRequestBody([
+        $data = $this->getNormalizedRequestBody([
             'email',
             'password'
         ]);

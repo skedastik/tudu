@@ -180,10 +180,10 @@ abstract class API extends Handler {
      * to validate. In such cases, processing halts and an error response is
      * automatically generated.
      * 
-     * @param array $requiredProperties Array of normalized data.
+     * @param array $requiredProperties Array of properties.
      * @return array Key/value array of normalized model data.
      */
-    protected function decodeRequestBody($requiredProperties) {
+    protected function getNormalizedRequestBody($requiredProperties) {
         $mediaType = $this->app->getRequestHeader('Content-Type');
         $requestBody = $this->app->getRequestBody();
         $data = $this->app->getEncoder()->decode($requestBody, $mediaType);

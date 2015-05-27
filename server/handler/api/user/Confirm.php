@@ -15,7 +15,7 @@ final class Confirm extends UserEndpoint {
     protected function post() {
         $this->checkRequestDecodable();
         
-        $data = $this->decodeRequestBody([
+        $data = $this->getNormalizedRequestBody([
             'signup_token'
         ]);
         

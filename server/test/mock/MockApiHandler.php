@@ -21,7 +21,7 @@ final class MockApiHandler extends Handler\API {
         $this->checkResponseAcceptable();
         $this->checkRequestDecodable();
         
-        $data = $this->decodeRequestBody([
+        $data = $this->getNormalizedRequestBody([
             'name',
             'email'
         ]);
