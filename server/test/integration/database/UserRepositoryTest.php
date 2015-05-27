@@ -21,6 +21,30 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertTrue($user_id >= 0);
     }
     
+    public function testGetByIDShouldSucceedGivenValidID() {
+        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $user = $this->repo->getByID($user_id);
+        $this->assertTrue($user instanceof User);
+    }
+    
+    public function testGetByIDShouldFailGivenNonexistentID() {
+        $error = $this->repo->getByID(1);
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
+    }
+    
+    public function testGetByEmailShouldSucceedGivenValidEmail() {
+        $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $user = $this->repo->getByEmail('foo@bar.com');
+        $this->assertTrue($user instanceof User);
+    }
+    
+    public function testGetByEmailShouldFailGivenNonexistentEmail() {
+        $error = $this->repo->getByEmail('doesnt@exist.xyz');
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::GENERIC, $error->getError());
+    }
+    
     public function testSignupUserShouldCreateUserWithNormalizedData() {
         $pwHash = 'unlikely_pw_hash';
         $user_id = $this->repo->signupUser("   foo@bar.com   \t", $pwHash, '127.0.0.1');
@@ -47,18 +71,6 @@ class UserRepositoryTest extends DatabaseTest {
         $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $this->assertTrue($error instanceof Error);
         $this->assertEquals(Error::VALIDATION, $error->getError());
-    }
-
-    public function testGetByIDShouldFailGivenNonexistentID() {
-        $error = $this->repo->getByID(1);
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
-    }
-    
-    public function testGetByIDShouldSucceedGivenValidID() {
-        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
-        $user = $this->repo->getByID($user_id);
-        $this->assertTrue($user instanceof User);
     }
     
     public function testConfirmUserShouldSucceedGivenCorrectSignupToken() {

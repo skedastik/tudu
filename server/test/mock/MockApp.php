@@ -83,7 +83,10 @@ final class MockApp extends App {
     
     public function map($route, $callback, ...$methods) {}
     
-    public function pass() {}
+    public function pass() {
+        $this->setResponseStatus(200);
+        throw new MockException('MockApp::pass()');
+    }
     
     public function run() {
         try {

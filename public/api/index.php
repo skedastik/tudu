@@ -6,6 +6,10 @@ use \Tudu\Core;
 use \Tudu\Conf\Conf;
 use \Tudu\Handler;
 use \Tudu\Core\Encoder;
+use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
+use \Tudu\Core\Handler\Auth\Contract\BasicAuthentication;
+use \Tudu\Handler\Auth\Contract\TuduAuthentication;
+use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 
 $db = new Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
@@ -19,12 +23,26 @@ $app->setEncoder(new Encoder\JSON());
 
 // User URIs -------------------------------------------------------------------
 
-$app->map('/users/:user_id', $cb = function ($user_id) use ($app, $db) {
-    (new Core\Handler\Auth\Basic($app, $db, [
-        'user_id' => $user_id
-    ]))->process();
+$app->map('/signin', function () use ($app, $db) {
+    (new AuthHandler(
+        $app,
+        $db,
+        new BasicAuthentication()
+    ))->process();
+}, 'POST');
+
+$app->map('/signin', function () use ($app, $db) {
+    (new Handler\Api\User\Signin($app, $db))->process();
+});
+
+$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+    (new AuthHandler(
+        $app,
+        $db,
+        new BasicAuthentication(),
+        new TuduAuthorization($user_id, $db)
+    ))->process();
 }, 'PUT');
-$app->map('/users/:user_id/signin', $cb, 'POST');
 
 $app->map('/users/', function () use ($app, $db) {
     (new Handler\Api\User\Users($app, $db))->process();
@@ -42,19 +60,15 @@ $app->map('/users/:user_id/confirm', function ($user_id) use ($app, $db) {
     ]))->process();
 });
 
-$app->map('/users/:user_id/signin', function ($user_id) use ($app, $db) {
-    (new Handler\Api\User\Signin($app, $db, [
-        'user_id' => $user_id
-    ]))->process();
-});
-
 // Task URIs -------------------------------------------------------------------
 
-$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id, $task_id = null) use ($app, $db) {
-    (new Core\Handler\Auth\HMAC($app, $db, [
-        'user_id' => $user_id,
-        'task_id' => $task_id
-    ]))->process();
+$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id) use ($app, $db) {
+    (new AuthHandler(
+        $app,
+        $db,
+        new TuduAuthentication(),
+        new TuduAuthorization($user_id, $db)
+    ))->process();
 });
 
 $app->map('/users/:user_id/tasks/', function ($user_id) use ($app, $db) {

@@ -17,6 +17,7 @@ class Conf
     const LOG_PATH = __DIR__.'/../../logs';
     const LOG_LEVEL = LogLevel::DEBUG;
     
+    const AUTHENTICATION_REALM = 'TuduAPI';
     const ACCESS_TOKEN_TTL = '1 year';
 }
 

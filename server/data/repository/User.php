@@ -19,7 +19,24 @@ final class User extends Repository {
             [$id]
         );
         if ($result === false) {
-            return Error::Generic('User ID not found.');
+            return Error::Generic('User not found.');
+        }
+        return $this->prenormalize(new Model\User($result[0]));
+    }
+    
+    /**
+     * Fetch a single user with the given email address.
+     * 
+     * @param string $email Email address.
+     * @return mixed User model on success, otherwise an Error object.
+     */
+    public function getByEmail($email) {
+        $result = $this->db->query(
+            'select user_id, email, password_hash, kvs, status, edate, cdate from tudu_user where email = $1;',
+            [$email]
+        );
+        if ($result === false) {
+            return Error::Generic('User not found.');
         }
         return $this->prenormalize(new Model\User($result[0]));
     }
