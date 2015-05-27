@@ -29,6 +29,18 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertSame($pwHash, $user->get('password_hash'));
     }
     
+    public function testSignupUserShouldCreateUserWithStatusInit() {
+        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $user = $this->repo->getByID($user_id);
+        $this->assertSame('init', $user->get('status'));
+    }
+    
+    public function testSignupUserWithAutoConfirmShouldCreateUserWithStatusActive() {
+        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1', true);
+        $user = $this->repo->getByID($user_id);
+        $this->assertSame('active', $user->get('status'));
+    }
+    
     public function testSignupUserShouldFailGivenEmailThatIsAlreadyTaken() {
         $email = 'foo@bar.com';
         $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');

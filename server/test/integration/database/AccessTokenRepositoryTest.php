@@ -18,7 +18,7 @@ class AccessTokenRepositoryTest extends DatabaseTest {
         parent::setUp();
         $this->userRepo = new UserRepo($this->db);
         $this->tokenRepo = new AccessTokenRepo($this->db);
-        $userId = $this->userRepo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $userId = $this->userRepo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1', true);
         $this->user = $this->userRepo->getById($userId);
     }
     

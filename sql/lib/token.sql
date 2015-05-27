@@ -1,5 +1,5 @@
 /**
- * Create an access token for a given user.
+ * Create an access token for a given active user.
  * 
  * Arguments
  *   _user_id       ID of existing user
@@ -15,7 +15,7 @@
  * 
  * Returns
  *   Token ID on success.
- *   -1 if user does not exist
+ *   -1 if user is not valid
  *   -2 if access token is not unique for the given user
  */
 create or replace function tudu.create_access_token(
@@ -31,7 +31,7 @@ declare
     _token_id           bigint;
     _constraint         text;
 begin
-    select user_id into _user_id from tudu_user where user_id = _user_id;
+    select user_id into _user_id from tudu_user where user_id = _user_id and status = 'active';
     
     if _user_id is null then
         return -1;

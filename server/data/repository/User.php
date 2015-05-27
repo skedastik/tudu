@@ -30,12 +30,13 @@ final class User extends Repository {
      * @param string $email Email address.
      * @param string $passwordHash A secure password hash.
      * @param string $ip IP address.
+     * @param bool $autoConfirm (optional) Automatically confirm user.
      * @return int|\Tudu\Core\Error New user's ID on success, Error otherwise.
      */
-    public function signupUser($email, $passwordHash, $ip) {
+    public function signupUser($email, $passwordHash, $ip, $autoConfirm = false) {
         $result = $this->db->queryValue(
-            'select tudu.signup_user($1, $2, $3);',
-            [$email, $passwordHash,  $ip]
+            'select tudu.signup_user($1, $2, $3, \'\', $4);',
+            [$email, $passwordHash, $ip, $autoConfirm ? 't' : 'f']
         );
         if ($result == -1) {
             return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);

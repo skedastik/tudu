@@ -7,7 +7,7 @@ declare
     _access_token       tudu_access_token%ROWTYPE;
     _access_token_log   tudu_access_token_log%ROWTYPE;
 begin
-    _user               := tudu.create_random_user();
+    _user               := tudu.create_random_user(true);
     perform tudu.create_access_token(_user.user_id, 'silly-token-string', 'login', '1 week', false, '127.0.0.1');
     _access_token       := tudu.latest_access_token();
     _access_token_log   := tudu.latest_access_token_log();
@@ -70,7 +70,7 @@ declare
     _result     int;
     _token_log  tudu_access_token_log%ROWTYPE;
 begin
-    _user       := tudu.create_random_user();
+    _user       := tudu.create_random_user(true);
     _token_id   := tudu.create_access_token(_user.user_id, 'token-string', 'login', '1 week', false, '127.0.0.1');
     _result     := tudu.revoke_active_access_tokens(_user.user_id, 'login', '127.0.0.1');
     _token_log  := tudu.latest_access_token_log();
@@ -112,7 +112,7 @@ begin
     -- temporarily disable constraint to allow arbitrary token types for test
     alter table tudu_access_token drop constraint check_token_type;
 
-    _user       := tudu.create_random_user();
+    _user       := tudu.create_random_user(true);
     _token_id1  := tudu.create_access_token(_user.user_id, 'token-string', 'test', '1 week', false, '127.0.0.1');
     _token_id2  := tudu.create_access_token(_user.user_id, 'other-token-string', 'test', '1 week', false, '127.0.0.1');
     perform tudu.revoke_active_access_tokens(_user.user_id, 'test', '127.0.0.1');
@@ -137,7 +137,7 @@ declare
     _token_id   bigint;
     _token_log  tudu_access_token_log%ROWTYPE;
 begin
-    _user       := tudu.create_random_user();
+    _user       := tudu.create_random_user(true);
     _token_id   := tudu.revoke_active_access_tokens(_user.user_id, '127.0.0.1');
     _token_log  := tudu.latest_access_token_log();
 
@@ -162,7 +162,7 @@ declare
     _user               tudu_user%ROWTYPE;
     _access_token_id    bigint;
 begin
-    _user := tudu.create_random_user();
+    _user := tudu.create_random_user(true);
     perform tudu.create_access_token(_user.user_id, 'token-string', 'login', '1 week', true, '127.0.0.1');
     _access_token_id := tudu.create_access_token(_user.user_id, 'diff-token-string', 'login', '1 week', true, '127.0.0.1');
 
@@ -183,7 +183,7 @@ declare
     _access_token_id    bigint;
     _exception          boolean default false;
 begin
-    _user := tudu.create_random_user();
+    _user := tudu.create_random_user(true);
     perform tudu.create_access_token(_user.user_id, 'token-string', 'login', '1 week', true, '127.0.0.1');
 
     begin
@@ -209,7 +209,7 @@ declare
     _access_token_id    bigint;
     _exception          boolean default false;
 begin
-    _user := tudu.create_random_user();
+    _user := tudu.create_random_user(true);
     perform tudu.create_access_token(_user.user_id, 'token-string', 'password_reset', '1 week', true, '127.0.0.1');
 
     begin
@@ -251,7 +251,7 @@ declare
     _access_token_id    bigint;
     _user               tudu_user%ROWTYPE;
 begin
-    _user := tudu.create_random_user();
+    _user := tudu.create_random_user(true);
     perform tudu.create_access_token(_user.user_id, 'silly-token-string', 'login', '1 week', true, '127.0.0.1');
     _access_token_id := tudu.create_access_token(_user.user_id, 'silly-token-string', 'login', '1 week', true, '127.0.0.1');
 
@@ -270,6 +270,25 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function unit_tests.create_access_token_for_user_that_is_not_active() returns test_result as $$
+declare
+    _message            test_result;
+    _access_token_id    bigint;
+    _user               tudu_user%ROWTYPE;
+begin
+    _user := tudu.create_random_user();
+    _access_token_id := tudu.create_access_token(_user.user_id, 'silly-token-string', 'login', '1 week', true, '127.0.0.1');
+
+    if _access_token_id <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
 create or replace function unit_tests.validate_access_token() returns test_result as $$
 declare
     _message        test_result;
@@ -277,7 +296,7 @@ declare
     _user           tudu_user%ROWTYPE;
     _result         integer;
 begin
-    _user         := tudu.create_random_user();
+    _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login');
     _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
 
@@ -297,7 +316,7 @@ declare
     _user           tudu_user%ROWTYPE;
     _result         integer;
 begin
-    _user         := tudu.create_random_user();
+    _user         := tudu.create_random_user(true);
     perform tudu.create_random_access_token(_user.user_id, 'login');
     _result       := tudu.validate_access_token(_user.user_id, 'mismatched-token-string');
 
@@ -318,7 +337,7 @@ declare
     _user           tudu_user%ROWTYPE;
     _result         integer;
 begin
-    _user         := tudu.create_random_user();
+    _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login');
     perform tudu.revoke_active_access_tokens(_user.user_id, 'login');
     _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
@@ -340,7 +359,7 @@ declare
     _user           tudu_user%ROWTYPE;
     _result         integer;
 begin
-    _user         := tudu.create_random_user();
+    _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login', '1 millisecond');
     update tudu_access_token set cdate = cdate - '1 second'::interval where token_id = _access_token.token_id;
     _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);

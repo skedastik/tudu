@@ -58,14 +58,22 @@ $$ language plpgsql;
 
 /**
  * Sign up a random user.
+ * 
+ * Arguments
+ *   _autoconfirm    (optional) Autoconfirm user. Defaults to FALSE.
  */
 drop function if exists tudu.create_random_user();
-create function tudu.create_random_user() returns tudu_user as $$
+create function tudu.create_random_user(
+    _autoconfirm    boolean     default false
+) returns tudu_user as $$
 declare
-    _id bigint;
+    _cur_id bigint;
+    _id     bigint;
 begin
-    _id := currval('tudu_user_seq');
-    perform tudu.signup_user('user' || _id || '@foo.xyz', tudu.random_string(), '127.0.0.1');
+    _cur_id := currval('tudu_user_seq');
+    _id := nextval('tudu_user_seq');
+    perform setval('tudu_user_seq', _cur_id);
+    perform tudu.signup_user('user' || _id || '@foo.xyz', tudu.random_string(), '127.0.0.1', '', _autoconfirm);
     return tudu.latest_user();
 end;
 $$ language plpgsql;
