@@ -114,6 +114,13 @@ class UserRepositoryTest extends DatabaseTest {
         $this->assertEquals(Error::GENERIC, $error->getError());
     }
     
+    public function testSetUserEmailShouldFailGivenIdenticalEmail() {
+        $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
+        $error = $this->repo->setUserEmail($user_id, 'foo@bar.com', '127.0.0.1');
+        $this->assertTrue($error instanceof Error);
+        $this->assertEquals(Error::NOTICE, $error->getError());
+    }
+    
     public function testSetUserEmailToAlreadyUsedEmailShouldFail() {
         $this->repo->signupUser('baz@qux.xyz', 'unlikely_pw_hash', '127.0.0.1');
         $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
