@@ -104,6 +104,26 @@ class UserEndpointTest extends DatabaseTest {
         $tokenRepo = new Repository\AccessToken($this->db);
         $accessToken = $tokenRepo->getByUserIDAndTokenString($user_id, $tokenString);
         $this->assertEquals($tokenString, $accessToken->get('token_string'));
+        $this->assertEquals(200, $this->app->getResponseStatus());
+    }
+    
+    public function testMultipleValidPostsToSigninShouldSucceed() {
+        // create a new user
+        $user_id = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
+        $user = $this->userRepo->getByID($user_id);
+        
+        // simulate two valid POSTs to /signin
+        for ($i = 0; $i < 2; $i++) {
+            $this->app->setRequestMethod('POST');
+            $this->app->setContext([
+                'user_id' => $user_id
+            ]);
+            $this->app->setHandler(
+                new Handler\Api\User\Signin($this->app, $this->db)
+            );
+            $this->app->run();
+            $this->assertEquals(200, $this->app->getResponseStatus());
+        }
     }
     
     public function tearDown() {

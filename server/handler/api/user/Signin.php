@@ -30,7 +30,7 @@ final class Signin extends \Tudu\Core\Handler\API {
             $tokenString,
             'login',
             Conf::ACCESS_TOKEN_TTL,
-            false,
+            true,
             $this->app->getRequestIp()
         );
         if ($result instanceof Error) {
@@ -44,7 +44,7 @@ final class Signin extends \Tudu\Core\Handler\API {
             'access_token' => $tokenString
         ]);
         
-        $this->app->setResponseStatus(204);
+        $this->app->setResponseStatus(200);
     }
 }
 
