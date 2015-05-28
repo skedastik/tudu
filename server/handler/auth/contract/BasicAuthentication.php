@@ -17,6 +17,35 @@ final class BasicAuthentication implements Authentication {
     private $passwordDelegate;
     
     /**
+     * Encode a user ID and password as basic HTTP authentication credentials.
+     * 
+     * @param int|string $id User ID.
+     * @param string $password Plain text password.
+     * @return string Base-64-encoded credentials.
+     */
+    public static function encodeCredentials($id, $password) {
+        return base64_encode($id.':'.$password);
+    }
+    
+    /**
+     * Decode basic HTTP authentication credentials.
+     * 
+     * @param string $credentials Base-64 encoded credentials.
+     * @return array|false Key/value array with 'user_id' and 'password' keys
+     * on success, NULL on failure.
+     */
+    public static function decodeCredentials($credentials) {
+        $decoded = base64_decode($credentials);
+        if (preg_match('/^([^:]+):(.+)/', $decoded, $matches) !== 1) {
+            return null;
+        }
+        return [
+            'user_id' => $matches[1],
+            'password' => $matches[2]
+        ];
+    }
+    
+    /**
      * Constructor.
      * 
      * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
@@ -34,20 +63,19 @@ final class BasicAuthentication implements Authentication {
     
     public function authenticate($param) {
         // extract user and password from base-64-encoded auth parameter
-        $decoded = base64_decode($param);
-        if (preg_match('/^([^:]+):(.+)/', $decoded, $matches) !== 1) {
+        $credentials = self::decodeCredentials($param);
+        if (is_null($credentials)) {
             return false;
         }
         
-        $userId = $matches[1];
+        $userId = $credentials['user_id'];
         $userRepo = new Repository\User($this->db);
         $user = is_numeric($userId) ? $userRepo->getById($userId) : $userRepo->getByEmail($userId);
         if ($user instanceof Error) {
             return false;
         }
         
-        $password = $matches[2];
-        if (!$this->passwordDelegate->compare($password, $user->get('password_hash'))) {
+        if (!$this->passwordDelegate->compare($credentials['password'], $user->get('password_hash'))) {
             return false;
         }
         
