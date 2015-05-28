@@ -142,7 +142,6 @@ abstract class API extends Handler {
      * handling requests with payloads (i.e., POST, PUT, and PATCH).
      */
     protected function checkRequestDecodable() {
-        $method = $this->app->getRequestMethod();
         $requestContentType = $this->app->getRequestHeader('Content-Type');
         $encoder = $this->app->getEncoder();
         if (!$encoder->supportsMediaType($requestContentType)) {
