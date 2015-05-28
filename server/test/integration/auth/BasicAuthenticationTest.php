@@ -73,7 +73,8 @@ class BasicAuthenticationTest extends DatabaseTest {
         // simulate a POST to /signin with basic authentication
         $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
         $this->app->setRequestMethod('POST');
-        $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.base64_encode($userId.':wrong_password'));
+        $credentials = BasicAuthentication::encodeCredentials($userId, ':wrong_password');
+        $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.$credentials);
         $this->app->setHandler(new AuthHandler(
             $this->app,
             $this->db,
