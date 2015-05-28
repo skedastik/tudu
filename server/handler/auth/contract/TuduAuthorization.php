@@ -9,12 +9,18 @@ use \Tudu\Core\Handler\Auth\Contract\Authorization;
  */
 final class TuduAuthorization implements Authorization {
     
-    private $userId;
     private $db;
+    private $userId;
     
-    public function __construct($userId, DbConnection $db) {
-        $this->userId = $userId;
+    /**
+     * Constructor.
+     * 
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param int $userId User ID.
+     */
+    public function __construct(DbConnection $db, $userId) {
         $this->db = $db;
+        $this->userId = $userId;
     }
     
     public function authorize($param) {

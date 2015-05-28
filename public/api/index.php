@@ -5,6 +5,7 @@ require_once __DIR__.'/../../server/autoload.php';
 use \Tudu\Core;
 use \Tudu\Conf\Conf;
 use \Tudu\Handler;
+use \Tudu\Delegate;
 use \Tudu\Core\Encoder;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
@@ -21,13 +22,16 @@ $db = new Core\Data\PgSQLConnection([
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
 $app->setEncoder(new Encoder\JSON());
 
+$passwordDelegate = new Delegate\PHPass();
+$basicAuthentication = new BasicAuthentication($db, $passwordDelegate);
+
 // User URIs -------------------------------------------------------------------
 
-$app->map('/signin', function () use ($app, $db) {
+$app->map('/signin', function () use ($app, $db, $basicAuthentication) {
     (new AuthHandler(
         $app,
         $db,
-        new BasicAuthentication($db)
+        $basicAuthentication
     ))->process();
 }, 'POST');
 
@@ -35,17 +39,17 @@ $app->map('/signin', function () use ($app, $db) {
     (new Handler\Api\User\Signin($app, $db))->process();
 });
 
-$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id', function ($user_id) use ($app, $db, $basicAuthentication) {
     (new AuthHandler(
         $app,
         $db,
-        new BasicAuthentication($db),
-        new TuduAuthorization($user_id, $db)
+        $basicAuthentication,
+        new TuduAuthorization($db, $user_id)
     ))->process();
 }, 'PUT');
 
-$app->map('/users/', function () use ($app, $db) {
-    (new Handler\Api\User\Users($app, $db))->process();
+$app->map('/users/', function () use ($app, $db, $passwordDelegate) {
+    (new Handler\Api\User\Users($app, $db, [], $passwordDelegate))->process();
 });
 
 $app->map('/users/:user_id', function ($user_id) use ($app, $db) {
@@ -66,8 +70,8 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($user_id) use ($app, $db
     (new AuthHandler(
         $app,
         $db,
-        new TuduAuthentication(),
-        new TuduAuthorization($user_id, $db)
+        new TuduAuthentication($app, $db, $user_id),
+        new TuduAuthorization($db, $user_id)
     ))->process();
 });
 

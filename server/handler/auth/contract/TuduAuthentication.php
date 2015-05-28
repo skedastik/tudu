@@ -1,12 +1,30 @@
 <?php
 namespace Tudu\Handler\Auth\Contract;
 
+use \Tudu\Core\Delegate;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
 
 /**
  * HMAC-inspired Tudu user authentication.
  */
 final class TuduAuthentication implements Authentication {
+    
+    protected $app;
+    private $db;
+    private $userId;
+    
+    /**
+     * Constructor.
+     * 
+     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param int $userId User ID.
+     */
+    public function __construct(Delegate\App $app, DbConnection $db, $userId) {
+        $this->app = $app;
+        $this->db = $db;
+        $this->userId = $userId;
+    }
     
     public function getScheme() {
         return 'Tudu';

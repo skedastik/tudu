@@ -25,6 +25,7 @@ class UserEndpointTest extends DatabaseTest {
         ob_start();
         $this->app = new MockApp();
         $this->app->setEncoder(new Encoder\JSON());
+        $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
     }
     
@@ -35,7 +36,7 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setHandler(
-            new Handler\Api\User\Users($this->app, $this->db)
+            new Handler\Api\User\Users($this->app, $this->db, [], $this->passwordDelegate)
         );
         $this->app->setRequestBody('{
             "email": "foo@bar.xyz",
@@ -48,9 +49,8 @@ class UserEndpointTest extends DatabaseTest {
         
         // user should have matching data
         $user = $this->userRepo->getByID($user_id);
-        $phpass = new PHPass();
         $this->assertSame('foo@bar.xyz', $user->get('email'));
-        $this->assertTrue($phpass->compare($password, $user->get('password_hash')));
+        $this->assertTrue($this->passwordDelegate->compare($password, $user->get('password_hash')));
     }
     
     public function testValidPostToConfirmShouldConfirmExistingUser() {

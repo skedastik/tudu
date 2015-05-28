@@ -4,8 +4,9 @@ namespace Tudu\Handler\Auth\Contract;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Data\Repository;
+use \Tudu\Data\Model;
 use \Tudu\Core\Error;
-use \Tudu\Delegate\PHPass;
+use \Tudu\Core\Delegate;
 
 /**
  * Basic authentication for Tudu.
@@ -13,9 +14,18 @@ use \Tudu\Delegate\PHPass;
 final class BasicAuthentication implements Authentication {
     
     private $db;
+    private $passwordDelegate;
     
-    public function __construct(DbConnection $db) {
+    /**
+     * Constructor.
+     * 
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param \Tudu\Core\Delegate\Password $passwordDelegate Password delegate.
+     * This will be used to compare user passwords.
+     */
+    public function __construct(DbConnection $db, Delegate\Password $passwordDelegate) {
         $this->db = $db;
+        $this->passwordDelegate = $passwordDelegate;
     }
     
     public function getScheme() {
@@ -37,8 +47,7 @@ final class BasicAuthentication implements Authentication {
         }
         
         $password = $matches[2];
-        $phpass = new PHPass();
-        if (!$phpass->compare($password, $user->get('password_hash'))) {
+        if (!$this->passwordDelegate->compare($password, $user->get('password_hash'))) {
             return false;
         }
         

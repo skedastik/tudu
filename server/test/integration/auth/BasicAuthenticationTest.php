@@ -17,18 +17,18 @@ class BasicAuthenticationTest extends DatabaseTest {
         parent::setUp();
         ob_start();
         $this->app = new MockApp();
+        $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
     }
     
     public function testValidCredentialsUsingUserIdShouldReturn200() {
         // create a new user
         $password = 'test_password';
-        $phpass = new \Tudu\Delegate\PHPass();
-        $passwordHash = $phpass->getHash($password);
+        $passwordHash = $this->passwordDelegate->getHash($password);
         $userId = $this->userRepo->signupUser('foo@bar.xyz', $passwordHash, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db);
+        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.base64_encode($userId.':'.$password));
         $this->app->setHandler(new AuthHandler(
@@ -46,12 +46,11 @@ class BasicAuthenticationTest extends DatabaseTest {
         // create a new user
         $email = 'foo@bar.xyz';
         $password = 'test_password';
-        $phpass = new \Tudu\Delegate\PHPass();
-        $passwordHash = $phpass->getHash($password);
+        $passwordHash = $this->passwordDelegate->getHash($password);
         $userId = $this->userRepo->signupUser($email, $passwordHash, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db);
+        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.base64_encode($email.':'.$password));
         $this->app->setHandler(new AuthHandler(
@@ -70,7 +69,7 @@ class BasicAuthenticationTest extends DatabaseTest {
         $userId = $this->userRepo->signupUser('foo@bar.xyz', 'test_password', '127.0.0.1', true);
 
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db);
+        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.base64_encode($userId.':wrong_password'));
         $this->app->setHandler(new AuthHandler(
