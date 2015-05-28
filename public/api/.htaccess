@@ -6,3 +6,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 # Rewrite all matching requests to index.php, preserving query strings
 RewriteRule ^ index.php [QSA,L]
+
+# PHP does not reliably import Authorization headers. This can be fixed with 
+# the following directive.
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
