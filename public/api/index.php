@@ -7,7 +7,7 @@ use \Tudu\Conf\Conf;
 use \Tudu\Handler;
 use \Tudu\Core\Encoder;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
-use \Tudu\Core\Handler\Auth\Contract\BasicAuthentication;
+use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 
@@ -27,7 +27,7 @@ $app->map('/signin', function () use ($app, $db) {
     (new AuthHandler(
         $app,
         $db,
-        new BasicAuthentication()
+        new BasicAuthentication($db)
     ))->process();
 }, 'POST');
 
@@ -39,7 +39,7 @@ $app->map('/users/:user_id', function ($user_id) use ($app, $db) {
     (new AuthHandler(
         $app,
         $db,
-        new BasicAuthentication(),
+        new BasicAuthentication($db),
         new TuduAuthorization($user_id, $db)
     ))->process();
 }, 'PUT');

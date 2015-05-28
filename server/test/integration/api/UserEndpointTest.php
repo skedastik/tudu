@@ -86,7 +86,7 @@ class UserEndpointTest extends DatabaseTest {
         $user_id = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
         $user = $this->userRepo->getByID($user_id);
         
-        // simulate a valid POST to /users/:user_id/signin
+        // simulate a valid POST to /signin
         $this->app->setRequestMethod('POST');
         $this->app->setHandler(
             new Handler\Api\User\Signin($this->app, $this->db, [

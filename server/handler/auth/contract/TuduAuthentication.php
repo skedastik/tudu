@@ -4,7 +4,7 @@ namespace Tudu\Handler\Auth\Contract;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
 
 /**
- * HMAC-inspired authentication for the Tudu application.
+ * HMAC-inspired Tudu user authentication.
  */
 final class TuduAuthentication implements Authentication {
     
