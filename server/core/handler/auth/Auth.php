@@ -18,14 +18,14 @@ class Auth extends \Tudu\Core\Handler\Handler {
     /**
      * Constructor.
      * 
+     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
      * @param \Tudu\Core\Handler\Auth\Contract\Authentication $authentication An
      * instance of an Authentication implementation. This will be used to
      * authenticate incoming requests.
      * @param \Tudu\Core\Handler\Auth\Contract\Authentication $authorization
      * (optional) An instance of an Authorization implementation. This will be
      * used to authorize incoming requests.
-     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
      */
     public function __construct(
         Delegate\App $app,
