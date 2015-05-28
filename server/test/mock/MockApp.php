@@ -82,6 +82,11 @@ final class MockApp extends App {
     }
     
     public function map($route, $callback, ...$methods) {}
+    public function get($route, $callback) {}
+    public function post($route, $callback) {}
+    public function put($route, $callback) {}
+    public function delete($route, $callback) {}
+    public function patch($route, $callback) {}
     
     public function pass() {
         $this->setResponseStatus(200);

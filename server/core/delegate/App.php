@@ -112,6 +112,31 @@ abstract class App {
     abstract public function map($route, $callback, ...$methods);
     
     /**
+     * Shorthand GET request router.
+     */
+    abstract public function get($route, $callback);
+    
+    /**
+     * Shorthand POST request router.
+     */
+    abstract public function post($route, $callback);
+    
+    /**
+     * Shorthand PUT request router.
+     */
+    abstract public function put($route, $callback);
+    
+    /**
+     * Shorthand DELETE request router.
+     */
+    abstract public function delete($route, $callback);
+    
+    /**
+     * Shorthand PATCH request router.
+     */
+    abstract public function patch($route, $callback);
+    
+    /**
      * Immediately halt processing and pass control to the next applicable
      * router callback.
      */

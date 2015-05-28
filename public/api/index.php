@@ -28,31 +28,38 @@ $basicAuthentication = new BasicAuthentication($db, $passwordDelegate);
 // User URIs -------------------------------------------------------------------
 
 $app->map('/users/', function () use ($app, $db, $passwordDelegate) {
-    (new Handler\Api\User\Users($app, $db, [], $passwordDelegate))->process();
+    (new Handler\Api\User\Users(
+        $app,
+        $db,
+        [],
+        $passwordDelegate
+    ))->process();
 });
 
-$app->map('/signin', function () use ($app, $db, $basicAuthentication) {
-    $authHandler = 
+$app->post('/signin', function () use ($app, $db, $basicAuthentication) {
     (new AuthHandler(
         $app,
         $db,
         $basicAuthentication,
         new TuduAuthorization($db)
     ))->process();
-}, 'POST');
-
-$app->map('/signin', function () use ($app, $db) {
-    (new Handler\Api\User\Signin($app, $db))->process();
 });
 
-$app->map('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentication) {
+$app->map('/signin', function () use ($app, $db) {
+    (new Handler\Api\User\Signin(
+        $app,
+        $db
+    ))->process();
+});
+
+$app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentication) {
     (new AuthHandler(
         $app,
         $db,
         $basicAuthentication,
         new TuduAuthorization($db, $userId)
     ))->process();
-}, 'PUT');
+});
 
 $app->map('/users/:user_id', function ($userId) use ($app, $db) {
     (new Handler\Api\User\User($app, $db, [
@@ -75,7 +82,7 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
         new TuduAuthentication($app, $db, $userId),
         new TuduAuthorization($db, $userId)
     ))->process();
-});
+}, 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD');
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     (new Handler\Api\Task\Tasks($app, $db, [

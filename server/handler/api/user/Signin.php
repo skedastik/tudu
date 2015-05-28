@@ -17,16 +17,13 @@ final class Signin extends \Tudu\Core\Handler\API {
     
     protected function post() {
         $this->checkResponseAcceptable();
-        
-        $user = new Model\User();
         $context = $this->getNormalizedContext([
-            'user_id' => $user
+            'user_id' => new Model\User()
         ]);
-        
         $userId = $context['user_id'];
         $tokenRepo = new Repository\AccessToken($this->db);
         $tokenString = Model\AccessToken::generateTokenString();
-        $tokenId = $tokenRepo->createAccessToken(
+        $result = $tokenRepo->createAccessToken(
             $userId,
             $tokenString,
             'login',
@@ -34,10 +31,10 @@ final class Signin extends \Tudu\Core\Handler\API {
             false,
             $this->app->getRequestIp()
         );
-        if ($tokenId instanceof Error) {
+        if ($result instanceof Error) {
             $logger = Logger::getInstance();
             $errDescription = 'Error creating access token during user sign-in.';
-            $logger->error($errDescription, $tokenId);
+            $logger->error($errDescription, $result->asArray());
             throw new \Tudu\Core\TuduException($errDescription);
         }
         
