@@ -83,6 +83,7 @@ class Auth extends \Tudu\Core\Handler\Handler {
          * revoking access tokens if user sends unencrypted credentials.
          */
         
+        $this->app->setContext(['user_id' => $userId]);
         $this->app->pass();
     }
 }

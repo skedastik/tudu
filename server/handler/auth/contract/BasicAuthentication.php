@@ -64,6 +64,7 @@ final class BasicAuthentication implements Authentication {
     public function authenticate($param) {
         // extract user and password from base-64-encoded auth parameter
         $credentials = self::decodeCredentials($param);
+        
         if (is_null($credentials)) {
             return null;
         }

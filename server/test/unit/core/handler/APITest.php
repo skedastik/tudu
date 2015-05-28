@@ -157,9 +157,10 @@ class APITest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testGetNormalizedContextReturnsNormalizedContextGivenValidProperties() {
-        $this->handler = new MockApiHandler($this->app, $this->db, [
+        $this->app->setContext([
             'name' => '   John Doe   '
         ]);
+        $this->handler = new MockApiHandler($this->app, $this->db);
         $this->app->setHandler($this->handler);
         $this->app->setRequestMethod('PUT');
         $this->app->run();
@@ -168,9 +169,10 @@ class APITest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testGetNormalizedContextReturns400GivenPropertiesThatFailToValidate() {
-        $this->handler = new MockApiHandler($this->app, $this->db, [
+        $this->app->setContext([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected'
         ]);
+        $this->handler = new MockApiHandler($this->app, $this->db);
         $this->app->setHandler($this->handler);
         $this->app->setRequestMethod('PUT');
         $this->app->run();

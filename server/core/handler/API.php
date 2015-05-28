@@ -13,21 +13,6 @@ use \Tudu\Core\MediaType;
  */
 abstract class API extends Handler {
     
-    private $context;
-    
-    /**
-     * Constructor.
-     * 
-     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
-     * @param array $context (optional) Associative array describing the context
-     * of this request (route parameters, query parameters, etc.).
-     */
-    public function __construct(Delegate\App $app, DbConnection $db, array $context = []) {
-        parent::__construct($app, $db);
-        $this->context = $context;
-    }
-    
     /**
      * Handle GET requests on this endpoint. Override for custom behavior.
      */
@@ -217,11 +202,10 @@ abstract class API extends Handler {
     }
     
     /**
-     * Similar to `getNormalizedRequestBody`, but for context data.
+     * Similar to `getNormalizedRequestBody`, but for application context data.
      * 
-     * Context data is passed in to the request handler constructor via a
-     * key/value array. If context data is valid, it is normalized and returned
-     * as another key/value array.
+     * If application context data is valid, it is normalized and returned as
+     * another key/value array.
      * 
      * Context data is considered invalid if any of its properties fail to
      * validate by a corresponding Model object.
@@ -232,10 +216,11 @@ abstract class API extends Handler {
      * @return array Key/value array of normalized context data.
      */
     protected function getNormalizedContext($propertyNormalizers) {
+        $appContext = $this->app->getContext();
         $context = [];
         foreach ($propertyNormalizers as $property => $model) {
             $model->fromArray([
-                $property => $this->context[$property]
+                $property => $appContext[$property]
             ]);
             $errors = $model->normalize();
             if (!is_null($errors)) {

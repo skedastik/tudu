@@ -31,7 +31,6 @@ $app->map('/users/', function () use ($app, $db, $passwordDelegate) {
     (new Handler\Api\User\Users(
         $app,
         $db,
-        [],
         $passwordDelegate
     ))->process();
 });
@@ -62,15 +61,17 @@ $app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentica
 });
 
 $app->map('/users/:user_id', function ($userId) use ($app, $db) {
-    (new Handler\Api\User\User($app, $db, [
+    $app->setContext([
         'user_id' => $userId
-    ]))->process();
+    ]);
+    (new Handler\Api\User\User($app, $db))->process();
 });
 
 $app->map('/users/:user_id/confirm', function ($userId) use ($app, $db) {
-    (new Handler\Api\User\Confirm($app, $db, [
+    $app->setContext([
         'user_id' => $userId
-    ]))->process();
+    ]);
+    (new Handler\Api\User\Confirm($app, $db))->process();
 });
 
 // Task URIs -------------------------------------------------------------------
@@ -85,17 +86,20 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
 }, 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD');
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
-    (new Handler\Api\Task\Tasks($app, $db, [
+    $app->setContext([
         'user_id' => $userId
-    ]))->process();
+    ]);
+    (new Handler\Api\Task\Tasks($app, $db))->process();
 });
 
 $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
-    (new Handler\Api\Task\Task($app, $db, [
+    $app->setContext([
         'user_id' => $userId,
         'task_id' => $taskId
-    ]))->process();
+    ]);
+    (new Handler\Api\Task\Task($app, $db))->process();
 });
 
 $app->run();
+
 ?>

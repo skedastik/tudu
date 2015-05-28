@@ -17,10 +17,12 @@ final class Signin extends \Tudu\Core\Handler\API {
     
     protected function post() {
         $this->checkResponseAcceptable();
+        
         $context = $this->getNormalizedContext([
             'user_id' => new Model\User()
         ]);
         $userId = $context['user_id'];
+        
         $tokenRepo = new Repository\AccessToken($this->db);
         $tokenString = Model\AccessToken::generateTokenString();
         $result = $tokenRepo->createAccessToken(

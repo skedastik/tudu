@@ -36,7 +36,7 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setHandler(
-            new Handler\Api\User\Users($this->app, $this->db, [], $this->passwordDelegate)
+            new Handler\Api\User\Users($this->app, $this->db, $this->passwordDelegate)
         );
         $this->app->setRequestBody('{
             "email": "foo@bar.xyz",
@@ -66,10 +66,11 @@ class UserEndpointTest extends DatabaseTest {
         // simulate a valid POST to /users/:user_id/confirm
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
+        $this->app->setContext([
+            'user_id' => $user_id
+        ]);
         $this->app->setHandler(
-            new Handler\Api\User\Confirm($this->app, $this->db, [
-                'user_id' => $user_id
-            ])
+            new Handler\Api\User\Confirm($this->app, $this->db)
         );
         $this->app->setRequestBody('{
             "signup_token": "'.$signupToken.'"
@@ -88,10 +89,11 @@ class UserEndpointTest extends DatabaseTest {
         
         // simulate a valid POST to /signin
         $this->app->setRequestMethod('POST');
+        $this->app->setContext([
+            'user_id' => $user_id
+        ]);
         $this->app->setHandler(
-            new Handler\Api\User\Signin($this->app, $this->db, [
-                'user_id' => $user_id
-            ])
+            new Handler\Api\User\Signin($this->app, $this->db)
         );
         $this->app->run();
         

@@ -12,9 +12,11 @@ use \Tudu\Core\Encoder\Encoder;
 abstract class App {
     
     private $encoder;
+    private $context;
     
     public function __construct() {
         $this->encoder = null;
+        $this->context = [];
     }
     
     /**
@@ -38,6 +40,25 @@ abstract class App {
      */
     public function getEncoder() {
         return $this->encoder;
+    }
+    
+    /**
+     * Set application context data.
+     * 
+     * @param array $data Key/value array of data with which to update app
+     * context.
+     */
+    public function setContext($data) {
+        $this->context = array_merge($this->context, $data);
+    }
+    
+    /**
+     * Set application context data.
+     * 
+     * @return array Key/value array of context data.
+     */
+    public function getContext() {
+        return $this->context;
     }
     
     /**
