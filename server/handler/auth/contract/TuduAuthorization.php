@@ -10,21 +10,25 @@ use \Tudu\Core\Handler\Auth\Contract\Authorization;
 final class TuduAuthorization implements Authorization {
     
     private $db;
-    private $userId;
+    private $resourceOwnerId;
     
     /**
      * Constructor.
      * 
      * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
-     * @param int $userId User ID.
+     * @param int $resourceOwnerId (optional) ID of user who owns the requested
+     * resource.
      */
-    public function __construct(DbConnection $db, $userId) {
+    public function __construct(DbConnection $db, $resourceOwnerId = null) {
         $this->db = $db;
-        $this->userId = $userId;
+        $this->resourceOwnerId = $resourceOwnerId;
     }
     
-    public function authorize($param) {
-        // TODO
+    public function authorize($requesterId) {
+        /**
+         * TODO: Ensure requester has "active" status
+         * TODO: Ensure resource owner matches requester
+         */
         return false;
     }
 }

@@ -17,7 +17,7 @@ interface Authentication {
      * 
      * @param string $param Authorization param from HTTP "Authorization" header
      * credentials.
-     * @return bool TRUE if authentication succeeded, FALSE otherwise.
+     * @return int User ID on successful authentication, NULL otherwise.
      */
     public function authenticate($param);
 }

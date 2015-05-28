@@ -47,6 +47,12 @@ class AuthTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(401, $this->app->getResponseStatus());
     }
     
+    public function testInauthenticCredentialsReturn401() {
+        $this->app->setRequestHeader('Authorization', 'Test Melissa');
+        $this->app->run();
+        $this->assertEquals(401, $this->app->getResponseStatus());
+    }
+    
     public function testUnauthorizedUserReturns403() {
         $this->app->setRequestHeader('Authorization', 'Test Wendy');
         $this->app->run();

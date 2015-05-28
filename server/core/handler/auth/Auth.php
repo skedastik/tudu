@@ -69,11 +69,12 @@ class Auth extends \Tudu\Core\Handler\Handler {
         }
         
         $authParam = $matches[2];
-        if (!$this->authentication->authenticate($authParam)) {
+        $userId = $this->authentication->authenticate($authParam);
+        if (is_null($userId)) {
             $this->sendAuthError(401);
         }
         
-        if ($this->authorization && !$this->authorization->authorize($authParam)) {
+        if ($this->authorization && !$this->authorization->authorize($userId)) {
             $this->sendAuthError(403);
         }
         

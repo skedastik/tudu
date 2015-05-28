@@ -65,23 +65,21 @@ final class BasicAuthentication implements Authentication {
         // extract user and password from base-64-encoded auth parameter
         $credentials = self::decodeCredentials($param);
         if (is_null($credentials)) {
-            return false;
+            return null;
         }
         
         $userId = $credentials['user_id'];
         $userRepo = new Repository\User($this->db);
         $user = is_numeric($userId) ? $userRepo->getById($userId) : $userRepo->getByEmail($userId);
         if ($user instanceof Error) {
-            return false;
+            return null;
         }
         
         if (!$this->passwordDelegate->compare($credentials['password'], $user->get('password_hash'))) {
-            return false;
+            return null;
         }
         
-        // TODO: Make sure user has "active" status.
-        
-        return true;
+        return $user->get('user_id');
     }
 }
     

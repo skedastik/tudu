@@ -12,10 +12,9 @@ interface Authorization {
     /**
      * Authorize a request.
      * 
-     * @param string $param Authorization param from HTTP "Authorization" header
-     * credentials.
+     * @param int $userId ID of user making the request.
      * @return bool TRUE if authorization succeeded, FALSE otherwise.
      */
-    public function authorize($param);
+    public function authorize($requesterId);
 }
 ?>

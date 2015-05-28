@@ -5,8 +5,8 @@ use \Tudu\Core\Handler\Auth\Contract\Authorization;
 
 final class MockAuthorization implements Authorization {
     
-    public function authorize($param) {
-        return $param == 'Jane' ? true : false;
+    public function authorize($requesterId) {
+        return $requesterId == 'Jane' ? true : false;
     }
 }
 

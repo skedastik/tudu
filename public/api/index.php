@@ -27,11 +27,17 @@ $basicAuthentication = new BasicAuthentication($db, $passwordDelegate);
 
 // User URIs -------------------------------------------------------------------
 
+$app->map('/users/', function () use ($app, $db, $passwordDelegate) {
+    (new Handler\Api\User\Users($app, $db, [], $passwordDelegate))->process();
+});
+
 $app->map('/signin', function () use ($app, $db, $basicAuthentication) {
+    $authHandler = 
     (new AuthHandler(
         $app,
         $db,
-        $basicAuthentication
+        $basicAuthentication,
+        new TuduAuthorization($db)
     ))->process();
 }, 'POST');
 
@@ -39,52 +45,48 @@ $app->map('/signin', function () use ($app, $db) {
     (new Handler\Api\User\Signin($app, $db))->process();
 });
 
-$app->map('/users/:user_id', function ($user_id) use ($app, $db, $basicAuthentication) {
+$app->map('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentication) {
     (new AuthHandler(
         $app,
         $db,
         $basicAuthentication,
-        new TuduAuthorization($db, $user_id)
+        new TuduAuthorization($db, $userId)
     ))->process();
 }, 'PUT');
 
-$app->map('/users/', function () use ($app, $db, $passwordDelegate) {
-    (new Handler\Api\User\Users($app, $db, [], $passwordDelegate))->process();
-});
-
-$app->map('/users/:user_id', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id', function ($userId) use ($app, $db) {
     (new Handler\Api\User\User($app, $db, [
-        'user_id' => $user_id
+        'user_id' => $userId
     ]))->process();
 });
 
-$app->map('/users/:user_id/confirm', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id/confirm', function ($userId) use ($app, $db) {
     (new Handler\Api\User\Confirm($app, $db, [
-        'user_id' => $user_id
+        'user_id' => $userId
     ]))->process();
 });
 
 // Task URIs -------------------------------------------------------------------
 
-$app->map('/users/:user_id/tasks/(:task_id)', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db) {
     (new AuthHandler(
         $app,
         $db,
-        new TuduAuthentication($app, $db, $user_id),
-        new TuduAuthorization($db, $user_id)
+        new TuduAuthentication($app, $db, $userId),
+        new TuduAuthorization($db, $userId)
     ))->process();
 });
 
-$app->map('/users/:user_id/tasks/', function ($user_id) use ($app, $db) {
+$app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     (new Handler\Api\Task\Tasks($app, $db, [
-        'user_id' => $user_id
+        'user_id' => $userId
     ]))->process();
 });
 
-$app->map('/users/:user_id/tasks/:task_id', function ($user_id, $task_id) use ($app, $db) {
+$app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
     (new Handler\Api\Task\Task($app, $db, [
-        'user_id' => $user_id,
-        'task_id' => $task_id
+        'user_id' => $userId,
+        'task_id' => $taskId
     ]))->process();
 });
 

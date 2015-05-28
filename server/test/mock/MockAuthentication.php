@@ -10,7 +10,10 @@ final class MockAuthentication implements Authentication {
     }
     
     public function authenticate($param) {
-        return true;
+        if ($param == 'Wendy' || $param == 'Jane') {
+            return $param;
+        }
+        return null;
     }
 }
 
