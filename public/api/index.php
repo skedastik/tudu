@@ -9,6 +9,7 @@ use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 use \Tudu\Data\Model\User;
+use \Tudu\Data\Model\Task;
 
 $db = new \Tudu\Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
@@ -93,7 +94,7 @@ $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
 $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
     $app->setContext([
         User::USER_ID => $userId,
-        'task_id' => $taskId
+        Task::TASK_ID => $taskId
     ]);
     (new Handler\Api\Task\Task($app, $db))->process();
 });
