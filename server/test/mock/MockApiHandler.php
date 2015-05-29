@@ -17,13 +17,10 @@ final class MockApiHandler extends Handler\API {
     
     protected function post() {
         $this->checkResponseAcceptable();
-        $this->checkRequestDecodable();
-        
         $data = $this->getNormalizedRequestBody(new MockModel(), [
             'name',
             'email'
         ]);
-        
         $this->app->setResponseStatus(201);
     }
     
@@ -31,7 +28,6 @@ final class MockApiHandler extends Handler\API {
         $context = $this->getNormalizedContext([
             'name' => new MockModel()
         ]);
-        
         echo $context['name'];
     }
 }

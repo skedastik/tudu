@@ -40,7 +40,6 @@ final class Users extends \Tudu\Core\Handler\API {
      */
     protected function post() {
         $this->checkResponseAcceptable();
-        $this->checkRequestDecodable();
         
         $user = new Model\User();
         $data = $this->getNormalizedRequestBody($user, [

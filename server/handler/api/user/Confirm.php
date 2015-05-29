@@ -15,15 +15,13 @@ final class Confirm extends \Tudu\Core\Handler\API {
     }
     
     protected function post() {
-        $this->checkRequestDecodable();
-        
         $user = new Model\User();
-        $context = $this->getNormalizedContext([
-            'user_id' => $user
-        ]);
-        
         $data = $this->getNormalizedRequestBody($user, [
             'signup_token'
+        ]);
+        
+        $context = $this->getNormalizedContext([
+            'user_id' => $user
         ]);
         
         $userRepo = new Repository\User($this->db);

@@ -64,22 +64,6 @@ abstract class Handler {
     }
     
     /**
-     * Check that the request's content type can be decoded.
-     * 
-     * If request's content type is not supported, halt processing immediately
-     * and send an error response. It only makes sense to call this when
-     * handling requests with payloads (i.e., POST, PUT, and PATCH).
-     */
-    final protected function checkRequestDecodable() {
-        $requestContentType = $this->app->getRequestHeader('Content-Type');
-        $encoder = $this->app->getEncoder();
-        if (!$encoder->supportsMediaType($requestContentType)) {
-            $description = 'Request content type not supported. See context for a list of supported media types.';
-            $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
-        }
-    }
-    
-    /**
      * Set "Content-Type" header to the first supported media type as reported
      * by the app encoder.
      */
@@ -92,10 +76,19 @@ abstract class Handler {
     /**
      * Decode the request body.
      * 
+     * If request body's content type is not supported, processing halts
+     * immediately and an error response is sent.
+     * 
      * @return array $data Request body data as a key/value array.
      */
     final protected function decodeRequestBody() {
         $mediaType = $this->app->getRequestHeader('Content-Type');
+        $encoder = $this->app->getEncoder();
+        if (!$encoder->supportsMediaType($mediaType)) {
+            $description = 'Request content type not supported. See context for a list of supported media types.';
+            $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
+        }
+        
         $requestBody = $this->app->getRequestBody();
         $data = $this->app->getEncoder()->decode($requestBody, $mediaType);
         if (is_null($data)) {
