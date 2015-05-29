@@ -7,6 +7,7 @@ use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Delegate\PHPass;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
+use \Tudu\Core\Encoder;
 
 class BasicAuthenticationTest extends DatabaseTest {
     
@@ -16,6 +17,7 @@ class BasicAuthenticationTest extends DatabaseTest {
         parent::setUp();
         ob_start();
         $this->app = new MockApp();
+        $this->app->addEncoder(new Encoder\JSON());
         $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
     }

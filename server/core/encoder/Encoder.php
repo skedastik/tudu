@@ -12,40 +12,32 @@ interface Encoder {
      * card or range like 'application/*')/
      * 
      * @param string $mediaType
-     * @return string|false If the input media type is supported, a matching
-     * output media type is returned (this is to facilitate wildcard media type
-     * queries). Otherwise FALSE is returned.
+     * @return bool TRUE if the input media type is supported, FALSE otherwise.
      */
     public function supportsMediaType($mediaType);
     
     /**
-     * Get supported media types.
+     * Get supported media type.
      * 
-     * @return array An array of media type strings.
+     * @return string Media type string.
      */
-    public function getSupportedMediaTypes();
+    public function getMediaType();
     
     /**
      * Encode an array.
      * 
-     * Implementers may accept a second parameter specifying a media type.
-     * 
      * @param array $data Array.
-     * @param string $mediaType (optional)
-     * @return mixed Encoded array data.
+     * @return mixed Encoded array data on success, NULL on failure.
      */
-    public function encode(array $data, $mediaType = null);
+    public function encode(array $data);
     
     /**
      * Decode an encoded array.
      * 
-     * Implementers may accept a second parameter specifying a media type.
-     * 
      * @param mixed $data Encoded array data.
-     * @param string $mediaType (optional)
      * @return array|null Array on success, NULL on failure.
      */
-    public function decode($data, $mediaType = null);
+    public function decode($data);
 }
 
 ?>

@@ -16,7 +16,7 @@ final class Signin extends \Tudu\Core\Handler\API {
     }
     
     protected function post() {
-        $this->checkResponseAcceptable();
+        $this->negotiateContentType();
         
         $context = $this->getNormalizedContext([
             'user_id' => new Model\User()

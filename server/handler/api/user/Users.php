@@ -39,7 +39,7 @@ final class Users extends \Tudu\Core\Handler\API {
      * POST to "/users/" to sign up a new user.
      */
     protected function post() {
-        $this->checkResponseAcceptable();
+        $this->negotiateContentType();
         
         $user = new Model\User();
         $data = $this->getNormalizedRequestBody($user, [

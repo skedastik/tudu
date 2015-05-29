@@ -11,22 +11,19 @@ final class JSON implements Encoder {
     const MEDIA_TYPE = 'application/json; charset=utf-8';
     
     public function supportsMediaType($mediaType) {
-        if ((new MediaType($mediaType))->compare(new MediaType(self::MEDIA_TYPE))) {
-            return self::MEDIA_TYPE;
-        }
-        return false;
+        return (new MediaType(self::MEDIA_TYPE))->compare(new MediaType($mediaType));
     }
     
-    public function getSupportedMediaTypes() {
-        return [self::MEDIA_TYPE];
+    public function getMediaType() {
+        return self::MEDIA_TYPE;
     }
     
-    public function encode(array $data, $mediaType = null) {
+    public function encode(array $data) {
         $encoded = json_encode($data);
         return $encoded === false ? null : $encoded;
     }
     
-    public function decode($data, $mediaType = null) {
+    public function decode($data) {
         return json_decode($data, true);
     }
 }

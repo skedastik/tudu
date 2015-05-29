@@ -24,7 +24,7 @@ class UserEndpointTest extends DatabaseTest {
         parent::setUp();
         ob_start();
         $this->app = new MockApp();
-        $this->app->setEncoder(new Encoder\JSON());
+        $this->app->addEncoder(new Encoder\JSON());
         $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
     }

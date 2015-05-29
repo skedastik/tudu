@@ -16,7 +16,7 @@ final class MockApiHandler extends Handler\API {
     }
     
     protected function post() {
-        $this->checkResponseAcceptable();
+        $this->negotiateContentType();
         $data = $this->getNormalizedRequestBody(new MockModel(), [
             'name',
             'email'

@@ -17,7 +17,7 @@ $db = new \Tudu\Core\Data\PgSQLConnection([
 ]);
 
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
-$app->setEncoder(new \Tudu\Core\Encoder\JSON());
+$app->addEncoder(new \Tudu\Core\Encoder\JSON());
 
 $passwordDelegate = new \Tudu\Delegate\PHPass();
 $basicAuthentication = new BasicAuthentication($db, $passwordDelegate);

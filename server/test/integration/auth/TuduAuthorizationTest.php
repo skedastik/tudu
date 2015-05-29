@@ -6,6 +6,7 @@ use \Tudu\Test\Integration\Database\DatabaseTest;
 use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
+use \Tudu\Core\Encoder;
 
 class TuduAuthorizationTest extends DatabaseTest {
     
@@ -18,6 +19,7 @@ class TuduAuthorizationTest extends DatabaseTest {
         ob_start();
         $this->app = new MockApp();
         $this->app->setRequestMethod('POST');
+        $this->app->addEncoder(new Encoder\JSON());
         $scheme = 'Test';
         $this->app->setRequestHeader('Authorization', "$scheme Test-Param");
         $this->mockAuthentication = $this->getMockBuilder('\Tudu\Core\Handler\Auth\Contract\Authentication')->getMock();

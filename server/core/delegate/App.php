@@ -11,35 +11,66 @@ use \Tudu\Core\Encoder\Encoder;
  */
 abstract class App {
     
-    private $encoder;
+    private $encoders;
     private $context;
     
     public function __construct() {
-        $this->encoder = null;
+        $this->encoders = [];
         $this->context = [];
     }
     
     /**
-     * Set HTTP encoder.
+     * Add an encoder.
      * 
-     * The encoder can be used to encode and decode HTTP request and response
+     * The encoder may be used to encode and decode HTTP request and response
      * entities.
      * 
      * @param \Tudu\Core\Data\Encoder\Encoder $encoder
      */
-    public function setEncoder(Encoder $encoder) {
-        $this->encoder = $encoder;
+    public function addEncoder(Encoder $encoder) {
+        $this->encoders[] = $encoder;
         return $this;
     }
     
     /**
-     * Get HTTP encoder.
+     * Get an encoder.
      * 
+     * You may optionally request an encoder for a given media type or set of
+     * media types.
+     * 
+     * @param string $mediaType (optional) Encoder media type(s). Use a comma-
+     * delimited list to specify multiple. The first supported media type will
+     * be used. If no media type is specified, or media type is NULL, the
+     * default encoder is returned (the first encoder added).
      * @return \Tudu\Core\Data\Encoder\Encoder|null Encoder, or NULL if app does
-     * not have an encoder.
+     * not support the specified media types.
      */
-    public function getEncoder() {
-        return $this->encoder;
+    public function getEncoder($mediaType = null) {
+        if (is_null($mediaType)) {
+            return isset($this->encoders[0]) ? $this->encoders[0] : null;
+        }
+        $types = explode(',', $mediaType);
+        foreach ($types as $type) {
+            foreach ($this->encoders as $encoder) {
+                if ($encoder->supportsMediaType($type)) {
+                    return $encoder;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Get an array of supported content types.
+     * 
+     * Each encoder added to the app supports a single content type.
+     * 
+     * @return array Array of media type strings.
+     */
+    public function getSupportedContentTypes() {
+        return array_map(function ($encoder) {
+            return $encoder->getMediaType();
+        }, $this->encoders);
     }
     
     /**

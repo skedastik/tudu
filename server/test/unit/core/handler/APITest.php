@@ -16,7 +16,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
         ob_start();
         $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
         $this->app = new MockApp();
-        $this->app->setEncoder(new Encoder\JSON());
+        $this->app->addEncoder(new Encoder\JSON());
         $this->handler = new MockApiHandler($this->app, $this->db);
         $this->app->setHandler($this->handler);
     }
@@ -98,7 +98,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
     public function testPostReturns406GivenUnsupportedAcceptHeaders() {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
-        $this->app->setRequestHeader('Accept', 'text/xml');
+        $this->app->setRequestHeader('Accept', 'text/xml, application/xml');
         $this->app->setRequestBody('{
             "name": "John Doe",
             "email": "johndoe@foo.xyz"

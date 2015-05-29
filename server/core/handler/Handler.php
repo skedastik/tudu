@@ -28,48 +28,39 @@ abstract class Handler {
     }
     
     /**
-     * Ensure that our application is capable of encoding its response payload
+     * Ensure that the application is capable of encoding its response payload
      * in a format specified by the request's "Accept" header.
      * 
-     * This function may change the response "Content-Type" header.
+     * If no "Accept" header is found, the application is free to use any media
+     * type.
      * 
-     * If none of the media types specified by the "Accept" header is supported,
-     * processing halts immediately and an error response is sent.
+     * If an "Accept" header is found, this method will attempt to set the
+     * response "Content-Type" header to one of the acceptable media types.
      * 
-     * If no "Accept" header is provided, we are free to use any media type.
+     * @param bool $send406 (optional) Pass TRUE to halt processing immediately
+     * and send an error response if no acceptable media types are supported.
+     * This is the default behavior. Pass FALSE to default to a supported media
+     * type instead.
      */
-    final protected function checkResponseAcceptable() {
-        $accept = $this->app->getRequestHeader('Accept');
-        if (is_null($accept)) {
-            $this->useDefaultContentType();
-            return;
-        }
-        
-        // set response content type to first supported, accepted media type
-        $encoder = $this->app->getEncoder();
-        $acceptedMediaTypes = explode(',', $accept);
-        foreach ($acceptedMediaTypes as $mediaType) {
-            $supportedMediaType = $encoder->supportsMediaType($mediaType);
-            if ($supportedMediaType) {
+    final protected function negotiateContentType($send406 = true) {
+        $acceptableTypes = $this->app->getRequestHeader('Accept');
+        if ($acceptableTypes) {
+            $encoder = $this->app->getEncoder($acceptableTypes);
+            if ($encoder) {
                 $this->app->setResponseHeaders([
-                    'Content-Type' => $supportedMediaType
+                    'Content-Type' => $encoder->getMediaType()
                 ]);
                 return;
             }
+            if ($send406) {
+                $description = 'Accepted media types are not supported. See context for a list of supported media types.';
+                $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 406));
+            }
         }
         
-        // no supported media types are accepted, so send an error response
-        $description = 'Accepted media types are not supported. See context for a list of supported media types.';
-        $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 406));
-    }
-    
-    /**
-     * Set "Content-Type" header to the first supported media type as reported
-     * by the app encoder.
-     */
-    final private function useDefaultContentType() {
+        // set default content type
         $this->app->setResponseHeaders([
-            'Content-Type' => $this->app->getEncoder()->getSupportedMediaTypes()[0]
+            'Content-Type' => $this->app->getEncoder()->getMediaType()
         ]);
     }
     
@@ -83,14 +74,19 @@ abstract class Handler {
      */
     final protected function decodeRequestBody() {
         $mediaType = $this->app->getRequestHeader('Content-Type');
-        $encoder = $this->app->getEncoder();
-        if (!$encoder->supportsMediaType($mediaType)) {
-            $description = 'Request content type not supported. See context for a list of supported media types.';
-            $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
+        if (is_null($mediaType)) {
+            $description = 'Request "Content-Type" header is missing. See context for a list of supported media types.';
+            $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 415));
+        }
+        
+        $encoder = $this->app->getEncoder($mediaType);
+        if (is_null($encoder)) {
+            $description = 'Request "Content-Type" not supported. See context for a list of supported media types.';
+            $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 415));
         }
         
         $requestBody = $this->app->getRequestBody();
-        $data = $this->app->getEncoder()->decode($requestBody, $mediaType);
+        $data = $encoder->decode($requestBody, $mediaType);
         if (is_null($data)) {
             $description = 'Request body is malformed.';
             $this->sendError(Error::Generic($description, null, 400));
@@ -111,7 +107,7 @@ abstract class Handler {
      */
     final protected function renderBody($data) {
         if (is_null($this->app->getResponseHeader('Content-Type'))) {
-            $this->useDefaultContentType();
+            $this->negotiateContentType(false);
         }
         if ($data instanceof Arrayable) {
             $data = $data->asArray();
@@ -128,7 +124,6 @@ abstract class Handler {
      * @param \Tudu\Core\Error $error Error object.
      */
     final protected function sendError(\Tudu\Core\Error $error) {
-        // var_dump($this->app->getResponseHeader('Content-Type'));
         $statusCode = $error->getHttpStatusCode();
         $this->app->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
         $this->renderBody($error->asArray());

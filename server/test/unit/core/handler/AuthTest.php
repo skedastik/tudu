@@ -8,6 +8,7 @@ use \Tudu\Test\Mock\MockAuthorization;
 use \Tudu\Test\Mock\MockApp;
 use \Tudu\Test\Mock\MockModel;
 use \Tudu\Core\MediaType;
+use \Tudu\Core\Encoder;
 
 class AuthTest extends \PHPUnit_Framework_TestCase {
     
@@ -18,6 +19,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase {
         ob_start();
         $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
         $this->app = new MockApp();
+        $this->app->addEncoder(new Encoder\JSON());
         $this->authentication = new MockAuthentication();
         $this->authorization = new MockAuthorization();
         $this->handler = new Auth($this->app, $this->db, $this->authentication, $this->authorization);

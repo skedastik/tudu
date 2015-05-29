@@ -24,10 +24,6 @@ final class MockApp extends App {
         $this->handler = null;
     }
     
-    public function getEncoder() {
-        return new Encoder\JSON();
-    }
-    
     public function redirect($url, $status) {}
     
     public function setRequestMethod($method) {
