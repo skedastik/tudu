@@ -54,7 +54,7 @@ class Auth extends \Tudu\Core\Handler\Handler {
     
     final public function process() {
         $credentials = $this->app->getRequestHeader('Authorization');
-        if (empty($credentials)) {
+        if (is_null($credentials)) {
             $this->sendAuthError(Error::Generic('Authorization header is missing.', null, 401));
         }
         
