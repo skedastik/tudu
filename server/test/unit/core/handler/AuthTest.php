@@ -7,6 +7,7 @@ use \Tudu\Test\Mock\MockAuthentication;
 use \Tudu\Test\Mock\MockAuthorization;
 use \Tudu\Test\Mock\MockApp;
 use \Tudu\Test\Mock\MockModel;
+use \Tudu\Core\MediaType;
 
 class AuthTest extends \PHPUnit_Framework_TestCase {
     
@@ -57,6 +58,15 @@ class AuthTest extends \PHPUnit_Framework_TestCase {
         $this->app->setRequestHeader('Authorization', 'Test Wendy');
         $this->app->run();
         $this->assertEquals(403, $this->app->getResponseStatus());
+    }
+    
+    public function testAuthFailureReturnsJsonResponse() {
+        $this->app->setRequestHeader('Authorization', 'foo');
+        $this->app->run();
+        $mediaTypeString = $this->app->getResponseHeader('Content-Type');
+        $this->assertFalse(empty($mediaTypeString));
+        $mediaType = new MediaType($mediaTypeString);
+        $this->assertNotFalse($mediaType->compare(new MediaType('application/json')));
     }
     
     public function testValidAuthorizationHeaderReturns200() {

@@ -2,17 +2,14 @@
 
 require_once __DIR__.'/../../server/autoload.php';
 
-use \Tudu\Core;
 use \Tudu\Conf\Conf;
 use \Tudu\Handler;
-use \Tudu\Delegate;
-use \Tudu\Core\Encoder;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 
-$db = new Core\Data\PgSQLConnection([
+$db = new \Tudu\Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
     'database' => Conf::DB_NAME,
     'username' => Conf::DB_USERNAME,
@@ -20,9 +17,9 @@ $db = new Core\Data\PgSQLConnection([
 ]);
 
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
-$app->setEncoder(new Encoder\JSON());
+$app->setEncoder(new \Tudu\Core\Encoder\JSON());
 
-$passwordDelegate = new Delegate\PHPass();
+$passwordDelegate = new \Tudu\Delegate\PHPass();
 $basicAuthentication = new BasicAuthentication($db, $passwordDelegate);
 
 // User URIs -------------------------------------------------------------------

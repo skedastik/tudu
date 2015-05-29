@@ -2,6 +2,7 @@
 namespace Tudu\Core\Handler\Auth;
 
 use \Tudu\Conf\Conf;
+use \Tudu\Core\Error;
 use \Tudu\Core\Delegate;
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
@@ -44,38 +45,38 @@ class Auth extends \Tudu\Core\Handler\Handler {
      * 
      * @param int $status Response status code.
      */
-    private function sendAuthError($status) {
+    private function sendAuthError(Error $error) {
         $this->app->setResponseHeaders([
             'WWW-Authenticate' => $this->authentication->getScheme().' realm="'.Conf::AUTHENTICATION_REALM.'"'
         ]);
-        $this->app->setResponseStatus($status);
-        $this->app->send();
+        $this->sendError($error);
     }
     
     final public function process() {
         $credentials = $this->app->getRequestHeader('Authorization');
-        if (is_null($credentials)) {
-            $this->sendAuthError(401);
+        if (empty($credentials)) {
+            $this->sendAuthError(Error::Generic('Authorization header is missing.', null, 401));
         }
         
         // extract scheme and param from authorization credentials
         if (preg_match('/^([^\s]+)\s+(.+)/', $credentials, $matches) !== 1) {
-            $this->sendAuthError(401);
+            $this->sendAuthError(Error::Generic('Authorization header is malformed.', null, 401));
         }
         
         $scheme = $matches[1];
-        if ($scheme != $this->authentication->getScheme()) {
-            $this->sendAuthError(401);
+        $requiredScheme = $this->authentication->getScheme();
+        if ($scheme != $requiredScheme) {
+            $this->sendAuthError(Error::Generic('Authorization scheme must be "'.$requiredScheme.'".', null, 401));
         }
         
         $authParam = $matches[2];
         $userId = $this->authentication->authenticate($authParam);
         if (is_null($userId)) {
-            $this->sendAuthError(401);
+            $this->sendAuthError(Error::Generic('Authentication failed.', null, 401));
         }
         
         if ($this->authorization && !$this->authorization->authorize($userId)) {
-            $this->sendAuthError(403);
+            $this->sendAuthError(Error::Generic('User is not authorized.', null, 403));
         }
         
         /**

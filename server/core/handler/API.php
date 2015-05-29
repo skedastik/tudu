@@ -98,64 +98,7 @@ abstract class API extends Handler {
         ]);
     }
     
-    /**
-     * Ensure that our application is capable of encoding its response payload
-     * in a format specified by the request's "Accept" header.
-     * 
-     * This function may change the response "Content-Type" header.
-     * 
-     * If none of the media types specified by the "Accept" header is supported,
-     * halt processing immediately and send an error response.
-     * 
-     * If no "Accept" header is provided, we are free to use any media type.
-     */
-    protected function checkResponseAcceptable() {
-        $accept = $this->app->getRequestHeader('Accept');
-        if (is_null($accept)) {
-            // no accept header provided, so stick with the default media type
-            return;
-        }
-        
-        // set response content type to first supported, accepted media type
-        $encoder = $this->app->getEncoder();
-        $acceptedMediaTypes = explode(',', $accept);
-        foreach ($acceptedMediaTypes as $mediaType) {
-            $supportedMediaType = $encoder->supportsMediaType($mediaType);
-            if ($supportedMediaType) {
-                $this->app->setResponseHeaders([
-                    'Content-Type' => $supportedMediaType
-                ]);
-                return;
-            }
-        }
-        
-        // no supported media types are accepted, so send an error response
-        $description = 'Accepted media types are not supported. See context for a list of supported media types.';
-        $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 406));
-    }
-    
-    /**
-     * Check that the request's content type can be decoded.
-     * 
-     * If request's content type is not supported, halt processing immediately
-     * and send an error response. It only makes sense to call this when
-     * handling requests with payloads (i.e., POST, PUT, and PATCH).
-     */
-    protected function checkRequestDecodable() {
-        $requestContentType = $this->app->getRequestHeader('Content-Type');
-        $encoder = $this->app->getEncoder();
-        if (!$encoder->supportsMediaType($requestContentType)) {
-            $description = 'Request content type not supported. See context for a list of supported media types.';
-            $this->sendError(Error::Generic($description, $encoder->getSupportedMediaTypes(), 415));
-        }
-    }
-    
     final public function process() {
-        $this->app->setResponseHeaders([
-            // default to the first supported media type
-            'Content-Type' => $this->app->getEncoder()->getSupportedMediaTypes()[0]
-        ]);
-        
         $method = strtolower($this->app->getRequestMethod());
         // invoke method corresponding to HTTP request method
         $this->{$method}();
@@ -177,19 +120,12 @@ abstract class API extends Handler {
      * @return array Key/value array of normalized model data.
      */
     protected function getNormalizedRequestBody($model, $requiredProperties) {
-        $mediaType = $this->app->getRequestHeader('Content-Type');
-        $requestBody = $this->app->getRequestBody();
-        $data = $this->app->getEncoder()->decode($requestBody, $mediaType);
-        if (is_null($data)) {
-            $description = 'Badly formatted request body. Expected a resource descriptor with the listed properties.';
-            $this->sendError(Error::Generic($description, $requiredProperties, 400));
-        }
-        
+        $data = $this->decodeRequestBody();
         $model->fromArray($data);
         
         if (!$model->hasProperties($requiredProperties)) {
             $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
-            $this->sendError(Error::Generic('Resource descriptor is missing listed properties.', $missingProperties, 400));
+            $this->sendError(Error::Generic('Request body is missing listed properties.', $missingProperties, 400));
         }
         
         $errors = $model->normalize();
@@ -228,37 +164,6 @@ abstract class API extends Handler {
             $context[$property] = $model->get($property);
         }
         return $context;
-    }
-    
-    /**
-     * Halt processing immediately and send an error response.
-     * 
-     * @param \Tudu\Core\Error $error Error object.
-     */
-    final protected function sendError($error) {
-        $statusCode = $error->getHttpStatusCode();
-        $this->app->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
-        $this->renderBody($error->asArray());
-        $this->app->send();
-    }
-    
-    /**
-     * Render response body.
-     * 
-     * Input data must either be an Arrayable object, an array, or a string. If
-     * one of the former, data is encoded as a string before being rendered.
-     * 
-     * @param mixed $data Either an Arrayable object, an array, or a string.
-     */
-    final protected function renderBody($data) {
-        if ($data instanceof Arrayable) {
-            $data = $data->asArray();
-        }
-        if (is_array($data)) {
-            $mediaType = $this->app->getResponseHeader('Content-Type');
-            $data = $this->app->getEncoder()->encode($data, $mediaType);
-        }
-        echo $data;
     }
 }
 

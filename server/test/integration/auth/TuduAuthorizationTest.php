@@ -7,9 +7,6 @@ use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 
-/**
- * @group todo
- */
 class TuduAuthorizationTest extends DatabaseTest {
     
     protected $app;
@@ -18,6 +15,7 @@ class TuduAuthorizationTest extends DatabaseTest {
     
     public function setUp() {
         parent::setUp();
+        ob_start();
         $this->app = new MockApp();
         $this->app->setRequestMethod('POST');
         $scheme = 'Test';
@@ -105,6 +103,11 @@ class TuduAuthorizationTest extends DatabaseTest {
     
         // response status should be 403
         $this->assertEquals(403, $this->app->getResponseStatus());
+    }
+    
+    public function tearDown() {
+        ob_end_clean();
+        parent::tearDown();
     }
 }
 ?>

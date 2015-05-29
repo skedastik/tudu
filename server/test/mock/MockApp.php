@@ -3,6 +3,7 @@ namespace Tudu\Test\Mock;
 
 use \Tudu\Core\Handler\Handler;
 use \Tudu\Core\Delegate\App;
+use \Tudu\Core\Encoder;
 
 final class MockApp extends App {
     
@@ -21,6 +22,10 @@ final class MockApp extends App {
         $this->responseHeaders = [];
         $this->responseStatus = null;
         $this->handler = null;
+    }
+    
+    public function getEncoder() {
+        return new Encoder\JSON();
     }
     
     public function redirect($url, $status) {}
@@ -54,7 +59,7 @@ final class MockApp extends App {
     }
     
     public function getResponseHeader($header) {
-        return $this->responseHeaders[$header];
+        return isset($this->responseHeaders[$header]) ? $this->responseHeaders[$header] : null;
     }
     
     public function setResponseHeaders($headers) {

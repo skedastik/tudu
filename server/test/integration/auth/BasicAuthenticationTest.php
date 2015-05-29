@@ -14,6 +14,7 @@ class BasicAuthenticationTest extends DatabaseTest {
     
     public function setUp() {
         parent::setUp();
+        ob_start();
         $this->app = new MockApp();
         $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
@@ -85,6 +86,7 @@ class BasicAuthenticationTest extends DatabaseTest {
     }
     
     public function tearDown() {
+        ob_end_clean();
         parent::tearDown();
     }
 }
