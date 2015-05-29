@@ -14,12 +14,12 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     
     public function testGetByIDShouldProduceNormalizedModel() {
         $mockResult = [[
-            'user_id' => '123',
-            'email'   => "  foo@bar.xyz  \t"
+            User::USER_ID => '123',
+            User::EMAIL   => "  foo@bar.xyz  \t"
         ]];
         $expected = [
-            'user_id' => 123,
-            'email'   => 'foo@bar.xyz'
+            User::USER_ID => 123,
+            User::EMAIL   => 'foo@bar.xyz'
         ];
         $this->db->method('query')->willReturn($mockResult);
         $user = $this->repo->getByID(123);

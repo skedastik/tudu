@@ -3,7 +3,7 @@ namespace Tudu\Handler\Api\User;
 
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Data\Repository;
-use \Tudu\Data\Model;
+use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;
 use \Tudu\Core\Delegate;
 
@@ -41,16 +41,16 @@ final class Users extends \Tudu\Core\Handler\API {
     protected function post() {
         $this->negotiateContentType();
         
-        $user = new Model\User();
+        $user = new User();
         $data = $this->getNormalizedRequestBody($user, [
-            'email',
-            'password'
+            User::EMAIL,
+            User::PASSWORD
         ]);
         
         $userRepo = new Repository\User($this->db);
         $userId = $userRepo->signupUser(
-            $data['email'],
-            $this->passwordDelegate->getHash($data['password']),
+            $data[User::EMAIL],
+            $this->passwordDelegate->getHash($data[User::PASSWORD]),
             $this->app->getRequestIp()
         );
         if ($userId instanceof Error) {
@@ -66,7 +66,7 @@ final class Users extends \Tudu\Core\Handler\API {
             'Location' => '/users/'.$userId
         ]);
         $this->renderBody([
-            'user_id' => $userId
+            User::USER_ID => $userId
         ]);
     }
 }

@@ -8,31 +8,31 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     
     public function testNormalizedUserShouldHaveNormalizedData() {
         $data = [
-            'user_id' => '123',
-            'email' => "   foo@bar.xyz   \t"
+            User::USER_ID => '123',
+            User::EMAIL => "   foo@bar.xyz   \t"
         ];
         $user = new User($data);
         $user->normalize();
         $this->assertTrue($user->isNormalized());
         $expected = [
-            'user_id' => 123,
-            'email' => 'foo@bar.xyz'
+            User::USER_ID => 123,
+            User::EMAIL => 'foo@bar.xyz'
         ];
         $this->assertSame($expected, $user->asArray());
     }
     
     public function testSanitizedUserShouldHaveSanitizedData() {
         $data = [
-            'user_id' => '123',
-            'email' => 'foo&baz@bar.xyz'
+            User::USER_ID => '123',
+            User::EMAIL => 'foo&baz@bar.xyz'
         ];
         $user = new User($data);
         $user->normalize();
         $user = $user->getSanitizedCopy('html');
         $this->assertTrue($user->isSanitized());
         $expected = [
-            'user_id' => 123,
-            'email' => 'foo&amp;baz@bar.xyz'
+            User::USER_ID => 123,
+            User::EMAIL => 'foo&amp;baz@bar.xyz'
         ];
         $this->assertSame($expected, $user->asArray());
     }

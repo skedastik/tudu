@@ -4,7 +4,10 @@ namespace Tudu\Test\Integration\Api;
 use \Tudu\Test\Mock\MockApp;
 use \Tudu\Test\Integration\Database\DatabaseTest;
 use \Tudu\Data\Repository;
+use \Tudu\Data\Model\AccessToken;
+use \Tudu\Data\Model\User;
 use \Tudu\Core\Encoder;
+use \Tudu\Core\Handler\Auth\Auth;
 use \Tudu\Handler;
 use \Tudu\Delegate\PHPass;
 use \Tudu\Core\Data\Transform\Transform;
@@ -45,12 +48,12 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->run();
         
         // extract "user_id" property from response body
-        $user_id = $this->decodeOutputBuffer()['user_id'];
+        $user_id = $this->decodeOutputBuffer()[User::USER_ID];
         
         // user should have matching data
         $user = $this->userRepo->getByID($user_id);
-        $this->assertSame('foo@bar.xyz', $user->get('email'));
-        $this->assertTrue($this->passwordDelegate->compare($password, $user->get('password_hash')));
+        $this->assertSame('foo@bar.xyz', $user->get(User::EMAIL));
+        $this->assertTrue($this->passwordDelegate->compare($password, $user->get(User::PASSWORD_HASH)));
     }
     
     public function testValidPostToConfirmShouldConfirmExistingUser() {
@@ -61,13 +64,13 @@ class UserEndpointTest extends DatabaseTest {
         // extract signup token from user KVS
         $userKvs = $user->get('kvs');
         $transformer = Transform::HStore()->to()->keyValueArray();
-        $signupToken = $transformer->execute($userKvs)['signup_token'];
+        $signupToken = $transformer->execute($userKvs)[User::SIGNUP_TOKEN];
         
         // simulate a valid POST to /users/:user_id/confirm
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setContext([
-            'user_id' => $user_id
+            User::USER_ID => $user_id
         ]);
         $this->app->setHandler(
             new Handler\Api\User\Confirm($this->app, $this->db)
@@ -90,7 +93,7 @@ class UserEndpointTest extends DatabaseTest {
         // simulate a valid POST to /signin
         $this->app->setRequestMethod('POST');
         $this->app->setContext([
-            'user_id' => $user_id
+            Auth::AUTHENTICATED_ID => $user_id
         ]);
         $this->app->setHandler(
             new Handler\Api\User\Signin($this->app, $this->db)
@@ -98,7 +101,7 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->run();
         
         // extract access token string from response body
-        $tokenString = $this->decodeOutputBuffer()['access_token'];
+        $tokenString = $this->decodeOutputBuffer()[AccessToken::TOKEN_STRING];
         
         // token string should match that in database
         $tokenRepo = new Repository\AccessToken($this->db);
@@ -116,7 +119,7 @@ class UserEndpointTest extends DatabaseTest {
         for ($i = 0; $i < 2; $i++) {
             $this->app->setRequestMethod('POST');
             $this->app->setContext([
-                'user_id' => $user_id
+                Auth::AUTHENTICATED_ID => $user_id
             ]);
             $this->app->setHandler(
                 new Handler\Api\User\Signin($this->app, $this->db)

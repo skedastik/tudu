@@ -14,12 +14,12 @@ class AccessTokenTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetByIDShouldProduceNormalizedModel() {
         $mockResult = [[
-            'token_id' => '123',
-            'user_id'  => '456'
+            AccessToken::TOKEN_ID => '123',
+            AccessToken::USER_ID  => '456'
         ]];
         $expected = [
-            'token_id' => 123,
-            'user_id'  => 456
+            AccessToken::TOKEN_ID => 123,
+            AccessToken::USER_ID  => 456
         ];
         $this->db->method('query')->willReturn($mockResult);
         $accessToken = $this->repo->getByID(123);

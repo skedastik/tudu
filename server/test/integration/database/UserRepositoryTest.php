@@ -49,8 +49,8 @@ class UserRepositoryTest extends DatabaseTest {
         $pwHash = 'unlikely_pw_hash';
         $user_id = $this->repo->signupUser("   foo@bar.com   \t", $pwHash, '127.0.0.1');
         $user = $this->repo->getByID($user_id);
-        $this->assertSame('foo@bar.com', $user->get('email'));
-        $this->assertSame($pwHash, $user->get('password_hash'));
+        $this->assertSame('foo@bar.com', $user->get(User::EMAIL));
+        $this->assertSame($pwHash, $user->get(User::PASSWORD_HASH));
     }
     
     public function testSignupUserShouldCreateUserWithStatusInit() {
@@ -77,7 +77,7 @@ class UserRepositoryTest extends DatabaseTest {
         $email = 'foo@bar.com';
         $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $user = $this->repo->getByID($id);
-        $signupToken = Transform::HStore()->execute($user->get('kvs'))['signup_token'];
+        $signupToken = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
         $confirmId = $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
         $this->assertEquals($id, $confirmId);
     }
@@ -100,7 +100,7 @@ class UserRepositoryTest extends DatabaseTest {
         $email = 'foo@bar.com';
         $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
         $user = $this->repo->getByID($id);
-        $signupToken = Transform::HStore()->execute($user->get('kvs'))['signup_token'];
+        $signupToken = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
         $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
         $error = $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
         $this->assertTrue($error instanceof Error);
@@ -129,7 +129,7 @@ class UserRepositoryTest extends DatabaseTest {
         $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
         $user_id_out = $this->repo->setUserEmail($user_id_in, " \n  baz@qux.xyz   ", '127.0.0.1');
         $user = $this->repo->getByID($user_id_in);
-        $this->assertSame('baz@qux.xyz', $user->get('email'));
+        $this->assertSame('baz@qux.xyz', $user->get(User::EMAIL));
     }
     
     public function testSetUserEmailShouldFailGivenInvalidUserId() {

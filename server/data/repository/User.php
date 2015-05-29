@@ -56,7 +56,7 @@ final class User extends Repository {
             [$email, $passwordHash, $ip, $autoConfirm ? 't' : 'f']
         );
         if ($result == -1) {
-            return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
+            return Error::Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
         }
         return $result;
     }
@@ -123,7 +123,7 @@ final class User extends Repository {
             case -2:
                 return Error::Notice('Provided email address is identical to current email address.', null, 409);
             case -3:
-                return Error::Validation(null, ['email' => 'Email address is already in use.'], 409);
+                return Error::Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
         }
         return $result;
     }

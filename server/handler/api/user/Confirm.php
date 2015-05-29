@@ -2,7 +2,7 @@
 namespace Tudu\Handler\Api\User;
 
 use \Tudu\Core\Error;
-use \Tudu\Data\Model;
+use \Tudu\Data\Model\User;
 use \Tudu\Data\Repository;
 
 /**
@@ -15,19 +15,19 @@ final class Confirm extends \Tudu\Core\Handler\API {
     }
     
     protected function post() {
-        $user = new Model\User();
+        $user = new User();
         $data = $this->getNormalizedRequestBody($user, [
-            'signup_token'
+            User::SIGNUP_TOKEN
         ]);
         
         $context = $this->getNormalizedContext([
-            'user_id' => $user
+            User::USER_ID => $user
         ]);
         
         $userRepo = new Repository\User($this->db);
         $result = $userRepo->confirmUser(
-            $context['user_id'],
-            $data['signup_token'],
+            $context[User::USER_ID],
+            $data[User::SIGNUP_TOKEN],
             $this->app->getRequestIp()
         );
         if ($result instanceof Error) {

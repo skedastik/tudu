@@ -13,6 +13,8 @@ use \Tudu\Core\Handler\Auth\Contract\Authorization;
  */
 class Auth extends \Tudu\Core\Handler\Handler {
     
+    const AUTHENTICATED_ID = 'authenticated_id';
+    
     private $authentication;
     private $authorization;
     
@@ -84,7 +86,8 @@ class Auth extends \Tudu\Core\Handler\Handler {
          * revoking access tokens if user sends unencrypted credentials.
          */
         
-        $this->app->setContext(['user_id' => $userId]);
+        // pass authenticated user ID as context to next handler
+        $this->app->setContext([self::AUTHENTICATED_ID => $userId]);
         $this->app->pass();
     }
 }

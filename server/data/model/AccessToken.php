@@ -10,11 +10,16 @@ use \Tudu\Core\Data\Validate\Validate;
  */
 final class AccessToken extends Model {
     
+    const TOKEN_ID     = 'token_id';
+    const USER_ID      = 'user_id';
+    const TOKEN_STRING = 'token_string';
+    const TTL          = 'ttl';
+    
     protected function getNormalizers() {
         return [
-            'token_id' => Transform::Convert()->to()->integer(),
+            self::TOKEN_ID => Transform::Convert()->to()->integer(),
             
-            'user_id' => Transform::Convert()->to()->integer()
+            self::USER_ID => Transform::Convert()->to()->integer()
         ];
     }
     

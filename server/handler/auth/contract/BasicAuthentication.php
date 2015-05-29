@@ -4,7 +4,7 @@ namespace Tudu\Handler\Auth\Contract;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
 use \Tudu\Core\Data\DbConnection;
 use \Tudu\Data\Repository;
-use \Tudu\Data\Model;
+use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;
 use \Tudu\Core\Delegate;
 
@@ -31,16 +31,16 @@ final class BasicAuthentication implements Authentication {
      * Decode basic HTTP authentication credentials.
      * 
      * @param string $credentials Base-64 encoded credentials.
-     * @return array|false Key/value array with 'user_id' and 'password' keys
-     * on success, NULL on failure.
+     * @return array|false Key/value array with 'id' and 'password' keys on
+     * success, NULL on failure.
      */
-    public static function decodeCredentials($credentials) {
+    private static function decodeCredentials($credentials) {
         $decoded = base64_decode($credentials);
         if (preg_match('/^([^:]+):(.+)/', $decoded, $matches) !== 1) {
             return null;
         }
         return [
-            'user_id' => $matches[1],
+            'id' => $matches[1],
             'password' => $matches[2]
         ];
     }
@@ -69,18 +69,18 @@ final class BasicAuthentication implements Authentication {
             return null;
         }
         
-        $userId = $credentials['user_id'];
+        $userId = $credentials['id'];
         $userRepo = new Repository\User($this->db);
-        $user = is_numeric($userId) ? $userRepo->getById($userId) : $userRepo->getByEmail($userId);
+        $user = is_numeric($userId) ? $userRepo->getById(intval($userId)) : $userRepo->getByEmail($userId);
         if ($user instanceof Error) {
             return null;
         }
         
-        if (!$this->passwordDelegate->compare($credentials['password'], $user->get('password_hash'))) {
+        if (!$this->passwordDelegate->compare($credentials['password'], $user->get(User::PASSWORD_HASH))) {
             return null;
         }
         
-        return $user->get('user_id');
+        return $user->get(User::USER_ID);
     }
 }
     

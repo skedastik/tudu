@@ -11,25 +11,31 @@ use \Tudu\Delegate\PHPass;
  */
 final class User extends Model {
     
+    const USER_ID       = 'user_id';
+    const EMAIL         = 'email';
+    const PASSWORD      = 'password';
+    const PASSWORD_HASH = 'password_hash';
+    const SIGNUP_TOKEN  = 'signup_token';
+    
     protected function getNormalizers() {
         return [
-            'user_id' => Transform::Convert()->to()->integer(),
+            self::USER_ID => Transform::Convert()->to()->integer(),
             
-            'email' => Transform::Convert()->to()->string()
-                    -> then(Transform::String()->trim())
-                    -> then(Validate::String()->is()->validEmail()->with()->length()->upTo(64))
-                    -> then(Transform::Description()->to('Email address')),
+            self::EMAIL => Transform::Convert()->to()->string()
+                        -> then(Transform::String()->trim())
+                        -> then(Validate::String()->is()->validEmail()->with()->length()->upTo(64))
+                        -> then(Transform::Description()->to('Email address')),
             
-            'password' => Transform::Convert()->to()->string()
-                       -> then(Validate::String()->length()->from(8))
-                       -> then(Transform::Description()->to('Password'))
+            self::PASSWORD => Transform::Convert()->to()->string()
+                           -> then(Validate::String()->length()->from(8))
+                           -> then(Transform::Description()->to('Password'))
         ];
     }
     
     protected function getSanitizers() {
         return [
-            'html' => [
-                'email' => Transform::String()->escapeForHTML()
+            Model::SCHEME_HTML => [
+                self::EMAIL => Transform::String()->escapeForHTML()
             ]
         ];
     }

@@ -8,6 +8,7 @@ use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
+use \Tudu\Data\Model\User;
 
 $db = new \Tudu\Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
@@ -59,14 +60,14 @@ $app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentica
 
 $app->map('/users/:user_id', function ($userId) use ($app, $db) {
     $app->setContext([
-        'user_id' => $userId
+        User::USER_ID => $userId
     ]);
     (new Handler\Api\User\User($app, $db))->process();
 });
 
 $app->map('/users/:user_id/confirm', function ($userId) use ($app, $db) {
     $app->setContext([
-        'user_id' => $userId
+        User::USER_ID => $userId
     ]);
     (new Handler\Api\User\Confirm($app, $db))->process();
 });
@@ -84,14 +85,14 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     $app->setContext([
-        'user_id' => $userId
+        User::USER_ID => $userId
     ]);
     (new Handler\Api\Task\Tasks($app, $db))->process();
 });
 
 $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
     $app->setContext([
-        'user_id' => $userId,
+        User::USER_ID => $userId,
         'task_id' => $taskId
     ]);
     (new Handler\Api\Task\Task($app, $db))->process();

@@ -3,8 +3,9 @@ namespace Tudu\Handler\Api\User;
 
 use \Tudu\Conf\Conf;
 use \Tudu\Core\Error;
-use \Tudu\Data\Model;
+use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Repository;
+use \Tudu\Core\Handler\Auth\Auth;
 
 /**
  * Request handler for /users/:user_id/signin
@@ -18,13 +19,9 @@ final class Signin extends \Tudu\Core\Handler\API {
     protected function post() {
         $this->negotiateContentType();
         
-        $context = $this->getNormalizedContext([
-            'user_id' => new Model\User()
-        ]);
-        $userId = $context['user_id'];
-        
+        $userId = $this->app->getContext()[Auth::AUTHENTICATED_ID];
         $tokenRepo = new Repository\AccessToken($this->db);
-        $tokenString = Model\AccessToken::generateTokenString();
+        $tokenString = AccessToken::generateTokenString();
         $result = $tokenRepo->createAccessToken(
             $userId,
             $tokenString,
@@ -41,7 +38,8 @@ final class Signin extends \Tudu\Core\Handler\API {
         }
         
         $this->renderBody([
-            'access_token' => $tokenString
+            AccessToken::TOKEN_STRING => $tokenString,
+            AccessToken::TTL => Conf::ACCESS_TOKEN_TTL
         ]);
         
         $this->app->setResponseStatus(200);
