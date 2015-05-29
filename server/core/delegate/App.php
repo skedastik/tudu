@@ -102,6 +102,8 @@ abstract class App {
     
     /**
      * Get the HTTP request method.
+     * 
+     * @return string The request method (e.g., 'GET', 'POST')
      */
     abstract public function getRequestMethod();
     
