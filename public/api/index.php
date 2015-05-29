@@ -82,7 +82,7 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
         new TuduAuthentication($app, $db, $userId),
         new TuduAuthorization($db, $userId)
     ))->process();
-}, 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD');
+});
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     $app->setContext([
