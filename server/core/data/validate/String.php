@@ -91,7 +91,7 @@ final class String extends Validator {
         if (!is_string($data)) {
             throw new Core\Exception('Non-string input passed to Validate\String.');
         }
-        return $this->apply($data);
+        return $this->applyOptions($data);
     }
 }
 ?>

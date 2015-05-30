@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Validate;
 /**
  * Shorthand factory functions for creating Validator objects.
  */
-class Validate {
+final class Validate {
     
     /**
      * Shorthand factory function for default validator.

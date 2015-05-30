@@ -74,7 +74,7 @@ final class String extends Transformer {
         if (!is_string($data)) {
             throw new Core\Exception('Non-string input passed to Transform\String.');
         }
-        return $this->apply($data);
+        return $this->applyOptions($data);
     }
 }
 ?>

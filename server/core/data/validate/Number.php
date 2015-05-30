@@ -41,7 +41,7 @@ final class Number extends Validator {
         if (!is_numeric($data)) {
             throw new Core\Exception('Non-numeric input passed to Validate\Number.');
         }
-        return $this->apply($data);
+        return $this->applyOptions($data);
     }
 }
 ?>

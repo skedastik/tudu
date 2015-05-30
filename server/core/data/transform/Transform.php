@@ -4,7 +4,7 @@ namespace Tudu\Core\Data\Transform;
 /**
  * Shorthand factory functions for creating Transformer objects.
  */
-abstract class Transform extends \Tudu\Core\Chainable\OptionsChainable {
+final class Transform {
     
     /**
      * Shorthand factory function for Transform\String.

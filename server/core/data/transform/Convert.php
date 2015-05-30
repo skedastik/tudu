@@ -76,7 +76,7 @@ final class Convert extends Transformer {
     }
     
     protected function process($data) {
-        return $this->apply($data);
+        return $this->applyOptions($data);
     }
 }
 ?>

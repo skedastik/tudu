@@ -1,8 +1,6 @@
 <?php
 namespace Tudu\Core\Data\Validate;
 
-use \Tudu\Core\Chainable\Sentinel;
-
 /**
  * Chainable data validation base class.
  * 
@@ -27,5 +25,6 @@ use \Tudu\Core\Chainable\Sentinel;
  * verb. Remember: The error string may be presented to the end user, so
  * make it as concise as possible while still being readable.
  */
-class Validator extends \Tudu\Core\Chainable\OptionsChainable {}
+class Validator extends \Tudu\Core\Chainable\Chainable {}
+
 ?>

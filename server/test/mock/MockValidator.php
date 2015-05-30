@@ -6,7 +6,7 @@ use \Tudu\Core\Data\Validate\Validate;
 class MockValidator extends \Tudu\Core\Data\Validate\Validator {
     
     protected function process($data) {
-        return $this->apply($data);
+        return $this->applyOptions($data);
     }
 }
 ?>
