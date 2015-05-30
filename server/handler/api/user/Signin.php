@@ -34,7 +34,7 @@ final class Signin extends \Tudu\Core\Handler\API {
             $logger = Logger::getInstance();
             $errDescription = 'Error creating access token during user sign-in.';
             $logger->error($errDescription, $result->asArray());
-            throw new \Tudu\Core\TuduException($errDescription);
+            throw new \Tudu\Core($errDescription);
         }
         
         $this->renderBody([

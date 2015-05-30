@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Chainable;
 
-use \Tudu\Core\TuduException;
+use \Tudu\Core;
 
 /**
  * Chainable base class with selectable options.
@@ -94,7 +94,7 @@ abstract class OptionsChainable extends Chainable {
      */
     final protected function apply($data) {
         if (empty($this->selectedOptions)) {
-            throw new TuduException('OptionsChainable::apply() called, but no options have been selected.');
+            throw new Core\Exception('OptionsChainable::apply() called, but no options have been selected.');
         }
         foreach (array_keys($this->selectedOptions) as $option) {
             $data = $this->dispatch($option, $data);

@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Data\Transform;
 
-use Tudu\Core\TuduException;
+use \Tudu\Core;
 
 /**
  * Chainable string transformer.
@@ -72,7 +72,7 @@ final class String extends Transformer {
     
     protected function process($data) {
         if (!is_string($data)) {
-            throw new TuduException('Non-string input passed to Transform\String.');
+            throw new Core\Exception('Non-string input passed to Transform\String.');
         }
         return $this->apply($data);
     }

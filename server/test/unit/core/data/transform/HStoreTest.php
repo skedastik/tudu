@@ -71,7 +71,7 @@ class HStoreTest extends \PHPUnit_Framework_TestCase {
     
     public function testPassingNonStringInputToHStoreTransformerShouldThrowAnException() {
         $transformer = Transform::HStore();
-        $this->setExpectedException('\Tudu\Core\TuduException');
+        $this->setExpectedException('\Tudu\Core\Exception');
         $transformer->execute(1);
     }
 }

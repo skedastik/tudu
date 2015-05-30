@@ -2,7 +2,6 @@
 namespace Tudu\Core\Database;
 
 use \Tudu\Core\Logger;
-use \Tudu\Core\TuduException;
 
 final class PgSQLConnection extends DbConnection {
     
