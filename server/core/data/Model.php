@@ -3,7 +3,7 @@ namespace Tudu\Core\Data;
 
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Chainable\Sentinel;
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 
 /**
  * Model base class.
@@ -168,11 +168,11 @@ abstract class Model implements Arrayable {
     final private function sanitize($scheme) {
         if (!$this->isSanitized) {
             if (!$this->isNormalized) {
-                throw new Core\Exception('Attempt to sanitize Model object that has not been normalized first.');
+                throw new Exception\Internal('Attempt to sanitize Model object that has not been normalized first.');
             }
             $sanitizers = self::getCachedSanitizers();
             if (!isset($sanitizers[$scheme])) {
-                throw new Core\Exception('Attempt to sanitize Model using nonexistent scheme "'.$scheme.'".');
+                throw new Exception\Internal('Attempt to sanitize Model using nonexistent scheme "'.$scheme.'".');
             }
             $this->applyPropertyFunctors($sanitizers[$scheme]);
             $this->isSanitized = true;

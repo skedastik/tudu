@@ -29,7 +29,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected',
             'email' => 'foo@bar.xyz'
         ]);
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $error = $repo->publicPrenormalize($model);
     }
 }

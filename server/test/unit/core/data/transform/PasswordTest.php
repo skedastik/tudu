@@ -16,7 +16,7 @@ class PasswordTest extends \PHPUnit_Framework_TestCase {
     
     public function testPassingNonStringInputToPasswordTransformerShouldThrowAnException() {
         $transformer = Transform::Password();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $transformer->execute(1);
     }
 }

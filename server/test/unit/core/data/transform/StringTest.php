@@ -29,7 +29,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
 
     public function testPassingNonStringInputToStringTransformerShouldThrowAnException() {
         $transformer = Transform::String();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $transformer->execute(1);
     }
 }

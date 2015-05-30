@@ -9,7 +9,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase {
 
     public function testPassingNonNumericInputToNumberValidatorShouldThrowAnException() {
         $validator = Validate::Number();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $validator->execute('this is not a number');
     }
     

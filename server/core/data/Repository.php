@@ -2,7 +2,7 @@
 namespace Tudu\Core\Data;
 
 use \Tudu\Core\Database\DbConnection;
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 use \Tudu\Core\Error;
 
 /**
@@ -34,7 +34,7 @@ abstract class Repository {
         if (is_null($errors)) {
             return $model;
         }
-        throw new Core\Exception('Model exported from repository has validation errors.');
+        throw new Exception\Internal('Model exported from repository has validation errors.');
     }
     
     /**

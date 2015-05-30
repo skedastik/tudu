@@ -21,7 +21,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     
     public function testApplyingOptionsWithoutSpecifyingOptionsShouldThrowAnException() {
         $validator = new MockValidator();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $validator->execute('whatever');
     }
     

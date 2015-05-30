@@ -5,7 +5,7 @@ use \Tudu\Core\Data\Model;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Delegate;
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 
 /**
  * User model.
@@ -61,7 +61,7 @@ final class User extends Model {
      */
     public static function setPasswordDelegate(Delegate\Password $passwordDelegate) {
         if (self::$passwordDelegate !== NULL) {
-            throw new Core\Exception('A user password delegate has already been instantiated.');
+            throw new Exception\Internal('A user password delegate has already been instantiated.');
         }
         self::$passwordDelegate = $passwordDelegate;
         return $passwordDelegate;
@@ -74,7 +74,7 @@ final class User extends Model {
      */
     public static function getPasswordDelegate() {
         if (self::$passwordDelegate === NULL) {
-            throw new Core\Exception('No user password delegate has been set.');
+            throw new Exception\Internal('No user password delegate has been set.');
         }
         return self::$passwordDelegate;
     }

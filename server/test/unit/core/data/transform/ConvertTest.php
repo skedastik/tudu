@@ -7,7 +7,7 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
     
     public function testConvertingWithoutSpecifyingOutputTypeShouldThrowAnException() {
         $transformer = Transform::Convert();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $transformer->execute('whatever');
     }
     

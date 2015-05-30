@@ -93,7 +93,7 @@ class StringTest extends \PHPUnit_Framework_TestCase {
     
     public function testPassingNonStringInputToStringValidatorShouldThrowAnException() {
         $validator = Validate::String();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $validator->execute([]);
     }
 }  

@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Chainable;
 
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 
 /**
  * Chainable is a base class for function-like objects. These objects have only
@@ -193,7 +193,7 @@ abstract class Chainable {
      */
     final protected function applyOptions($data) {
         if (empty($this->selectedOptions)) {
-            throw new Core\Exception('Chainable::applyOptions() called, but no options have been selected.');
+            throw new Exception\Internal('Chainable::applyOptions() called, but no options have been selected.');
         }
         foreach (array_keys($this->selectedOptions) as $option) {
             $data = $this->dispatch($option, $data);

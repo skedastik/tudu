@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Data\Transform;
 
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 
 /**
  * Transform a string representation of a PostgreSQL HSTORE to a key/value
@@ -24,7 +24,7 @@ final class HStore extends Transformer {
     
     protected function process($data) {
         if (!is_string($data)) {
-            throw new Core\Exception('Non-string input passed to Transform\HStore.');
+            throw new Exception\Internal('Non-string input passed to Transform\HStore.');
         }
         
         if (empty($data)) {

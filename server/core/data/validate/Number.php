@@ -2,7 +2,7 @@
 namespace Tudu\Core\Data\Validate;
 
 use \Tudu\Core\Chainable\Sentinel;
-use \Tudu\Core;
+use \Tudu\Core\Exception;
 
 /**
  * Number validator.
@@ -39,7 +39,7 @@ final class Number extends Validator {
     
     protected function process($data) {
         if (!is_numeric($data)) {
-            throw new Core\Exception('Non-numeric input passed to Validate\Number.');
+            throw new Exception\Internal('Non-numeric input passed to Validate\Number.');
         }
         return $this->applyOptions($data);
     }

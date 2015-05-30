@@ -237,20 +237,20 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
     
     public function testSanitizingAModelThatHasNotBeenNormalizedShouldThrowAnException() {
         $model = new MockModel([]);
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $model->getSanitizedCopy('name-only');
     }
     
     public function testSanitizingAModelUsingANonexistentSchemeShouldThrowAnException() {
         $model = new MockModel([]);
         $model->normalize();
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $model->getSanitizedCopy('nonexistent-scheme');
     }
     
     public function testUsingANonexistentSanitizationSchemeShouldThrowAnException() {
         $model = new MockModel([]);
-        $this->setExpectedException('\Tudu\Core\Exception');
+        $this->setExpectedException('\Tudu\Core\Exception\Internal');
         $model->getSanitizedCopy('nonexistent-scheme');
     }
     
