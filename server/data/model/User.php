@@ -47,7 +47,7 @@ final class User extends Model {
         self::NEW_PASSWORD => self::PASSWORD
     ];
     
-    // Use password delegate singleton -----------------------------------------
+    // User password delegate singleton ----------------------------------------
     
     private static $passwordDelegate = null;
     
