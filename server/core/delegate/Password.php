@@ -12,16 +12,6 @@ abstract class Password {
      * @param string $password Plain-text password.
      * @return string Computed password hash.
      */
-    final public function getHash($password) {
-        return $this->computeHash($password);
-    }
-    
-    /**
-     * Perform the actual hash computation.
-     * 
-     * @param string $password Plain-text password.
-     * @return string Computed password hash.
-     */
     abstract protected function computeHash($password);
     
     /**

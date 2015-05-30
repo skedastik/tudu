@@ -8,7 +8,7 @@ use \Tudu\Core\Delegate\Password;
  */
 final class MockPass extends Password {
     
-    protected function computeHash($password) {
+    public function computeHash($password) {
         return $password.'*';
     }
     

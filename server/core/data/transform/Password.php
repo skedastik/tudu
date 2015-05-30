@@ -32,7 +32,7 @@ final class Password extends Transformer {
         if (is_null($delegate)) {
             throw new Core\Exception('No password delegate instance has been supplied to Transform\Password');
         }
-        return $delegate->getHash($data);
+        return $delegate->computeHash($data);
     }
 }
 ?>

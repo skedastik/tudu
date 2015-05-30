@@ -25,7 +25,7 @@ class BasicAuthenticationTest extends DatabaseTest {
     public function testValidCredentialsUsingUserIdShouldReturn200() {
         // create a new user
         $password = 'test_password';
-        $passwordHash = $this->passwordDelegate->getHash($password);
+        $passwordHash = $this->passwordDelegate->computeHash($password);
         $userId = $this->userRepo->signupUser('foo@bar.xyz', $passwordHash, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication
@@ -48,7 +48,7 @@ class BasicAuthenticationTest extends DatabaseTest {
         // create a new user
         $email = 'foo@bar.xyz';
         $password = 'test_password';
-        $passwordHash = $this->passwordDelegate->getHash($password);
+        $passwordHash = $this->passwordDelegate->computeHash($password);
         $userId = $this->userRepo->signupUser($email, $passwordHash, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication

@@ -18,7 +18,7 @@ final class PHPass extends Password {
         $this->phpass = new PasswordHash(8, false);
     }
     
-    protected function computeHash($password) {
+    public function computeHash($password) {
         return $this->phpass->HashPassword($password);
     }
     
