@@ -6,7 +6,6 @@ use \Tudu\Core\Data\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;
-use \Tudu\Core\Delegate;
 
 /**
  * Basic authentication for Tudu.
@@ -14,7 +13,41 @@ use \Tudu\Core\Delegate;
 final class BasicAuthentication implements Authentication {
     
     private $db;
-    private $passwordDelegate;
+    
+    /**
+     * Constructor.
+     * 
+     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     */
+    public function __construct(DbConnection $db) {
+        $this->db = $db;
+    }
+    
+    public function getScheme() {
+        return 'Basic';
+    }
+    
+    public function authenticate($param) {
+        // extract user and password from base-64-encoded auth parameter
+        $credentials = self::decodeCredentials($param);
+        
+        if (is_null($credentials)) {
+            return null;
+        }
+        
+        $userId = $credentials['id'];
+        $userRepo = new Repository\User($this->db);
+        $user = is_numeric($userId) ? $userRepo->getById(intval($userId)) : $userRepo->getByEmail($userId);
+        if ($user instanceof Error) {
+            return null;
+        }
+        
+        if (!User::getPasswordDelegate()->compare($credentials['password'], $user->get(User::PASSWORD_HASH))) {
+            return null;
+        }
+        
+        return $user;
+    }
     
     /**
      * Encode a user ID and password as basic HTTP authentication credentials.
@@ -43,44 +76,6 @@ final class BasicAuthentication implements Authentication {
             'id' => $matches[1],
             'password' => $matches[2]
         ];
-    }
-    
-    /**
-     * Constructor.
-     * 
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
-     * @param \Tudu\Core\Delegate\Password $passwordDelegate Password delegate.
-     * This will be used to compare user passwords.
-     */
-    public function __construct(DbConnection $db, Delegate\Password $passwordDelegate) {
-        $this->db = $db;
-        $this->passwordDelegate = $passwordDelegate;
-    }
-    
-    public function getScheme() {
-        return 'Basic';
-    }
-    
-    public function authenticate($param) {
-        // extract user and password from base-64-encoded auth parameter
-        $credentials = self::decodeCredentials($param);
-        
-        if (is_null($credentials)) {
-            return null;
-        }
-        
-        $userId = $credentials['id'];
-        $userRepo = new Repository\User($this->db);
-        $user = is_numeric($userId) ? $userRepo->getById(intval($userId)) : $userRepo->getByEmail($userId);
-        if ($user instanceof Error) {
-            return null;
-        }
-        
-        if (!$this->passwordDelegate->compare($credentials['password'], $user->get(User::PASSWORD_HASH))) {
-            return null;
-        }
-        
-        return $user;
     }
 }
     

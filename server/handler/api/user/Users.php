@@ -5,31 +5,11 @@ use \Tudu\Core\Data\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;
-use \Tudu\Core\Delegate;
 
 /**
  * Request handler for /users/
  */
 final class Users extends \Tudu\Core\Handler\API {
-    
-    private $passwordDelegate;
-    
-    /**
-     * Constructor.
-     * 
-     * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
-     * @param \Tudu\Core\Delegate\Password $passwordDelegate Password delegate.
-     * This will be used to hash user passwords.
-     */
-    public function __construct(
-        Delegate\App $app,
-        DbConnection $db,
-        Delegate\Password $passwordDelegate
-    ) {
-        parent::__construct($app, $db);
-        $this->passwordDelegate = $passwordDelegate;
-    }
     
     protected function _getAllowedMethods() {
         return 'POST';
@@ -50,7 +30,7 @@ final class Users extends \Tudu\Core\Handler\API {
         $userRepo = new Repository\User($this->db);
         $userId = $userRepo->signupUser(
             $data[User::EMAIL],
-            $this->passwordDelegate->getHash($data[User::PASSWORD]),
+            $data[User::PASSWORD],
             $this->app->getRequestIp()
         );
         if ($userId instanceof Error) {

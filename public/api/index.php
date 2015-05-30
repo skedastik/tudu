@@ -21,16 +21,15 @@ $db = new \Tudu\Core\Data\PgSQLConnection([
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
 $app->addEncoder(new \Tudu\Core\Encoder\JSON());
 
-$passwordDelegate = new \Tudu\Delegate\PHPass();
-$basicAuthentication = new BasicAuthentication($db, $passwordDelegate);
+User::setPasswordDelegate(new \Tudu\Delegate\PHPass());
+$basicAuthentication = new BasicAuthentication($db);
 
 // User URIs -------------------------------------------------------------------
 
-$app->map('/users/', function () use ($app, $db, $passwordDelegate) {
+$app->map('/users/', function () use ($app, $db) {
     (new Handler\Api\User\Users(
         $app,
-        $db,
-        $passwordDelegate
+        $db
     ))->process();
 });
 
