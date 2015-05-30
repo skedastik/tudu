@@ -28,6 +28,11 @@ abstract class Handler {
     }
     
     /**
+     * Handle the request.
+     */
+    abstract public function process();
+    
+    /**
      * Ensure that the application is capable of encoding its response payload
      * in a format specified by the request's "Accept" header.
      * 
