@@ -78,7 +78,7 @@ class Auth extends \Tudu\Core\Handler\Handler {
         }
         
         if ($this->authorization && !$this->authorization->authorize($user)) {
-            $this->sendAuthError(Error::Generic('User is not authorized.', null, 403));
+            $this->sendAuthError(Error::Generic('User is not authorized to access this resource.', null, 403));
         }
         
         /**
