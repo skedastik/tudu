@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Handler;
 
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
 
@@ -30,7 +30,31 @@ abstract class Handler {
     /**
      * Handle the request.
      */
-    abstract public function process();
+    final public function run() {
+        try {
+            $this->process();
+        } catch (Exception\Client $exception) {
+            $this->handleClientException($exception);
+        }
+    }
+    
+    /**
+     * Handle a client exception.
+     * 
+     * Override for custom error handling.
+     * 
+     * @param \Tudu\Core\Exception\Client $exception Client exception.
+     */
+    protected function handleClientException(Exception\Client $exception) {
+        $statusCode = $exception->getHttpStatusCode();
+        $this->app->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
+        $this->renderBody($exception->asArray());
+    }
+    
+    /**
+     * Perform actual request processing.
+     */
+    abstract protected function process();
     
     /**
      * Ensure that the application is capable of encoding its response payload
@@ -59,7 +83,7 @@ abstract class Handler {
             }
             if ($send406) {
                 $description = 'Accepted media types are not supported. See context for a list of supported media types.';
-                $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 406));
+                throw new Exception\Client($description, $this->app->getSupportedContentTypes(), 406);
             }
         }
         
@@ -81,20 +105,20 @@ abstract class Handler {
         $mediaType = $this->app->getRequestHeader('Content-Type');
         if (is_null($mediaType)) {
             $description = 'Request "Content-Type" header is missing. See context for a list of supported media types.';
-            $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 415));
+            throw new Exception\Client($description, $this->app->getSupportedContentTypes(), 415);
         }
         
         $encoder = $this->app->getEncoder($mediaType);
         if (is_null($encoder)) {
             $description = 'Request "Content-Type" not supported. See context for a list of supported media types.';
-            $this->sendError(Error::Generic($description, $this->app->getSupportedContentTypes(), 415));
+            throw new Exception\Client($description, $this->app->getSupportedContentTypes(), 415);
         }
         
         $requestBody = $this->app->getRequestBody();
         $data = $encoder->decode($requestBody, $mediaType);
         if (is_null($data)) {
             $description = 'Request body is malformed.';
-            $this->sendError(Error::Generic($description, null, 400));
+            throw new Exception\Client($description, null, 400);
         }
         return $data;
     }
@@ -121,18 +145,6 @@ abstract class Handler {
             $data = $this->app->getEncoder()->encode($data, $mediaType);
         }
         echo $data;
-    }
-    
-    /**
-     * Halt processing immediately and send an error response.
-     * 
-     * @param \Tudu\Core\Error $error Error object.
-     */
-    final protected function sendError(\Tudu\Core\Error $error) {
-        $statusCode = $error->getHttpStatusCode();
-        $this->app->setResponseStatus(is_null($statusCode) ? 400 : $statusCode);
-        $this->renderBody($error->asArray());
-        $this->app->send();
     }
 }
     

@@ -5,7 +5,6 @@ use \Tudu\Test\Integration\Database\DatabaseTest;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Data\Model\User;
 use \Tudu\Data\Repository\User as UserRepo;
-use \Tudu\Core\Error;
 
 class UserRepositoryTest extends DatabaseTest {
     
@@ -28,9 +27,8 @@ class UserRepositoryTest extends DatabaseTest {
     }
     
     public function testGetByIDShouldFailGivenNonexistentID() {
-        $error = $this->repo->getByID(1);
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->getByID(1);
     }
     
     public function testGetByEmailShouldSucceedGivenValidEmail() {
@@ -40,9 +38,8 @@ class UserRepositoryTest extends DatabaseTest {
     }
     
     public function testGetByEmailShouldFailGivenNonexistentEmail() {
-        $error = $this->repo->getByEmail('doesnt@exist.xyz');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->getByEmail('doesnt@exist.xyz');
     }
     
     public function testSignupUserShouldCreateUserWithNormalizedData() {
@@ -68,9 +65,8 @@ class UserRepositoryTest extends DatabaseTest {
     public function testSignupUserShouldFailGivenEmailThatIsAlreadyTaken() {
         $email = 'foo@bar.com';
         $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::VALIDATION, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Validation');
+        $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
     }
     
     public function testConfirmUserShouldSucceedGivenCorrectSignupToken() {
@@ -83,17 +79,15 @@ class UserRepositoryTest extends DatabaseTest {
     }
     
     public function testConfirmUserShouldFailGivenNonexistentUserId() {
-        $error = $this->repo->confirmUser(-1, 'unlikely_signup_token', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->confirmUser(-1, 'unlikely_signup_token', '127.0.0.1');
     }
     
     public function testConfirmUserShouldFailGivenInvalidSignupToken() {
         $email = 'foo@bar.com';
         $id = $this->repo->signupUser($email, 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->confirmUser($id, 'unlikely_signup_token', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->confirmUser($id, 'unlikely_signup_token', '127.0.0.1');
     }
     
     public function testConfirmUserShouldFailForAlreadyConfirmedUser() {
@@ -102,9 +96,8 @@ class UserRepositoryTest extends DatabaseTest {
         $user = $this->repo->getByID($id);
         $signupToken = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
         $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
-        $error = $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::NOTICE, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->confirmUser($id, $signupToken, '127.0.0.1');
     }
     
     public function testSetUserPasswordHashShouldSucceedGivenValidInputs() {
@@ -114,9 +107,8 @@ class UserRepositoryTest extends DatabaseTest {
     }
     
     public function testSetUserPasswordHashShouldFailGivenInvalidUserId() {
-        $error = $this->repo->setUserPasswordHash(-1, 'new_pw_hash', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->setUserPasswordHash(-1, 'new_pw_hash', '127.0.0.1');
     }
     
     public function testSetUserEmailShouldSucceedGivenValidInput() {
@@ -133,24 +125,21 @@ class UserRepositoryTest extends DatabaseTest {
     }
     
     public function testSetUserEmailShouldFailGivenInvalidUserId() {
-        $error = $this->repo->setUserEmail(-1, 'baz@qux.xyz', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->setUserEmail(-1, 'baz@qux.xyz', '127.0.0.1');
     }
     
     public function testSetUserEmailShouldFailGivenIdenticalEmail() {
         $user_id = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->setUserEmail($user_id, 'foo@bar.com', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::NOTICE, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->setUserEmail($user_id, 'foo@bar.com', '127.0.0.1');
     }
     
     public function testSetUserEmailToAlreadyUsedEmailShouldFail() {
         $this->repo->signupUser('baz@qux.xyz', 'unlikely_pw_hash', '127.0.0.1');
         $user_id_in = $this->repo->signupUser('foo@bar.com', 'unlikely_pw_hash', '127.0.0.1');
-        $error = $this->repo->setUserEmail($user_id_in, 'baz@qux.xyz', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::VALIDATION, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Validation');
+        $this->repo->setUserEmail($user_id_in, 'baz@qux.xyz', '127.0.0.1');
     }
 }
 ?>

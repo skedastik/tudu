@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Test\Unit\Core\Data\Model;
 
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Test\Mock\MockModel;
 use \Tudu\Test\Mock\MockRepository;
 

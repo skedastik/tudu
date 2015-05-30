@@ -6,7 +6,6 @@ use \Tudu\Data\Model\User;
 use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Repository\User as UserRepo;
 use \Tudu\Data\Repository\AccessToken as AccessTokenRepo;
-use \Tudu\Core\Error;
 
 class AccessTokenRepositoryTest extends DatabaseTest {
     
@@ -28,16 +27,14 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     }
     
     public function testCreateAccessTokenShouldFailGivenInvalidUserId() {
-        $error = $this->tokenRepo->createAccessToken(-1, 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->createAccessToken(-1, 'token_string', 'login', '1 week', false, '127.0.0.1');
     }
     
     public function testCreateAccessTokenShouldFailGivenNonUniqueTokenString() {
         $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $error = $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '1 week', false, '127.0.0.1');
     }
     
     public function testRevokeActiveAccessTokensShouldSucceedGivenValidInputs() {
@@ -47,9 +44,8 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     }
     
     public function testRevokeActiveAccessTokensShouldFailIfNoActiveTokensExist() {
-        $error = $this->tokenRepo->revokeActiveAccessTokens($this->user->get(User::USER_ID), 'login', '127.0.0.1');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->revokeActiveAccessTokens($this->user->get(User::USER_ID), 'login', '127.0.0.1');
     }
     
     public function testValidateAccessTokenShouldSucceedGivenValidInputs() {
@@ -60,24 +56,21 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     
     public function testValidateAccessTokenShouldFailGivenInvalidTokenString() {
         $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '1 week', false, '127.0.0.1');
-        $error = $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'invalid_token_string');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'invalid_token_string');
     }
     
     public function testValidateAccessTokenShouldFailGivenRevokedToken() {
         $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '1 week', false, '127.0.0.1');
         $this->tokenRepo->revokeActiveAccessTokens($this->user->get(User::USER_ID), 'login', '127.0.0.1');
-        $error = $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'token_string');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'token_string');
     }
     
     public function testValidateAccessTokenShouldFailGivenExpiredToken() {
         $this->tokenRepo->createAccessToken($this->user->get(User::USER_ID), 'token_string', 'login', '0 seconds', false, '127.0.0.1');
-        $error = $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'token_string');
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->tokenRepo->validateAccessToken($this->user->get(User::USER_ID), 'token_string');
     }
 }
 ?>

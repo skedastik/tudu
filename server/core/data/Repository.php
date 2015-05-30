@@ -3,17 +3,12 @@ namespace Tudu\Core\Data;
 
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Exception;
-use \Tudu\Core\Error;
 
 /**
  * Data repository base class.
  * 
- * All repository methods should return a \Tudu|Core\Error object if an error
- * occurs.
- * 
- * Repository subclasses should not normalize input data. This is the
- * responsibility of the input provider. Output data, however, should be
- * normalized.
+ * All repository methods throw a \Tudu|Core\Exception\Client exception if an
+ * error occurs.
  */
 abstract class Repository {
     protected $db;

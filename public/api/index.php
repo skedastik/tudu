@@ -33,7 +33,7 @@ $app->map('/users/', function () use ($app, $db) {
     (new Handler\Api\User\Users(
         $app,
         $db
-    ))->process();
+    ))->run();
 });
 
 $app->post('/signin', function () use ($app, $db, $basicAuthentication) {
@@ -42,14 +42,14 @@ $app->post('/signin', function () use ($app, $db, $basicAuthentication) {
         $db,
         $basicAuthentication,
         new TuduAuthorization()
-    ))->process();
+    ))->run();
 });
 
 $app->map('/signin', function () use ($app, $db) {
     (new Handler\Api\User\Signin(
         $app,
         $db
-    ))->process();
+    ))->run();
 });
 
 $app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentication) {
@@ -58,21 +58,21 @@ $app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentica
         $db,
         $basicAuthentication,
         new TuduAuthorization($userId)
-    ))->process();
+    ))->run();
 });
 
 $app->map('/users/:user_id', function ($userId) use ($app, $db) {
     $app->setContext([
         User::USER_ID => $userId
     ]);
-    (new Handler\Api\User\User($app, $db))->process();
+    (new Handler\Api\User\User($app, $db))->run();
 });
 
 $app->map('/users/:user_id/confirm', function ($userId) use ($app, $db) {
     $app->setContext([
         User::USER_ID => $userId
     ]);
-    (new Handler\Api\User\Confirm($app, $db))->process();
+    (new Handler\Api\User\Confirm($app, $db))->run();
 });
 
 // Task URIs -------------------------------------------------------------------
@@ -83,14 +83,14 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
         $db,
         new TuduAuthentication($app, $db, $userId),
         new TuduAuthorization($userId)
-    ))->process();
+    ))->run();
 });
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     $app->setContext([
         User::USER_ID => $userId
     ]);
-    (new Handler\Api\Task\Tasks($app, $db))->process();
+    (new Handler\Api\Task\Tasks($app, $db))->run();
 });
 
 $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
@@ -98,7 +98,7 @@ $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($ap
         User::USER_ID => $userId,
         Task::TASK_ID => $taskId
     ]);
-    (new Handler\Api\Task\Task($app, $db))->process();
+    (new Handler\Api\Task\Task($app, $db))->run();
 });
 
 $app->run();

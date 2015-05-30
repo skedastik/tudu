@@ -2,7 +2,7 @@
 namespace Tudu\Data\Repository;
 
 use \Tudu\Core\Data\Repository;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Data\Model;
 
 final class User extends Repository {
@@ -19,7 +19,7 @@ final class User extends Repository {
             [$id]
         );
         if ($result === false) {
-            return Error::Generic('User not found.');
+            throw new Exception\Client('User not found.');
         }
         return $this->prenormalize(new Model\User($result[0]));
     }
@@ -36,7 +36,7 @@ final class User extends Repository {
             [$email]
         );
         if ($result === false) {
-            return Error::Generic('User not found.');
+            throw new Exception\Client('User not found.');
         }
         return $this->prenormalize(new Model\User($result[0]));
     }
@@ -56,7 +56,7 @@ final class User extends Repository {
             [$email, $passwordHash, $ip, $autoConfirm ? 't' : 'f']
         );
         if ($result == -1) {
-            return Error::Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
+            throw new Exception\Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
         }
         return $result;
     }
@@ -76,11 +76,11 @@ final class User extends Repository {
         );
         switch ($result) {
             case -1:
-                return Error::Generic('User not found.', null, 404);
+                throw new Exception\Client('User not found.', null, 404);
             case -2:
-                return Error::Generic('Signup token does not match.', null, 409);
+                throw new Exception\Client('Signup token does not match.', null, 409);
             case -3:
-                return Error::Notice('User has already been confirmed.', null, 409);
+                throw new Exception\Client('User has already been confirmed.', null, 409);
         }
         return $result;
     }
@@ -99,7 +99,7 @@ final class User extends Repository {
             [$id, $newPasswordHash, $ip]
         );
         if ($result == -1) {
-            return Error::Generic('User ID not found.', null, 404);
+            throw new Exception\Client('User ID not found.', null, 404);
         }
         return $result;
     }
@@ -119,11 +119,11 @@ final class User extends Repository {
         );
         switch ($result) {
             case -1:
-                return Error::Generic('User ID not found.', null, 404);
+                throw new Exception\Client('User ID not found.', null, 404);
             case -2:
-                return Error::Notice('Provided email address is identical to current email address.', null, 409);
+                throw new Exception\Client('Provided email address is identical to current email address.', null, 409);
             case -3:
-                return Error::Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
+                throw new Exception\Validation(null, [Model\User::EMAIL => 'Email address is already in use.'], 409);
         }
         return $result;
     }

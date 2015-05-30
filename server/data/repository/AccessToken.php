@@ -2,7 +2,7 @@
 namespace Tudu\Data\Repository;
 
 use \Tudu\Core\Data\Repository;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Data\Model;
 
 final class AccessToken extends Repository {
@@ -19,7 +19,7 @@ final class AccessToken extends Repository {
             [$id]
         );
         if ($result === false) {
-            return Error::Generic('Token not found.');
+            throw new Exception\Client('Token not found.');
         }
         return $this->prenormalize(new Model\AccessToken($result[0]));
     }
@@ -37,7 +37,7 @@ final class AccessToken extends Repository {
             [$userId, $tokenString]
         );
         if ($result === false) {
-            return Error::Generic('Token not found.');
+            throw new Exception\Client('Token not found.');
         }
         return $this->prenormalize(new Model\AccessToken($result[0]));
     }
@@ -51,7 +51,7 @@ final class AccessToken extends Repository {
      * @param string $ttl Access token time to live.
      * @param bool $autoRevoke Auto-revoke active access tokens of same type.
      * @param string $ip IP address
-     * @return mixed Token ID on success, Error object otherwise.
+     * @return int Token ID.
      */
     public function createAccessToken($userId, $tokenString, $tokenType, $ttl, $autoRevoke, $ip) {
         $result = $this->db->queryValue(
@@ -60,9 +60,9 @@ final class AccessToken extends Repository {
         );
         switch ($result) {
             case -1:
-                return Error::Generic('User ID not found.');
+                throw new Exception\Client('User ID not found.');
             case -2:
-                return Error::Generic('Token string is already in use.');
+                throw new Exception\Client('Token string is already in use.');
         }
         return $result;
     }
@@ -73,7 +73,7 @@ final class AccessToken extends Repository {
      * @param int $userId ID of existing user.
      * @param string $tokenType Type of access token.
      * @param string $ip IP address
-     * @return mixed Number of tokens revoked on success, Error otherwise.
+     * @return int Number of tokens revoked.
      */
     public function revokeActiveAccessTokens($userId, $tokenType, $ip) {
         $result = $this->db->queryValue(
@@ -81,7 +81,7 @@ final class AccessToken extends Repository {
             [$userId, $tokenType, $ip]
         );
         if ($result == -1) {
-            return Error::Generic('No active tokens of given type exist for given user.');
+            throw new Exception\Client('No active tokens of given type exist for given user.');
         }
         return $result;
     }
@@ -91,7 +91,6 @@ final class AccessToken extends Repository {
      * 
      * @param int $userId ID of existing user.
      * @param string $tokenString Access token string.
-     * @return mixed 0 on success, Error object otherwise.
      */
     public function validateAccessToken($userId, $tokenString) {
         $result = $this->db->queryValue(
@@ -100,13 +99,12 @@ final class AccessToken extends Repository {
         );
         switch ($result) {
             case -1:
-                return Error::Generic('No such token found for given user.');
+                throw new Exception\Client('No such token found for given user.');
             case -2:
-                return Error::Generic('Token has been revoked.');
+                throw new Exception\Client('Token has been revoked.');
             case -3:
-                return Error::Generic('Token is expired.');
+                throw new Exception\Client('Token is expired.');
         }
-        return $result;
     }
 }
 ?>

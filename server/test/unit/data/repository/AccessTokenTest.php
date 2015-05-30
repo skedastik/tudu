@@ -3,7 +3,6 @@ namespace Tudu\Test\Unit\Data\Repository;
 
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\AccessToken;
-use \Tudu\Core\Error;
 
 class AccessTokenTest extends \PHPUnit_Framework_TestCase {
 
@@ -31,9 +30,8 @@ class AccessTokenTest extends \PHPUnit_Framework_TestCase {
     public function testGetByIDShouldGenerateResourceNotFoundErrorIfQueryFails() {
         $this->db->method('query')->willReturn(false);
         $id = 123;
-        $error = $this->repo->getByID($id);
-        $this->assertTrue($error instanceof Error);
-        $this->assertEquals(Error::GENERIC, $error->getError());
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->getByID($id);
     }
 }
 ?>

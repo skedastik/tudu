@@ -5,7 +5,7 @@ use \Tudu\Core\Handler\Auth\Contract\Authentication;
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 
 /**
  * Basic authentication for Tudu.

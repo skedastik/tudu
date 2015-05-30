@@ -3,7 +3,7 @@ namespace Tudu\Core\Handler;
 
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Core\Data\Model;
 use \Tudu\Core\MediaType;
 
@@ -60,7 +60,6 @@ abstract class API extends Handler {
     final private function options() {
         $this->setAllowHeader();
         $this->app->setResponseStatus(200);
-        $this->app->send();
     }
     
     /**
@@ -85,7 +84,6 @@ abstract class API extends Handler {
     private function rejectMethod() {
         $this->setAllowHeader();
         $this->app->setResponseStatus(405);
-        $this->app->send();
     }
     
     /**
@@ -97,7 +95,7 @@ abstract class API extends Handler {
         ]);
     }
     
-    final public function process() {
+    final protected function process() {
         $method = strtolower($this->app->getRequestMethod());
         // invoke method corresponding to HTTP request method
         $this->{$method}();
@@ -124,12 +122,12 @@ abstract class API extends Handler {
         
         if (!$model->hasProperties($requiredProperties)) {
             $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
-            $this->sendError(Error::Generic('Request body is missing listed properties.', $missingProperties, 400));
+            throw new Exception\Client('Request body is missing listed properties.', $missingProperties, 400);
         }
         
         $errors = $model->normalize();
         if (!is_null($errors)) {
-            $this->sendError(Error::Validation(null, $errors, 400));
+            throw new Exception\Validation(null, $errors, 400);
         }
         
         return $model->asArray();
@@ -158,7 +156,7 @@ abstract class API extends Handler {
             ]);
             $errors = $model->normalize();
             if (!is_null($errors)) {
-                $this->sendError(Error::Validation(null, $errors, 400));
+                throw new Exception\Validation(null, $errors, 400);
             }
             $context[$property] = $model->get($property);
         }

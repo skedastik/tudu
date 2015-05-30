@@ -4,7 +4,7 @@ namespace Tudu\Handler\Api\User;
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 
 /**
  * Request handler for /users/

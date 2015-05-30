@@ -2,7 +2,7 @@
 namespace Tudu\Handler\Api\User;
 
 use \Tudu\Conf\Conf;
-use \Tudu\Core\Error;
+use \Tudu\Core\Exception;
 use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth;

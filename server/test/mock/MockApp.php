@@ -96,7 +96,7 @@ final class MockApp extends App {
     
     public function run() {
         try {
-            $this->handler->process();
+            $this->handler->run();
         } catch (MockException $e) {
             // swallow exception
         }
