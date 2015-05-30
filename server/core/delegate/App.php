@@ -86,10 +86,11 @@ abstract class App {
     /**
      * Set application context data.
      * 
+     * @param string $key (optional) Get value under specific context key.
      * @return array Key/value array of context data.
      */
-    public function getContext() {
-        return $this->context;
+    public function getContext($key = null) {
+        return is_null($key) ? $this->context : $this->context[$key];
     }
     
     /**
