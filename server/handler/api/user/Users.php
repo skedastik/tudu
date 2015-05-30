@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Handler\Api\User;
 
-use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;

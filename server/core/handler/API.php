@@ -1,7 +1,7 @@
 <?php
 namespace Tudu\Core\Handler;
 
-use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
 use \Tudu\Core\Arrayable;
 use \Tudu\Core\Error;

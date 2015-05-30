@@ -1,5 +1,5 @@
 <?php
-namespace Tudu\Core\Data;
+namespace Tudu\Core\Database;
 
 /**
  * A minimal database abstraction layer.

@@ -2,7 +2,7 @@
 namespace Tudu\Test\Integration\Database;
 
 use \Tudu\Conf\Conf;
-use \Tudu\Core\Data\PgSQLConnection;
+use \Tudu\Core\Database\PgSQLConnection;
 
 abstract class DatabaseTest extends \PHPUnit_Framework_TestCase {
     

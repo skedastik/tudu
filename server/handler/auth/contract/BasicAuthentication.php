@@ -2,7 +2,7 @@
 namespace Tudu\Handler\Auth\Contract;
 
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
-use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
 use \Tudu\Core\Error;
@@ -17,7 +17,7 @@ final class BasicAuthentication implements Authentication {
     /**
      * Constructor.
      * 
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param \Tudu\Core\Database\DbConnection $db Database connection instance.
      */
     public function __construct(DbConnection $db) {
         $this->db = $db;

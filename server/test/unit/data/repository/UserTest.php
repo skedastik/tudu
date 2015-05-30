@@ -8,7 +8,7 @@ use \Tudu\Core\Error;
 class UserTest extends \PHPUnit_Framework_TestCase {
     
     protected function setUp() {
-        $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
+        $this->db = $this->getMockBuilder('\Tudu\Core\Database\DbConnection')->disableOriginalConstructor()->getMock();
         $this->repo = new Repository\User($this->db);
     }
     

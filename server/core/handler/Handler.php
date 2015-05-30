@@ -2,7 +2,7 @@
 namespace Tudu\Core\Handler;
 
 use \Tudu\Core\Error;
-use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
 
 /**
@@ -17,7 +17,7 @@ abstract class Handler {
      * Constructor.
      * 
      * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param \Tudu\Core\Database\DbConnection $db Database connection instance.
      */
     public function __construct(Delegate\App $app, DbConnection $db) {
         $this->app = $app;

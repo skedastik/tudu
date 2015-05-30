@@ -17,7 +17,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase {
     
     public function setUp() {
         ob_start();
-        $this->db = $this->getMockBuilder('\Tudu\Core\Data\DbConnection')->disableOriginalConstructor()->getMock();
+        $this->db = $this->getMockBuilder('\Tudu\Core\Database\DbConnection')->disableOriginalConstructor()->getMock();
         $this->app = new MockApp();
         $this->app->addEncoder(new Encoder\JSON());
         $this->authentication = new MockAuthentication();

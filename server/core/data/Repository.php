@@ -1,6 +1,7 @@
 <?php
 namespace Tudu\Core\Data;
 
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\TuduException;
 use \Tudu\Core\Error;
 

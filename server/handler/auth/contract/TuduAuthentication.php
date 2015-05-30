@@ -17,7 +17,7 @@ final class TuduAuthentication implements Authentication {
      * Constructor.
      * 
      * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param \Tudu\Core\Database\DbConnection $db Database connection instance.
      * @param int $userId ID of user making the request.
      */
     public function __construct(Delegate\App $app, DbConnection $db, $userId) {

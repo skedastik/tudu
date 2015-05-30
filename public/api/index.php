@@ -15,7 +15,7 @@ use \Tudu\Data\Model\Task;
 Logger::setInstance(new \Katzgrau\KLogger\Logger(Conf::LOG_PATH, Conf::LOG_LEVEL));
 User::setPasswordDelegate(new \Tudu\Delegate\PHPass());
 
-$db = new \Tudu\Core\Data\PgSQLConnection([
+$db = new \Tudu\Core\Database\PgSQLConnection([
     'host'     => Conf::DB_HOST,
     'database' => Conf::DB_NAME,
     'username' => Conf::DB_USERNAME,

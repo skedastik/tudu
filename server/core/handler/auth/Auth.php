@@ -4,7 +4,7 @@ namespace Tudu\Core\Handler\Auth;
 use \Tudu\Conf\Conf;
 use \Tudu\Core\Error;
 use \Tudu\Core\Delegate;
-use \Tudu\Core\Data\DbConnection;
+use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Handler\Auth\Contract\Authentication;
 use \Tudu\Core\Handler\Auth\Contract\Authorization;
 
@@ -22,7 +22,7 @@ class Auth extends \Tudu\Core\Handler\Handler {
      * Constructor.
      * 
      * @param \Tudu\Core\Delegate\App $app Instance of an app delegate.
-     * @param \Tudu\Core\Data\DbConnection $db Database connection instance.
+     * @param \Tudu\Core\Database\DbConnection $db Database connection instance.
      * @param \Tudu\Core\Handler\Auth\Contract\Authentication $authentication An
      * instance of an Authentication implementation. This will be used to
      * authenticate incoming requests.
