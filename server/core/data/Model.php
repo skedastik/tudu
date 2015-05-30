@@ -122,6 +122,23 @@ abstract class Model implements Arrayable {
     abstract protected function getSanitizers();
     
     /**
+     * Override this static property to specify a key/value array of model
+     * property aliases.
+     * 
+     * Example:
+     * 
+     *    [
+     *        'first_name' => 'name'
+     *        'middle_name' => 'name'
+     *        'last_name' => 'name'
+     *    ]
+     * 
+     * By setting the above array, 'first_name', 'middle_name', and 'last_name'
+     * will inherit the normalizers and sanitizers from the 'name' property.
+     */
+    protected static $propertyAliases = [];
+    
+    /**
      * Attempt to normalize the model.
      * 
      * Normalization consists of both validation and possibly transformation.
@@ -255,7 +272,11 @@ abstract class Model implements Arrayable {
     final private function getCachedNormalizers() {
         $key = get_class($this);
         if (!isset(self::$normalizerCache[$key])) {
-            self::$normalizerCache[$key] = $this->getNormalizers();
+            $normalizers = $this->getNormalizers();
+            foreach (static::$propertyAliases as $alias => $property) {
+                $normalizers[$alias] = $normalizers[$property];
+            }
+            self::$normalizerCache[$key] = $normalizers;
         }
         return self::$normalizerCache[$key];
     }
@@ -267,7 +288,15 @@ abstract class Model implements Arrayable {
     final private function getCachedSanitizers() {
         $key = get_class($this);
         if (!isset(self::$sanitizerCache[$key])) {
-            self::$sanitizerCache[$key] = $this->getSanitizers();
+            $sanitizers = $this->getSanitizers();
+            foreach (static::$propertyAliases as $alias => $property) {
+                foreach (array_keys($sanitizers) as $scheme) {
+                    if (isset($sanitizers[$scheme][$property])) {
+                        $sanitizers[$scheme][$alias] = $sanitizers[$scheme][$property];
+                    }
+                }
+            }
+            self::$sanitizerCache[$key] = $sanitizers;
         }
         return self::$sanitizerCache[$key];
     }

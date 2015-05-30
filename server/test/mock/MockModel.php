@@ -34,6 +34,12 @@ class MockModel extends \Tudu\Core\Data\Model {
         ];
     }
     
+    protected static $propertyAliases = [
+        'first_name' => 'name',
+        'middle_name' => 'name',
+        'last_name' => 'name'
+    ];
+    
     public static function getNormalizersMethodCallCount() {
         return self::$getNormalizersCallCount;
     }

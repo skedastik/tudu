@@ -241,10 +241,50 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
         $model->getSanitizedCopy('name-only');
     }
     
+    public function testSanitizingAModelUsingANonexistentSchemeShouldThrowAnException() {
+        $model = new MockModel([]);
+        $model->normalize();
+        $this->setExpectedException('\Tudu\Core\TuduException');
+        $model->getSanitizedCopy('nonexistent-scheme');
+    }
+    
     public function testUsingANonexistentSanitizationSchemeShouldThrowAnException() {
         $model = new MockModel([]);
         $this->setExpectedException('\Tudu\Core\TuduException');
         $model->getSanitizedCopy('nonexistent-scheme');
+    }
+    
+    public function testPropertyAliasesShouldAlsoBeNormalized() {
+        $data = [
+            'first_name' => "   Johnny   \t",
+            'middle_name' => "\n   Comme   ",
+            'last_name' => "   Lately    ",
+        ];
+        $mockModel = new MockModel($data);
+        $mockModel->normalize();
+        $expected = [
+            'first_name' => 'Johnny',
+            'middle_name' => 'Comme',
+            'last_name' => 'Lately',
+        ];
+        $this->assertSame($expected, $mockModel->asArray());
+    }
+    
+    public function testPropertyAliasesShouldAlsoBeSanitized() {
+        $data = [
+            'first_name' => '<a href="#" >Johnny</a><br />',
+            'middle_name' => 'Comme<a href="#" ></a><br />',
+            'last_name' => '<a href="#" ></a>Lately<br />',
+        ];
+        $mockModel = new MockModel($data);
+        $mockModel->normalize();
+        $sanitizedCopy = $mockModel->getSanitizedCopy('name-only');
+        $expected = [
+            'first_name' => 'Johnny',
+            'middle_name' => 'Comme',
+            'last_name' => 'Lately',
+        ];
+        $this->assertSame($expected, $sanitizedCopy->asArray());
     }
 }
 ?>
