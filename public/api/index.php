@@ -39,7 +39,7 @@ $app->post('/signin', function () use ($app, $db, $basicAuthentication) {
         $app,
         $db,
         $basicAuthentication,
-        new TuduAuthorization($db)
+        new TuduAuthorization()
     ))->process();
 });
 
@@ -55,7 +55,7 @@ $app->put('/users/:user_id', function ($userId) use ($app, $db, $basicAuthentica
         $app,
         $db,
         $basicAuthentication,
-        new TuduAuthorization($db, $userId)
+        new TuduAuthorization($userId)
     ))->process();
 });
 
@@ -80,7 +80,7 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
         $app,
         $db,
         new TuduAuthentication($app, $db, $userId),
-        new TuduAuthorization($db, $userId)
+        new TuduAuthorization($userId)
     ))->process();
 });
 

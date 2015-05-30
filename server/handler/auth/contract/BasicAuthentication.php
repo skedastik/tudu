@@ -80,7 +80,7 @@ final class BasicAuthentication implements Authentication {
             return null;
         }
         
-        return $user->get(User::USER_ID);
+        return $user;
     }
 }
     

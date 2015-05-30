@@ -1,6 +1,8 @@
 <?php
 namespace Tudu\Core\Handler\Auth\Contract;
 
+use \Tudu\Core\Data\Model;
+
 /**
  * HTTP authorization interface.
  * 
@@ -12,9 +14,10 @@ interface Authorization {
     /**
      * Authorize a request.
      * 
-     * @param int $userId ID of user making the request.
+     * @param \Tudu\Core\Data\Model $requester Model of user that made the
+     * request.
      * @return bool TRUE if authorization succeeded, FALSE otherwise.
      */
-    public function authorize($requesterId);
+    public function authorize(Model $requester);
 }
 ?>

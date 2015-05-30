@@ -30,16 +30,17 @@ class TuduAuthorizationTest extends DatabaseTest {
     public function testAuthorizedCredentialsShouldReturn200() {
         // create new user
         $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
+        $user = $this->userRepo->getById($userId);
         
         // simulate authenticated request by above user
-        $this->mockAuthentication->method('authenticate')->willReturn($userId);
+        $this->mockAuthentication->method('authenticate')->willReturn($user);
         
         // simulate POST to resource owned by above user
         $this->app->setHandler(new AuthHandler(
             $this->app,
             $this->db,
             $this->mockAuthentication,
-            new TuduAuthorization($this->db, $userId)
+            new TuduAuthorization($userId)
         ));
         $this->app->run();
         
@@ -50,16 +51,17 @@ class TuduAuthorizationTest extends DatabaseTest {
     public function testAuthenticCredentialsWithoutSpecifyingResourceOwnerShouldReturn200() {
         // create new user
         $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
+        $user = $this->userRepo->getById($userId);
         
         // simulate authenticated request by above user
-        $this->mockAuthentication->method('authenticate')->willReturn($userId);
+        $this->mockAuthentication->method('authenticate')->willReturn($user);
         
         // simulate POST to public resource
         $this->app->setHandler(new AuthHandler(
             $this->app,
             $this->db,
             $this->mockAuthentication,
-            new TuduAuthorization($this->db)
+            new TuduAuthorization()
         ));
         $this->app->run();
         
@@ -70,16 +72,17 @@ class TuduAuthorizationTest extends DatabaseTest {
     public function testAuthenticCredentialsWithDifferentResourceOwnerShouldReturn403() {
         // create new user
         $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
+        $user = $this->userRepo->getById($userId);
         
         // simulate authenticated request by above user
-        $this->mockAuthentication->method('authenticate')->willReturn($userId);
+        $this->mockAuthentication->method('authenticate')->willReturn($user);
         
         // simulate POST to resource owned by different user
         $this->app->setHandler(new AuthHandler(
             $this->app,
             $this->db,
             $this->mockAuthentication,
-            new TuduAuthorization($this->db, -1)
+            new TuduAuthorization(-1)
         ));
         $this->app->run();
         
@@ -90,16 +93,17 @@ class TuduAuthorizationTest extends DatabaseTest {
     public function testInactiveUserShouldReturn403() {
         // create new user without auto-confirming (status will not be "active")
         $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1');
+        $user = $this->userRepo->getById($userId);
     
         // simulate authenticated request by above user
-        $this->mockAuthentication->method('authenticate')->willReturn($userId);
+        $this->mockAuthentication->method('authenticate')->willReturn($user);
     
         // simulate POST to resource owned by above user
         $this->app->setHandler(new AuthHandler(
             $this->app,
             $this->db,
             $this->mockAuthentication,
-            new TuduAuthorization($this->db, $userId)
+            new TuduAuthorization($userId)
         ));
         $this->app->run();
     

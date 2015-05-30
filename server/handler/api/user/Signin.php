@@ -19,11 +19,11 @@ final class Signin extends \Tudu\Core\Handler\API {
     protected function post() {
         $this->negotiateContentType();
         
-        $userId = $this->app->getContext()[Auth::AUTHENTICATED_ID];
+        $user = $this->app->getContext()[Auth::AUTHENTICATED_USER_MODEL];
         $tokenRepo = new Repository\AccessToken($this->db);
         $tokenString = AccessToken::generateTokenString();
         $result = $tokenRepo->createAccessToken(
-            $userId,
+            $user->get('user_id'),
             $tokenString,
             'login',
             Conf::ACCESS_TOKEN_TTL,
