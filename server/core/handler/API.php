@@ -3,7 +3,6 @@ namespace Tudu\Core\Handler;
 
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
-use \Tudu\Core\Arrayable;
 use \Tudu\Core\Error;
 use \Tudu\Core\Data\Model;
 use \Tudu\Core\MediaType;
