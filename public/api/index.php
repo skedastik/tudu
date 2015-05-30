@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../server/autoload.php';
 
 use \Tudu\Conf\Conf;
+use \Tudu\Core\Logger;
 use \Tudu\Handler;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
@@ -10,6 +11,9 @@ use \Tudu\Handler\Auth\Contract\TuduAuthentication;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 use \Tudu\Data\Model\User;
 use \Tudu\Data\Model\Task;
+
+Logger::setInstance(new \Katzgrau\KLogger\Logger(Conf::LOG_PATH, Conf::LOG_LEVEL));
+User::setPasswordDelegate(new \Tudu\Delegate\PHPass());
 
 $db = new \Tudu\Core\Data\PgSQLConnection([
     'host'     => Conf::DB_HOST,
@@ -21,7 +25,6 @@ $db = new \Tudu\Core\Data\PgSQLConnection([
 $app = new \Tudu\Delegate\Slim(new \Slim\Slim());
 $app->addEncoder(new \Tudu\Core\Encoder\JSON());
 
-User::setPasswordDelegate(new \Tudu\Delegate\PHPass());
 $basicAuthentication = new BasicAuthentication($db);
 
 // User URIs -------------------------------------------------------------------

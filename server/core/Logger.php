@@ -1,8 +1,8 @@
 <?php
 namespace Tudu\Core;
 
-use \Katzgrau\KLogger\Logger as KLogger;
 use \Tudu\Conf\Conf;
+use \Psr\Log\LoggerInterface;
 
 /**
  * A PSR3-compliant logger singleton. Get or set an instance and proceed to log!
@@ -27,7 +27,7 @@ use \Tudu\Conf\Conf;
  */
 class Logger {
     
-    private static $instance = NULL;
+    private static $instance = null;
 
     private function __construct() {}
         
@@ -36,8 +36,8 @@ class Logger {
      * @param \Psr\Log\LoggerInterface $logger An instance of a PSR3-compliant
      * logger implementation.
      */
-    public static function setInstance(\Psr\Log\LoggerInterface $logger) {
-        if (self::$instance !== NULL) {
+    public static function setInstance(LoggerInterface $logger) {
+        if (self::$instance !== null) {
             throw new Exception('A logger has already been instantiated.');
         }
         self::$instance = $logger;
@@ -49,8 +49,8 @@ class Logger {
      * @return \Katzgrau\KLogger\Logger
      */
     public static function getInstance() {
-        if (self::$instance === NULL) {
-            self::$instance = new KLogger(Conf::LOG_PATH, Conf::LOG_LEVEL);
+        if (self::$instance === null) {
+            throw new Exception('A logger instance has not been set.');
         }
         return self::$instance;
     }
