@@ -107,27 +107,22 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(406, $this->app->getResponseStatus());
     }
     
-    public function testPostReturns415GivenMissingContentType() {
+    public function testPostReturns415GivenNonEmptyRequestBodyWithMissingContentType() {
         $this->app->setRequestMethod('POST');
+        $this->app->setRequestBody('non-empty request body');
         $this->app->run();
         $this->assertEquals(415, $this->app->getResponseStatus());
     }
     
-    public function testPostReturns415GivenUnsupportedContentType() {
-        $this->app->setRequestMethod('POST');
-        $this->app->setRequestHeader('Content-Type', 'text/xml');
-        $this->app->run();
-        $this->assertEquals(415, $this->app->getResponseStatus());
-    }
-    
-    public function testGetNormalizedRequestBodyReturnsNormalizedDataGivenValidRequestBody() {
+    public function testPostReturns415GivenNonEmptyRequestBodyUnsupportedContentType() {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'text/xml');
+        $this->app->setRequestBody('non-empty request body');
         $this->app->run();
         $this->assertEquals(415, $this->app->getResponseStatus());
     }
     
-    public function testGetNormalizedRequestBodyReturns400GivenBadlyFormattedJson() {
+    public function testImportRequestDataReturns400GivenBadlyFormattedJson() {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setRequestBody('Invalid JSON');
@@ -135,7 +130,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(400, $this->app->getResponseStatus());
     }
     
-    public function testGetNormalizedRequestBodyReturns400GivenIncompletePropertyList() {
+    public function testImportRequestDataReturns400GivenIncompletePropertyList() {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setRequestBody('{
@@ -145,7 +140,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(400, $this->app->getResponseStatus());
     }
     
-    public function testGetNormalizedRequestBodyReturns400GivenPropertiesThatFailToValidate() {
+    public function testImportRequestDataReturns400GivenRequestBodyThatFailsToValidate() {
         $this->app->setRequestMethod('POST');
         $this->app->setRequestHeader('Content-Type', 'application/json');
         $this->app->setRequestBody('{
@@ -156,7 +151,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(400, $this->app->getResponseStatus());
     }
     
-    public function testGetNormalizedContextReturnsNormalizedContextGivenValidProperties() {
+    public function testImportRequestDataReturnsNormalizedContextData() {
         $this->app->setContext([
             'name' => '   John Doe   '
         ]);
@@ -168,7 +163,7 @@ class APITest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('John Doe', $responseBody);
     }
     
-    public function testGetNormalizedContextReturns400GivenPropertiesThatFailToValidate() {
+    public function testImportRequestDataReturns400GivenContextDataThatFailsToValidate() {
         $this->app->setContext([
             'name' => 'Jonathan Mynameis Waytoolong Andwillberejected'
         ]);

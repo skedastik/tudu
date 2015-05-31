@@ -51,15 +51,23 @@ class UserEndpointTest extends DatabaseTest {
         $userId = $this->decodeOutputBuffer()[User::USER_ID];
         
         // user should have matching data
-        $user = $this->userRepo->getByID($userId);
+        $user = $this->userRepo->getByID(new User([
+            User::USER_ID => $userId
+        ]));
         $this->assertSame('foo@bar.xyz', $user->get(User::EMAIL));
         $this->assertTrue($this->passwordDelegate->compare($password, $user->get(User::PASSWORD_HASH)));
     }
     
     public function testValidPostToConfirmShouldConfirmExistingUser() {
         // create a new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getByID($userId);
+        $user = new User([
+            USER::EMAIL => 'foo@bar.xyz',
+            USER::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getByID(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // extract signup token from user KVS
         $userKvs = $user->get('kvs');
@@ -81,14 +89,22 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->run();
         
         // user should have "active" status
-        $user = $this->userRepo->getByID($userId);
+        $user = $this->userRepo->getByID(new User([
+            User::USER_ID => $userId
+        ]));
         $this->assertEquals('active', $user->get('status'));
     }
     
     public function testValidPostToSigninShouldReturnAccessToken() {
         // create a new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getByID($userId);
+        $user = new User([
+            USER::EMAIL => 'foo@bar.xyz',
+            USER::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getByID(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // simulate a valid POST to /signin
         $this->app->setRequestMethod('POST');
@@ -105,15 +121,25 @@ class UserEndpointTest extends DatabaseTest {
         
         // token string should match that in database
         $tokenRepo = new Repository\AccessToken($this->db);
-        $accessToken = $tokenRepo->getByUserIDAndTokenString($userId, $tokenString);
+        $token = new AccessToken([
+            AccessToken::USER_ID => $userId,
+            AccessToken::TOKEN_STRING => $tokenString
+        ]);
+        $accessToken = $tokenRepo->getByUserIDAndTokenString($token);
         $this->assertTrue($accessToken instanceof AccessToken);
         $this->assertEquals(200, $this->app->getResponseStatus());
     }
     
     public function testMultipleValidPostsToSigninShouldSucceed() {
         // create a new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getByID($userId);
+        $user = new User([
+            USER::EMAIL => 'foo@bar.xyz',
+            USER::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getByID(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // simulate two valid POSTs to /signin
         for ($i = 0; $i < 2; $i++) {

@@ -7,6 +7,7 @@ use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
 use \Tudu\Handler\Auth\Contract\TuduAuthorization;
 use \Tudu\Core\Encoder;
+use \Tudu\Data\Model\User;
 
 class TuduAuthorizationTest extends DatabaseTest {
     
@@ -29,8 +30,14 @@ class TuduAuthorizationTest extends DatabaseTest {
     
     public function testAuthorizedCredentialsShouldReturn200() {
         // create new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getById($userId);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getById(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // simulate authenticated request by above user
         $this->mockAuthentication->method('authenticate')->willReturn($user);
@@ -50,8 +57,14 @@ class TuduAuthorizationTest extends DatabaseTest {
     
     public function testAuthenticCredentialsWithoutSpecifyingResourceOwnerShouldReturn200() {
         // create new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getById($userId);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getById(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // simulate authenticated request by above user
         $this->mockAuthentication->method('authenticate')->willReturn($user);
@@ -71,8 +84,14 @@ class TuduAuthorizationTest extends DatabaseTest {
     
     public function testAuthenticCredentialsWithDifferentResourceOwnerShouldReturn403() {
         // create new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1', true);
-        $user = $this->userRepo->getById($userId);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->getById(new User([
+            USER::USER_ID => $userId,
+        ]));
         
         // simulate authenticated request by above user
         $this->mockAuthentication->method('authenticate')->willReturn($user);
@@ -92,8 +111,14 @@ class TuduAuthorizationTest extends DatabaseTest {
     
     public function testInactiveUserShouldReturn403() {
         // create new user without auto-confirming (status will not be "active")
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'password_hash', '127.0.0.1');
-        $user = $this->userRepo->getById($userId);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1');
+        $user = $this->userRepo->getById(new User([
+            USER::USER_ID => $userId,
+        ]));
     
         // simulate authenticated request by above user
         $this->mockAuthentication->method('authenticate')->willReturn($user);

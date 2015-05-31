@@ -15,25 +15,12 @@ final class Confirm extends \Tudu\Core\Handler\API {
     }
     
     protected function post() {
-        $user = new User();
-        $data = $this->getNormalizedRequestBody($user, [
+        $user = $this->importRequestData(new User(), [
+            User::USER_ID,
             User::SIGNUP_TOKEN
         ]);
-        
-        $context = $this->getNormalizedContext([
-            User::USER_ID => $user
-        ]);
-        
         $userRepo = new Repository\User($this->db);
-        $result = $userRepo->confirmUser(
-            $context[User::USER_ID],
-            $data[User::SIGNUP_TOKEN],
-            $this->app->getRequestIp()
-        );
-        if ($result instanceof Error) {
-            $this->sendError($result);
-        }
-        
+        $result = $userRepo->confirmUser($user, $this->app->getRequestIp());        
         $this->app->setResponseStatus(204);
     }
 }

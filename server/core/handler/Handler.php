@@ -94,14 +94,20 @@ abstract class Handler {
     }
     
     /**
-     * Decode the request body.
+     * Decode the request body into a key/value array of data.
      * 
-     * If request body's content type is not supported, processing halts
-     * immediately and an error response is sent.
+     * If request body is empty, an empty array is returned.
+     * 
+     * If request body's content type is not supported, a client exception is
+     * thrown.
      * 
      * @return array $data Request body data as a key/value array.
      */
     final protected function decodeRequestBody() {
+        if (empty($this->app->getRequestBody())) {
+            return [];
+        }
+        
         $mediaType = $this->app->getRequestHeader('Content-Type');
         if (is_null($mediaType)) {
             $description = 'Request "Content-Type" header is missing. See context for a list of supported media types.';

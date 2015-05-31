@@ -5,9 +5,9 @@ use \Tudu\Test\Mock\MockApp;
 use \Tudu\Test\Integration\Database\DatabaseTest;
 use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth as AuthHandler;
-use \Tudu\Delegate\PHPass;
 use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Core\Encoder;
+use \Tudu\Data\Model\User;
 
 class BasicAuthenticationTest extends DatabaseTest {
     
@@ -18,18 +18,20 @@ class BasicAuthenticationTest extends DatabaseTest {
         ob_start();
         $this->app = new MockApp();
         $this->app->addEncoder(new Encoder\JSON());
-        $this->passwordDelegate = new PHPass();
         $this->userRepo = new Repository\User($this->db);
     }
     
     public function testValidCredentialsUsingUserIdShouldReturn200() {
         // create a new user
         $password = 'test_password';
-        $passwordHash = $this->passwordDelegate->computeHash($password);
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', $passwordHash, '127.0.0.1', true);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => $password
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
+        $basicAuthentication = new BasicAuthentication($this->db);
         $this->app->setRequestMethod('POST');
         $credentials = BasicAuthentication::encodeCredentials($userId, $password);
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.$credentials);
@@ -44,17 +46,23 @@ class BasicAuthenticationTest extends DatabaseTest {
         $this->assertEquals(200, $this->app->getResponseStatus());
     }
     
+    /**
+     * @group todo
+     */
     public function testValidCredentialsUsingEmailShouldReturn200() {
         // create a new user
         $email = 'foo@bar.xyz';
         $password = 'test_password';
-        $passwordHash = $this->passwordDelegate->computeHash($password);
-        $userId = $this->userRepo->signupUser($email, $passwordHash, '127.0.0.1', true);
+        $user = new User([
+            User::EMAIL => $email,
+            User::PASSWORD => $password
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
+        $basicAuthentication = new BasicAuthentication($this->db);
         $this->app->setRequestMethod('POST');
-        $credentials = BasicAuthentication::encodeCredentials($userId, $password);
+        $credentials = BasicAuthentication::encodeCredentials($email, $password);
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.$credentials);
         $this->app->setHandler(new AuthHandler(
             $this->app,
@@ -69,12 +77,16 @@ class BasicAuthenticationTest extends DatabaseTest {
     
     public function testInvalidCredentialsShouldReturn401() {
         // create a new user
-        $userId = $this->userRepo->signupUser('foo@bar.xyz', 'test_password', '127.0.0.1', true);
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'test_password'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
 
         // simulate a POST to /signin with basic authentication
-        $basicAuthentication = new BasicAuthentication($this->db, $this->passwordDelegate);
+        $basicAuthentication = new BasicAuthentication($this->db);
         $this->app->setRequestMethod('POST');
-        $credentials = BasicAuthentication::encodeCredentials($userId, ':wrong_password');
+        $credentials = BasicAuthentication::encodeCredentials($userId, 'wrong_password');
         $this->app->setRequestHeader('Authorization', $basicAuthentication->getScheme().' '.$credentials);
         $this->app->setHandler(new AuthHandler(
             $this->app,

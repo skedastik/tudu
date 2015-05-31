@@ -31,7 +31,9 @@ final class User extends Model {
             self::PASSWORD => Transform::Convert()->to()->string()
                            -> then(Validate::String()->length()->from(8))
                            -> then(Transform::Password()->with(self::getPasswordDelegate()))
-                           -> then(Transform::Description()->to('Password'))
+                           -> then(Transform::Description()->to('Password')),
+            
+            self::SIGNUP_TOKEN => Transform::Convert()->to()->string()
         ];
     }
     

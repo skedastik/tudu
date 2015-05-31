@@ -3,6 +3,7 @@ namespace Tudu\Handler\Api\User;
 
 use \Tudu\Conf\Conf;
 use \Tudu\Core\Exception;
+use \Tudu\Data\Model\User;
 use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Repository;
 use \Tudu\Core\Handler\Auth\Auth;
@@ -20,22 +21,20 @@ final class Signin extends \Tudu\Core\Handler\API {
         $this->negotiateContentType();
         
         $user = $this->app->getContext(Auth::AUTHENTICATED_USER_MODEL);
-        $tokenRepo = new Repository\AccessToken($this->db);
         $tokenString = AccessToken::generateTokenString();
+        $token = new AccessToken([
+            AccessToken::USER_ID => $user->get(User::USER_ID),
+            AccessToken::TOKEN_STRING => $tokenString
+        ]);
+        
+        $tokenRepo = new Repository\AccessToken($this->db);
         $result = $tokenRepo->createAccessToken(
-            $user->get('user_id'),
-            $tokenString,
+            $token,
             'login',
             Conf::ACCESS_TOKEN_TTL,
             true,
             $this->app->getRequestIp()
         );
-        if ($result instanceof Error) {
-            $logger = Logger::getInstance();
-            $errDescription = 'Error creating access token during user sign-in.';
-            $logger->error($errDescription, $result->asArray());
-            throw new \Tudu\Core($errDescription);
-        }
         
         $this->renderBody([
             AccessToken::TOKEN_STRING => $tokenString,

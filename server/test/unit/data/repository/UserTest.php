@@ -14,24 +14,22 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     public function testGetByIDShouldProduceNormalizedModel() {
         $mockResult = [[
             User::USER_ID => '123',
-            User::EMAIL   => "  foo@bar.xyz  \t"
-        ]];
-        $expected = [
-            User::USER_ID => 123,
             User::EMAIL   => 'foo@bar.xyz'
-        ];
+        ]];
         $this->db->method('query')->willReturn($mockResult);
-        $user = $this->repo->getByID(123);
-        $this->assertTrue($user instanceof User);
+        $user = $this->repo->getByID(new User([
+            User::USER_ID => 123
+        ]));
         $this->assertTrue($user->isNormalized());
-        $this->assertSame($expected, $user->asArray());
     }
     
     public function testGetByIDShouldGenerateResourceNotFoundErrorIfQueryFails() {
         $this->db->method('query')->willReturn(false);
         $id = 123;
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->repo->getByID($id);
+        $this->repo->getByID(new User([
+            User::USER_ID => 123
+        ]));
     }
 }
 ?>

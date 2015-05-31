@@ -11,33 +11,38 @@ use \Tudu\Core\Exception;
  * error occurs.
  */
 abstract class Repository {
+
     protected $db;
-    
+    protected $stagedModel;
+ 
     public function __construct(DbConnection $db) {
         $this->db = $db;
     }
     
     /**
-     * Call this function from fetch methods to normalize Model objects prior to
-     * returning them.
+     * Attempt to normalize a model object, throwing a Validation exception if
+     * model is invalid.
      * 
-     * @param \Tudu\Core\Data\Model $model Model to normalize.
-     * @return \Tudu\Core\Data\Model A normalized Model object.
+     * Use this method to ensure that all untrusted data passed to a repository
+     * method is normalized. Subclass methods should never accept raw arguments
+     * from an untrusted source.
+     * 
+     * @param \Tudu\Core\Data\Model $model
      */
-    final protected function prenormalize($model) {
+    protected function normalize(Model $model) {
         $errors = $model->normalize();
-        if (is_null($errors)) {
-            return $model;
+        if (!is_null($errors)) {
+            throw new Exception\Validation(null, $errors, 400);
         }
-        throw new Exception\Internal('Model exported from repository has validation errors.');
+        return $model;
     }
     
     /**
-     * Fetch a single Model with the given ID.
+     * Fetch a single model with matching ID.
      * 
-     * @param int $id Model ID.
-     * @return mixed A Model or Error object.
+     * @param \Tudu\Core\Data\Model $model Model to match against.
+     * @return \Tudu\Core\Data\Model A normalized model populated with data.
      */
-    abstract public function getByID($id);
+    abstract public function getByID(Model $model);
 }
 ?>

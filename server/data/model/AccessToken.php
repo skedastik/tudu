@@ -19,7 +19,9 @@ final class AccessToken extends Model {
         return [
             self::TOKEN_ID => Transform::Convert()->to()->integer(),
             
-            self::USER_ID => Transform::Convert()->to()->integer()
+            self::USER_ID => Transform::Convert()->to()->integer(),
+            
+            self::TOKEN_STRING => Transform::Convert()->to()->string()
         ];
     }
     

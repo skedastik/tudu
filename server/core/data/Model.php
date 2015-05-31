@@ -23,9 +23,14 @@ abstract class Model implements Arrayable {
      * Constructor.
      * 
      * @param array $properties (optional) Key/value properties array.
+     * @param bool $prenormalized (optional) Pass TRUE to mark model as
+     * normalized upon instantiation. This should only be done if you are
+     * fetching data from a trusted source such as the database. Defaults to
+     * FALSE.
      */
-    final public function __construct($properties = []) {
+    final public function __construct($properties = [], $prenormalized = false) {
         $this->fromArray($properties);
+        $this->isNormalized = $prenormalized;
     }
     
     /**
@@ -149,6 +154,11 @@ abstract class Model implements Arrayable {
      * that do not validate will not have transformations applied.
      */
     final public function normalize() {
+        /**
+         * TODO: It may be worthwhile to track normalization per-property as
+         * well as per-model to avoid repeated normalizations. Something to
+         * consider down the road.
+         */
         if (!$this->isNormalized) {
             $normalizers = self::getCachedNormalizers();
             $errors = $this->applyPropertyFunctors($normalizers);
@@ -248,10 +258,9 @@ abstract class Model implements Arrayable {
      */
     final private function applyPropertyFunctors($functors) {
         $errors = [];
-        
-        foreach ($functors as $property => $functor) {
-            if (isset($this->properties[$property])) {
-                $result = $functor->execute($this->properties[$property]);
+        foreach ($this->properties as $property => $value) {
+            if (isset($functors[$property])) {
+                $result = $functors[$property]->execute($value);
                 if ($result instanceof Sentinel) {
                     // error encountered, extract it from the sentinel
                     $errors[$property] = $result->getValue();
@@ -261,7 +270,6 @@ abstract class Model implements Arrayable {
                 }
             }
         }
-        
         return count($errors) === 0 ? null : $errors;
     }
     

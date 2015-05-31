@@ -102,65 +102,31 @@ abstract class API extends Handler {
     }
     
     /**
-     * Decode the request body into normalized model data.
+     * Import data from request body and application context into a Model
+     * object.
      * 
-     * If the request body is valid, its data is normalized and returned as a
-     * key/value array.
+     * Before being imported into a Model object, body data and application
+     * context are merged into a single array with application context taking
+     * precedence.
      * 
-     * The request body is considered invalid if the resource it represents is
-     * missing any of the given properties, or if the properties themselves fail
-     * to validate. In such cases, processing halts and an error response is
-     * automatically generated.
+     * You may optionally specify required properties. If any of these
+     * properties are missing from the merged data, a Client exception is
+     * thrown.
      * 
-     * @param \Tudu\Core\Data\Model $model Model for normalizing data.
-     * @param array $requiredProperties Array of properties.
-     * @return array Key/value array of normalized model data.
+     * @param \Tudu\Core\Data\Model $model
+     * @param array $requiredProperties
+     * @return \Tudu\Core\Data\Model
      */
-    protected function getNormalizedRequestBody($model, $requiredProperties) {
-        $data = $this->decodeRequestBody();
+    protected function importRequestData($model, $requiredProperties) {
+        $bodyData = $this->decodeRequestBody();
+        $appContext = $this->app->getContext();
+        $data = array_merge($bodyData, $appContext);
         $model->fromArray($data);
-        
         if (!$model->hasProperties($requiredProperties)) {
             $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
             throw new Exception\Client('Request body is missing listed properties.', $missingProperties, 400);
         }
-        
-        $errors = $model->normalize();
-        if (!is_null($errors)) {
-            throw new Exception\Validation(null, $errors, 400);
-        }
-        
-        return $model->asArray();
-    }
-    
-    /**
-     * Similar to `getNormalizedRequestBody`, but for application context data.
-     * 
-     * If application context data is valid, it is normalized and returned as
-     * another key/value array.
-     * 
-     * Context data is considered invalid if any of its properties fail to
-     * validate by a corresponding Model object.
-     * 
-     * @param array $propertyNormalizers Key/value array where keys are
-     * properties and values are Model objects used to normalize the
-     * corresponding properties.
-     * @return array Key/value array of normalized context data.
-     */
-    protected function getNormalizedContext($propertyNormalizers) {
-        $appContext = $this->app->getContext();
-        $context = [];
-        foreach ($propertyNormalizers as $property => $model) {
-            $model->fromArray([
-                $property => $appContext[$property]
-            ]);
-            $errors = $model->normalize();
-            if (!is_null($errors)) {
-                throw new Exception\Validation(null, $errors, 400);
-            }
-            $context[$property] = $model->get($property);
-        }
-        return $context;
+        return $model;
     }
 }
 
