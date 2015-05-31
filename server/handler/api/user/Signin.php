@@ -30,7 +30,7 @@ final class Signin extends \Tudu\Core\Handler\API {
         $tokenRepo = new Repository\AccessToken($this->db);
         $result = $tokenRepo->createAccessToken(
             $token,
-            'login',
+            AccessToken::TYPE_LOGIN,
             Conf::ACCESS_TOKEN_TTL,
             true,
             $this->app->getRequestIp()

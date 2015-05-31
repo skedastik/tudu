@@ -15,6 +15,9 @@ final class AccessToken extends Model {
     const TOKEN_STRING = 'token_string';
     const TTL          = 'ttl';
     
+    // access token types
+    const TYPE_LOGIN = 'login';
+    
     protected function getNormalizers() {
         return [
             self::TOKEN_ID => Transform::Convert()->to()->integer(),
