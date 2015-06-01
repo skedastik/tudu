@@ -17,7 +17,6 @@ class Client extends \Exception implements Arrayable {
     const KEY_ERROR            = 'error';
     const KEY_DESCRIPTION      = 'description';
     const KEY_CONTEXT          = 'context';
-    const KEY_HTTP_STATUS_CODE = 'http status code';
     
     protected $description;
     protected $context;
@@ -59,9 +58,6 @@ class Client extends \Exception implements Arrayable {
         }
         if (!is_null($this->context)) {
             $error[self::KEY_CONTEXT] = $this->context;
-        }
-        if (!is_null($this->httpStatusCode)) {
-            $error[self::KEY_HTTP_STATUS_CODE] = $this->httpStatusCode;
         }
         return $error;
     }
