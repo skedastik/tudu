@@ -77,11 +77,6 @@ class Auth extends \Tudu\Core\Handler\Handler {
             throw new Exception\Auth('User is not authorized to access this resource.', null, 403);
         }
         
-        /**
-         * TODO: Reject non-secure requests, possibly emitting a warning and/or
-         * revoking access tokens if user sends unencrypted credentials.
-         */
-        
         // pass authenticated user as context to next handler
         $this->app->setContext([self::AUTHENTICATED_USER_MODEL => $user]);
         $this->app->pass();
