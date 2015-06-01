@@ -12,6 +12,8 @@ use \Tudu\Core\MediaType;
  */
 abstract class API extends Handler {
     
+    private $model;
+    
     /**
      * Handle GET requests on this endpoint. Override for custom behavior.
      */
@@ -87,6 +89,12 @@ abstract class API extends Handler {
     }
     
     /**
+     * Return an empty instance of the Model object representing the resource
+     * at this API endpoint.
+     */
+    abstract protected function getModel();
+    
+    /**
      * Set "Allow" header.
      */
     private function setAllowHeader() {
@@ -114,15 +122,16 @@ abstract class API extends Handler {
      * thrown.
      * 
      * @param \Tudu\Core\Data\Model $model
-     * @param array $requiredProperties
+     * @param array $requiredProperties (optional) Array of required properties.
      * @return \Tudu\Core\Data\Model
      */
-    protected function importRequestData($model, $requiredProperties) {
+    protected function importRequestData(array $requiredProperties = null) {
         $bodyData = $this->decodeRequestBody();
         $appContext = $this->app->getContext();
         $data = array_merge($bodyData, $appContext);
+        $model = $this->getModel();
         $model->fromArray($data);
-        if (!$model->hasProperties($requiredProperties)) {
+        if (!empty($requiredProperties) && !$model->hasProperties($requiredProperties)) {
             $missingProperties = array_values(array_diff($requiredProperties, array_keys($data)));
             throw new Exception\Client('Request body is missing listed properties.', $missingProperties, 400);
         }

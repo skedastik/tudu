@@ -16,9 +16,13 @@ final class MockApiHandler extends Handler\API {
         return 'POST';
     }
     
+    protected function getModel() {
+        return new MockModel();
+    }
+    
     protected function post() {
         $this->negotiateContentType();
-        $model = $this->importRequestData(new MockModel(), [
+        $model = $this->importRequestData([
             'name',
             'email'
         ]);
@@ -28,7 +32,7 @@ final class MockApiHandler extends Handler\API {
     }
     
     protected function put() {
-        $model = $this->importRequestData(new MockModel(), [
+        $model = $this->importRequestData([
             'name'
         ]);
         $mockRepo = new MockRepository($this->db);

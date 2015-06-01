@@ -9,7 +9,7 @@ use \Tudu\Core\Exception;
 /**
  * Request handler for /users/
  */
-final class Users extends \Tudu\Core\Handler\API {
+final class Users extends Endpoint {
     
     protected function _getAllowedMethods() {
         return 'POST';
@@ -21,7 +21,7 @@ final class Users extends \Tudu\Core\Handler\API {
     protected function post() {
         $this->negotiateContentType();
         
-        $user = $this->importRequestData(new User(), [
+        $user = $this->importRequestData([
             User::EMAIL,
             User::PASSWORD
         ]);

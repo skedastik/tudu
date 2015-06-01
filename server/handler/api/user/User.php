@@ -8,7 +8,7 @@ use \Tudu\Core\Handler\Auth\Auth;
 /**
  * Request handler for /users/:user_id
  */
-final class User extends \Tudu\Core\Handler\API {
+final class User extends Endpoint {
     
     protected function _getAllowedMethods() {
         return 'PUT';
@@ -17,19 +17,18 @@ final class User extends \Tudu\Core\Handler\API {
     protected function put() {
         $this->negotiateContentType();
         
-        $userModel = new Model\User();
-        $data = $this->getNormalizedRequestBody($userModel, [
-            Model\User::EMAIL
-        ]);
+        $user = $this->importRequestData();
+        $newEmail = $user->get(Model\User::EMAIL);
+        $newPassword = $user->get(Model\User::PASSWORD);
         
         $user = $this->getContext(Auth::AUTHENTICATED_USER_MODEL);
         $userRepo = new Repository\User($this->db);
         
-        $email = $data[Model\User::EMAIL];
-        if ($email != $user->get('email')) {
+        // update email address if it has changed
+        if ($newEmail != $user->get('email')) {
             $userRepo->setUserEmail(
                 $user->get('user_id'),
-                $email,
+                $newEmail,
                 $this->app->getRequestIp()
             );
         }

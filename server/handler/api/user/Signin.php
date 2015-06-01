@@ -11,7 +11,7 @@ use \Tudu\Core\Handler\Auth\Auth;
 /**
  * Request handler for /users/:user_id/signin
  */
-final class Signin extends \Tudu\Core\Handler\API {
+final class Signin extends Endpoint {
     
     protected function _getAllowedMethods() {
         return 'POST';

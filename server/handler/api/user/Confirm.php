@@ -8,14 +8,14 @@ use \Tudu\Data\Repository;
 /**
  * Request handler for /users/:user_id/confirm
  */
-final class Confirm extends \Tudu\Core\Handler\API {
+final class Confirm extends Endpoint {
     
     protected function _getAllowedMethods() {
         return 'POST';
     }
     
     protected function post() {
-        $user = $this->importRequestData(new User(), [
+        $user = $this->importRequestData([
             User::USER_ID,
             User::SIGNUP_TOKEN
         ]);
