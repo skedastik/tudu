@@ -10,6 +10,7 @@ use \Tudu\Core\Data\Validate\Validate;
  */
 final class AccessToken extends Model {
     
+    // column/field names
     const TOKEN_ID     = 'token_id';
     const USER_ID      = 'user_id';
     const TOKEN_STRING = 'token_string';
@@ -18,6 +19,7 @@ final class AccessToken extends Model {
     
     // access token types
     const TYPE_LOGIN = 'login';
+    const TYPE_PASSWORD_RESET = 'password_reset';
     
     protected function getNormalizers() {
         return [

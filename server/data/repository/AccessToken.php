@@ -30,21 +30,21 @@ final class AccessToken extends Repository {
      * Create an access token.
      * 
      * @param \Tudu\Core\Data\Model $accessToken Access token model to export
-     * (user ID and token string required).
+     * (user ID, token string, token type, and TTL required).
      * @param string $tokenType Type of access token.
      * @param string $ttl Access token time to live.
      * @param bool $autoRevoke Auto-revoke active access tokens of same type.
      * @param string $ip IP address
      * @return int Token ID.
      */
-    public function createAccessToken(Model $accessToken, $tokenType, $ttl, $autoRevoke, $ip) {
+    public function createAccessToken(Model $accessToken, $autoRevoke, $ip) {
         $result = $this->db->queryValue(
             'select tudu.create_access_token($1, $2, $3, $4, $5, $6);',
             [
                 $accessToken->get(AccessTokenModel::USER_ID),
                 $accessToken->get(AccessTokenModel::TOKEN_STRING),
-                $tokenType,
-                $ttl,
+                $accessToken->get(AccessTokenModel::TOKEN_TYPE),
+                $accessToken->get(AccessTokenModel::TTL),
                 $autoRevoke === true ? 't' : 'f',
                 $ip
             ]
@@ -63,17 +63,16 @@ final class AccessToken extends Repository {
      * Revoke active access tokens of a given type.
      * 
      * @param \Tudu\Core\Data\Model $accessToken Access token model to match
-     * against (user ID required).
-     * @param string $tokenType Type of access token.
+     * against (user ID required and token type required).
      * @param string $ip IP address
      * @return int Number of tokens revoked.
      */
-    public function revokeActiveAccessTokens(Model $accessToken, $tokenType, $ip) {
+    public function revokeActiveAccessTokens(Model $accessToken, $ip) {
         $result = $this->db->queryValue(
             'select tudu.revoke_active_access_tokens($1, $2, $3);',
             [
                 $accessToken->get(AccessTokenModel::USER_ID),
-                $tokenType,
+                $accessToken->get(AccessTokenModel::TOKEN_TYPE),
                 $ip
             ]
         );

@@ -24,17 +24,13 @@ final class Signin extends Endpoint {
         $tokenString = AccessToken::generateTokenString();
         $token = new AccessToken([
             AccessToken::USER_ID => $user->get(User::USER_ID),
-            AccessToken::TOKEN_STRING => $tokenString
+            AccessToken::TOKEN_STRING => $tokenString,
+            AccessToken::TOKEN_TYPE => AccessToken::TYPE_LOGIN,
+            AccessToken::TTL => Conf::ACCESS_TOKEN_TTL
         ]);
         
         $tokenRepo = new Repository\AccessToken($this->db);
-        $result = $tokenRepo->createAccessToken(
-            $token,
-            AccessToken::TYPE_LOGIN,
-            Conf::ACCESS_TOKEN_TTL,
-            true,
-            $this->app->getRequestIp()
-        );
+        $result = $tokenRepo->createAccessToken($token, true, $this->app->getRequestIp());
         
         $this->renderBody([
             AccessToken::TOKEN_STRING => $tokenString,
