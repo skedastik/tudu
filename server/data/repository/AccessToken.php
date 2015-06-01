@@ -108,16 +108,16 @@ final class AccessToken extends Repository {
      * Validate an access token of a given type.
      * 
      * @param \Tudu\Core\Data\Model $accessToken Access token model to validate
-     * (user ID and token string required).
+     * (user ID, token string, and token type required).
      * @return true
      */
     public function validateAccessToken(Model $accessToken) {
-        // TODO: Match access token type.
         $result = $this->db->queryValue(
-            'select tudu.validate_access_token($1, $2);',
+            'select tudu.validate_access_token($1, $2, $3);',
             [
                 $accessToken->get(AccessTokenModel::USER_ID),
-                $accessToken->get(AccessTokenModel::TOKEN_STRING)
+                $accessToken->get(AccessTokenModel::TOKEN_STRING),
+                $accessToken->get(AccessTokenModel::TOKEN_TYPE)
             ]
         );
         switch ($result) {

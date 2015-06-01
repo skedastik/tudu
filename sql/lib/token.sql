@@ -102,21 +102,23 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Validate an access token for a given user.
+ * Validate an access token of a given type for a given user.
  * 
  * Arguments
  *   _user_id       ID of existing user
  *   _token_string  An access token string
+ *   _token_type    Type of access token.
  *  
  * Returns
  *    0 if token is valid
- *   -1 if token/user pair does not exist
+ *   -1 if token/user pair of given token type does not exist
  *   -2 if token was revoked
  *   -3 if token is expired
  */
 create or replace function tudu.validate_access_token(
     _user_id        bigint,
-    _token_string   text
+    _token_string   text,
+    _token_type     varchar
 ) returns integer as $$
 declare
     _status         varchar;
@@ -125,7 +127,7 @@ declare
 begin
     select status, kvs->'ttl', cdate into _status, _ttl, _cdate
     from tudu_access_token
-    where user_id = _user_id and token_string = _token_string;
+    where user_id = _user_id and token_string = _token_string and token_type = _token_type;
     
     if _status is null then
         return -1;

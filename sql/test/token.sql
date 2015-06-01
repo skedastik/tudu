@@ -298,7 +298,7 @@ declare
 begin
     _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login');
-    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string, _access_token.token_type);
 
     if _result <> 0 then
         select assert.fail('should succeed given a valid user/access-token pair within time-to-live') into _message;
@@ -318,7 +318,28 @@ declare
 begin
     _user         := tudu.create_random_user(true);
     perform tudu.create_random_access_token(_user.user_id, 'login');
-    _result       := tudu.validate_access_token(_user.user_id, 'mismatched-token-string');
+    _result       := tudu.validate_access_token(_user.user_id, 'mismatched-token-string', 'login');
+
+    if _result <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
+create or replace function unit_tests.validate_access_token_using_wrong_token_type() returns test_result as $$
+declare
+    _message        test_result;
+    _access_token   tudu_access_token%ROWTYPE;
+    _user           tudu_user%ROWTYPE;
+    _result         integer;
+begin
+    _user         := tudu.create_random_user(true);
+    _access_token := tudu.create_random_access_token(_user.user_id, 'login');
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string, 'wrong-token-type');
 
     if _result <> -1 then
         select assert.fail('should fail') into _message;
@@ -340,7 +361,7 @@ begin
     _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login');
     perform tudu.revoke_active_access_tokens(_user.user_id, 'login');
-    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string, _access_token.token_type);
 
     if _result <> -2 then
         select assert.fail('should fail') into _message;
@@ -362,7 +383,7 @@ begin
     _user         := tudu.create_random_user(true);
     _access_token := tudu.create_random_access_token(_user.user_id, 'login', '1 millisecond');
     update tudu_access_token set cdate = cdate - '1 second'::interval where token_id = _access_token.token_id;
-    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string);
+    _result       := tudu.validate_access_token(_user.user_id, _access_token.token_string, _access_token.token_type);
 
     if _result <> -3 then
         select assert.fail('should fail') into _message;

@@ -13,6 +13,7 @@ final class AccessToken extends Model {
     const TOKEN_ID     = 'token_id';
     const USER_ID      = 'user_id';
     const TOKEN_STRING = 'token_string';
+    const TOKEN_TYPE   = 'token_type';
     const TTL          = 'ttl';
     
     // access token types

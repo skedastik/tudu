@@ -76,7 +76,8 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     public function testValidateAccessTokenShouldSucceedGivenValidInputs() {
         $model = new AccessToken([
             AccessToken::USER_ID => $this->user->get(User::USER_ID),
-            AccessToken::TOKEN_STRING => 'token_string'
+            AccessToken::TOKEN_STRING => 'token_string',
+            AccessToken::TOKEN_TYPE => AccessToken::TYPE_LOGIN
         ]);
         $this->tokenRepo->createAccessToken($model, AccessToken::TYPE_LOGIN, '1 week', false, '127.0.0.1');
         $result = $this->tokenRepo->validateAccessToken($model, 'token_string');
@@ -86,7 +87,8 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     public function testValidateAccessTokenShouldFailGivenInvalidTokenString() {
         $model = new AccessToken([
             AccessToken::USER_ID => $this->user->get(User::USER_ID),
-            AccessToken::TOKEN_STRING => 'token_string'
+            AccessToken::TOKEN_STRING => 'token_string',
+            AccessToken::TOKEN_TYPE => AccessToken::TYPE_LOGIN
         ]);
         $this->tokenRepo->createAccessToken($model, AccessToken::TYPE_LOGIN, '1 week', false, '127.0.0.1');
         $model->set(AccessToken::TOKEN_STRING, 'mismatched_token_string');
@@ -97,22 +99,24 @@ class AccessTokenRepositoryTest extends DatabaseTest {
     public function testValidateAccessTokenShouldFailGivenRevokedToken() {
         $model = new AccessToken([
             AccessToken::USER_ID => $this->user->get(User::USER_ID),
-            AccessToken::TOKEN_STRING => 'token_string'
+            AccessToken::TOKEN_STRING => 'token_string',
+            AccessToken::TOKEN_TYPE => AccessToken::TYPE_LOGIN
         ]);
         $this->tokenRepo->createAccessToken($model, AccessToken::TYPE_LOGIN, '1 week', false, '127.0.0.1');
         $this->tokenRepo->revokeActiveAccessTokens($model, AccessToken::TYPE_LOGIN, '127.0.0.1');
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->tokenRepo->validateAccessToken($model, 'token_string');
+        $this->tokenRepo->validateAccessToken($model);
     }
     
     public function testValidateAccessTokenShouldFailGivenExpiredToken() {
         $model = new AccessToken([
             AccessToken::USER_ID => $this->user->get(User::USER_ID),
-            AccessToken::TOKEN_STRING => 'token_string'
+            AccessToken::TOKEN_STRING => 'token_string',
+            AccessToken::TOKEN_TYPE => AccessToken::TYPE_LOGIN
         ]);
         $this->tokenRepo->createAccessToken($model, AccessToken::TYPE_LOGIN, '0 seconds', false, '127.0.0.1');
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->tokenRepo->validateAccessToken($model, 'token_string');
+        $this->tokenRepo->validateAccessToken($model);
     }
 }
 ?>
