@@ -10,8 +10,6 @@ use \Tudu\Core\Exception;
  */
 abstract class Model implements Arrayable {
     
-    const SCHEME_HTML = 'html';
-    
     private static $normalizerCache;
     private static $sanitizerCache;
     

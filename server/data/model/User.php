@@ -2,6 +2,7 @@
 namespace Tudu\Data\Model;
 
 use \Tudu\Core\Data\Model;
+use \Tudu\Data\Model\Scheme;
 use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Core\Data\Validate\Validate;
 use \Tudu\Core\Delegate;
@@ -40,7 +41,7 @@ final class User extends Model {
     
     protected function getSanitizers() {
         return [
-            Model::SCHEME_HTML => [
+            Scheme::HTML => [
                 self::EMAIL => Transform::String()->escapeForHTML()
             ]
         ];
