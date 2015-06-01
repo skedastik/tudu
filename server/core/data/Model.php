@@ -231,6 +231,16 @@ abstract class Model implements Arrayable {
     }
     
     /**
+     * Check if the model has a given property.
+     * 
+     * @param string $property A property.
+     * @return bool TRUE if model has property, FALSE otherwise.
+     */
+    final public function hasProperty($property) {
+        return array_key_exists($property, $this->properties);
+    }
+    
+    /**
      * Check if the model has given properties.
      * 
      * @param array $properties An array of property keys.

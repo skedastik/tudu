@@ -6,7 +6,7 @@ use \Tudu\Core\Data\Repository;
 
 final class MockRepository extends Repository {
     
-    public function getByID(Model $mockModel) {
+    public function fetch(Model $mockModel) {
         $this->normalize($mockModel);
         return $mockModel;
     }

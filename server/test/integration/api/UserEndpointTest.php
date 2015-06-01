@@ -51,7 +51,7 @@ class UserEndpointTest extends DatabaseTest {
         $userId = $this->decodeOutputBuffer()[User::USER_ID];
         
         // user should have matching data
-        $user = $this->userRepo->getByID(new User([
+        $user = $this->userRepo->fetch(new User([
             User::USER_ID => $userId
         ]));
         $this->assertSame('foo@bar.xyz', $user->get(User::EMAIL));
@@ -65,7 +65,7 @@ class UserEndpointTest extends DatabaseTest {
             USER::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getByID(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         
@@ -89,7 +89,7 @@ class UserEndpointTest extends DatabaseTest {
         $this->app->run();
         
         // user should have "active" status
-        $user = $this->userRepo->getByID(new User([
+        $user = $this->userRepo->fetch(new User([
             User::USER_ID => $userId
         ]));
         $this->assertEquals('active', $user->get('status'));
@@ -102,7 +102,7 @@ class UserEndpointTest extends DatabaseTest {
             USER::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getByID(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         
@@ -125,8 +125,6 @@ class UserEndpointTest extends DatabaseTest {
             AccessToken::USER_ID => $userId,
             AccessToken::TOKEN_STRING => $tokenString
         ]);
-        $accessToken = $tokenRepo->getByUserIDAndTokenString($token);
-        $this->assertTrue($accessToken instanceof AccessToken);
         $this->assertEquals(200, $this->app->getResponseStatus());
     }
     
@@ -137,7 +135,7 @@ class UserEndpointTest extends DatabaseTest {
             USER::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getByID(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         

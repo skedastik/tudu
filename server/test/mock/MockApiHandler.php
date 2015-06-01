@@ -23,7 +23,7 @@ final class MockApiHandler extends Handler\API {
             'email'
         ]);
         $mockRepo = new MockRepository($this->db);
-        $mockRepo->getById($model);
+        $mockRepo->fetch($model);
         $this->app->setResponseStatus(201);
     }
     
@@ -32,7 +32,7 @@ final class MockApiHandler extends Handler\API {
             'name'
         ]);
         $mockRepo = new MockRepository($this->db);
-        $mockRepo->getById($model);
+        $mockRepo->fetch($model);
         echo $model->get('name');
     }
     

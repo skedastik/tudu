@@ -9,43 +9,30 @@ use \Tudu\Core\Data\Model;
 final class User extends Repository {
     
     /**
-     * Fetch a single user with matching ID.
+     * Fetch a single user with matching ID or email address.
      * 
      * @param \Tudu\Core\Data\Model $user User model to match against (user ID
-     * required).
+     * OR email address required).
      * @return \Tudu\Core\Data\Model A normalized model populated with data.
      */
-    public function getByID(Model $user) {
+    public function fetch(Model $user) {
         $this->normalize($user);
+        if ($user->hasProperty(UserModel::USER_ID)) {
+            $column = UserModel::USER_ID;
+            $param = $user->get(UserModel::USER_ID);
+        } else {
+            $column = UserModel::EMAIL;
+            $param = $user->get(UserModel::EMAIL);
+        }
         $result = $this->db->query(
-            'select user_id, email, password_hash, kvs, status, edate, cdate from tudu_user where user_id = $1;',
-            [$user->get(UserModel::USER_ID)]
+            'select user_id, email, password_hash, kvs, status, edate, cdate from tudu_user where '.$column.' = $1;',
+            [$param]
         );
         if ($result === false) {
             throw new Exception\Client('User not found.');
         }
         return new UserModel($result[0], true);
     }
-    
-    /**
-     * Fetch a single user with matching email address.
-     * 
-     * @param \Tudu\Core\Data\Model $user User model to match against (email
-     * address required).
-     * @return \Tudu\Core\Data\Model A normalized model populated with data.
-     */
-    public function getByEmail(Model $user) {
-        $this->normalize($user);
-        $result = $this->db->query(
-            'select user_id, email, password_hash, kvs, status, edate, cdate from tudu_user where email = $1;',
-            [$user->get(UserModel::EMAIL)]
-        );
-        if ($result === false) {
-            throw new Exception\Client('User not found.');
-        }
-        return new UserModel($result[0], true);
-    }
-    
     /**
      * Sign up a new user.
      * 

@@ -22,7 +22,7 @@ class AccessTokenRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->userRepo->signupUser($model, '127.0.0.1', true);
-        $this->user = $this->userRepo->getById(new User([
+        $this->user = $this->userRepo->fetch(new User([
             User::USER_ID => $userId,
         ]));
     }

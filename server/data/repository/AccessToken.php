@@ -9,13 +9,13 @@ use \Tudu\Core\Data\Model;
 final class AccessToken extends Repository {
     
     /**
-     * Fetch a single access token with matching ID.
+     * Fetch a single access token with matching token ID.
      * 
      * @param \Tudu\Core\Data\Model $accessToken Access token model to match
      * against (token ID required).
      * @return \Tudu\Core\Data\Model A normalized model populated with data.
      */
-    public function getByID(Model $accessToken) {
+    public function fetch(Model $accessToken) {
         $result = $this->db->query(
             'select token_id, user_id, token_string, token_type, kvs, status, edate, cdate from tudu_access_token where token_id = $1;',
             [$accessToken->get(AccessTokenModel::TOKEN_ID)]
@@ -24,27 +24,6 @@ final class AccessToken extends Repository {
             throw new Exception\Client('Token not found.');
         }
         return new AccessTokenModel($result[0], true);
-    }
-    
-    /**
-     * Fetch a single access token with a given user ID and token string.
-     * 
-     * @param \Tudu\Core\Data\Model $accessToken Access token model to match
-     * against (user ID and token string required).
-     * @return mixed AccessToken model on success, otherwise an Error object.
-     */
-    public function getByUserIDAndTokenString(Model $accessToken) {
-        $result = $this->db->query(
-            'select token_id, user_id, token_string, token_type, kvs, status, edate, cdate from tudu_access_token where user_id = $1 and token_string = $2;',
-            [
-                $accessToken->get(AccessTokenModel::USER_ID),
-                $accessToken->get(AccessTokenModel::TOKEN_STRING)
-            ]
-        );
-        if ($result === false) {
-            throw new Exception\Client('Token not found.');
-        }
-        return new AccessTokenModel($result[0], 0);
     }
     
     /**

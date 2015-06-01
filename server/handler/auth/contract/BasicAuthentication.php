@@ -38,19 +38,10 @@ final class BasicAuthentication implements Authentication {
         $id = $credentials['id'];
         $userRepo = new Repository\User($this->db);
         
-        // TODO: create a get-by-ID-or-email repo method to simplify this logic
-        if (is_numeric($id)) {
-            $model = new User([
-                User::USER_ID => $id
-            ]);
-            $user = $userRepo->getById($model);
-        } else {
-            $model = new User([
-                User::EMAIL => $id
-            ]);
-            $user = $userRepo->getByEmail($model);
-        }
-        
+        $property = is_numeric($id) ? User::USER_ID : User::EMAIL;
+        $user = $userRepo->fetch(new User([
+            $property => $id
+        ]));
         if ($user instanceof Error) {
             return null;
         }

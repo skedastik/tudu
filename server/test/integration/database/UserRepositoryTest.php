@@ -23,40 +23,40 @@ class UserRepositoryTest extends DatabaseTest {
         $user_id = $this->repo->signupUser($user, '127.0.0.1');
     }
     
-    public function testGetByIDShouldSucceedGivenValidID() {
+    public function testFetchShouldSucceedGivenValidID() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
     }
     
-    public function testGetByIDShouldFailGivenNonexistentID() {
+    public function testFetchShouldFailGivenNonexistentID() {
         $this->setExpectedException('\Tudu\Core\Exception\Client');
         $user = new User([
             User::USER_ID => -1
         ]);
-        $this->repo->getByID($user);
+        $this->repo->fetch($user);
     }
     
-    public function testGetByEmailShouldSucceedGivenValidEmail() {
+    public function testFetchShouldSucceedGivenValidEmail() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getByEmail($user);
+        $user = $this->repo->fetch($user);
     }
     
-    public function testGetByEmailShouldFailGivenNonexistentEmail() {
+    public function testFetchShouldFailGivenNonexistentEmail() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->repo->getByEmail($user);
+        $this->repo->fetch($user);
     }
     
     public function testSignupUserShouldCreateUserWithNormalizedData() {
@@ -65,7 +65,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
         $this->assertSame('foo@bar.com', $user->get(User::EMAIL));
@@ -77,7 +77,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
         $this->assertSame('init', $user->get('status'));
@@ -89,7 +89,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1', true);
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
         $this->assertSame('active', $user->get('status'));
@@ -111,7 +111,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
         $tokenString = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
@@ -151,7 +151,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::PASSWORD => 'unlikely_pw_hash'
         ]);
         $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = $this->repo->getById(new User([
+        $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
         $signupToken = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
@@ -210,7 +210,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::EMAIL => " \n  baz@qux.xyz   ",
         ]);
         $this->repo->setUserEmail($user, '127.0.0.1');
-        $user = $this->repo->getByID($user);
+        $user = $this->repo->fetch($user);
         $this->assertSame('baz@qux.xyz', $user->get(User::EMAIL));
     }
     

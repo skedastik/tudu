@@ -35,7 +35,7 @@ class TuduAuthorizationTest extends DatabaseTest {
             User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getById(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         
@@ -62,7 +62,7 @@ class TuduAuthorizationTest extends DatabaseTest {
             User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getById(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         
@@ -89,7 +89,7 @@ class TuduAuthorizationTest extends DatabaseTest {
             User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
-        $user = $this->userRepo->getById(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
         
@@ -116,7 +116,7 @@ class TuduAuthorizationTest extends DatabaseTest {
             User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1');
-        $user = $this->userRepo->getById(new User([
+        $user = $this->userRepo->fetch(new User([
             USER::USER_ID => $userId,
         ]));
     

@@ -38,11 +38,13 @@ abstract class Repository {
     }
     
     /**
-     * Fetch a single model with matching ID.
+     * Fetch a single model with matching information.
+     * 
+     * Exactly which properties are used for matching is up to the implementer.
      * 
      * @param \Tudu\Core\Data\Model $model Model to match against.
      * @return \Tudu\Core\Data\Model A normalized model populated with data.
      */
-    abstract public function getByID(Model $model);
+    abstract public function fetch(Model $model);
 }
 ?>
