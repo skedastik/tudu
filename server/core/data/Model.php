@@ -213,9 +213,10 @@ abstract class Model implements Arrayable {
      * Get value of property.
      * 
      * @param string $property The property.
+     * @return mixed The value. Returns NULL if property has not been set.
      */
     final public function get($property) {
-        return $this->properties[$property];
+        return isset($this->properties[$property]) ? $this->properties[$property] : null;
     }
     
     /**
