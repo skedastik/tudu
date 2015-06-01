@@ -12,6 +12,7 @@ use \Tudu\Core\Exception;
  */
 final class User extends Model {
     
+    // column/field names
     const USER_ID       = 'user_id';
     const EMAIL         = 'email';
     const PASSWORD      = 'password';

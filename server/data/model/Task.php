@@ -10,6 +10,7 @@ use \Tudu\Core\Data\Validate\Validate;
  */
 final class Task extends Model {
     
+    // column/field names
     const TASK_ID = 'task_id';
     
     protected function getNormalizers() {
