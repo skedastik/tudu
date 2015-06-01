@@ -35,6 +35,10 @@ final class MockApiHandler extends Handler\API {
         $mockRepo->getById($model);
         echo $model->get('name');
     }
+    
+    public function publicRenderBody($data) {
+        return parent::renderBody($data);
+    }
 }
 
 ?>

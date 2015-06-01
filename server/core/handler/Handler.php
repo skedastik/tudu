@@ -4,6 +4,7 @@ namespace Tudu\Core\Handler;
 use \Tudu\Core\Exception;
 use \Tudu\Core\Database\DbConnection;
 use \Tudu\Core\Delegate;
+use \Tudu\Core\Arrayable;
 
 /**
  * Request handler base class.
@@ -146,10 +147,9 @@ abstract class Handler {
         }
         if ($data instanceof Arrayable) {
             $data = $data->asArray();
-        } else {
-            $mediaType = $this->app->getResponseHeader('Content-Type');
-            $data = $this->app->getEncoder()->encode($data, $mediaType);
         }
+        $mediaType = $this->app->getResponseHeader('Content-Type');
+        $data = $this->app->getEncoder()->encode($data, $mediaType);
         echo $data;
     }
 }
