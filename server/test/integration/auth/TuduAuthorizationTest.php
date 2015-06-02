@@ -36,7 +36,7 @@ class TuduAuthorizationTest extends DatabaseTest {
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // simulate authenticated request by above user
@@ -63,7 +63,7 @@ class TuduAuthorizationTest extends DatabaseTest {
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // simulate authenticated request by above user
@@ -90,7 +90,7 @@ class TuduAuthorizationTest extends DatabaseTest {
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // simulate authenticated request by above user
@@ -117,7 +117,7 @@ class TuduAuthorizationTest extends DatabaseTest {
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1');
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
     
         // simulate authenticated request by above user
