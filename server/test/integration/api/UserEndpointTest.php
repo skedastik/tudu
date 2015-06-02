@@ -42,8 +42,8 @@ class UserEndpointTest extends DatabaseTest {
             new Handler\Api\User\Users($this->app, $this->db, $this->passwordDelegate)
         );
         $this->app->setRequestBody('{
-            "email": "foo@bar.xyz",
-            "password": "'.$password.'"
+            "'.User::EMAIL.'": "foo@bar.xyz",
+            "'.User::PASSWORD.'": "'.$password.'"
         }');
         $this->app->run();
         
@@ -61,12 +61,12 @@ class UserEndpointTest extends DatabaseTest {
     public function testValidPostToConfirmShouldConfirmExistingUser() {
         // create a new user
         $user = new User([
-            USER::EMAIL => 'foo@bar.xyz',
-            USER::PASSWORD => 'password_hash'
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // extract signup token from user KVS
@@ -84,7 +84,7 @@ class UserEndpointTest extends DatabaseTest {
             new Handler\Api\User\Confirm($this->app, $this->db)
         );
         $this->app->setRequestBody('{
-            "signup_token": "'.$signupToken.'"
+            "'.User::SIGNUP_TOKEN.'": "'.$signupToken.'"
         }');
         $this->app->run();
         
@@ -98,12 +98,12 @@ class UserEndpointTest extends DatabaseTest {
     public function testValidPostToSigninShouldReturnAccessToken() {
         // create a new user
         $user = new User([
-            USER::EMAIL => 'foo@bar.xyz',
-            USER::PASSWORD => 'password_hash'
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // simulate a valid POST to /signin
@@ -131,12 +131,12 @@ class UserEndpointTest extends DatabaseTest {
     public function testMultipleValidPostsToSigninShouldSucceed() {
         // create a new user
         $user = new User([
-            USER::EMAIL => 'foo@bar.xyz',
-            USER::PASSWORD => 'password_hash'
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
         ]);
         $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
         $user = $this->userRepo->fetch(new User([
-            USER::USER_ID => $userId,
+            User::USER_ID => $userId,
         ]));
         
         // simulate two valid POSTs to /signin
@@ -151,6 +151,35 @@ class UserEndpointTest extends DatabaseTest {
             $this->app->run();
             $this->assertEquals(200, $this->app->getResponseStatus());
         }
+    }
+    
+    public function testValidPutToUsersShouldReturn204() {
+        // create a new user
+        $user = new User([
+            User::EMAIL => 'foo@bar.xyz',
+            User::PASSWORD => 'password_hash'
+        ]);
+        $userId = $this->userRepo->signupUser($user, '127.0.0.1', true);
+        $user = $this->userRepo->fetch(new User([
+            User::USER_ID => $userId,
+        ]));
+        
+        // simulate a valid PUT to /users/:user_id
+        $this->app->setRequestMethod('PUT');
+        $this->app->setRequestHeader('Content-Type', 'application/json');
+        $this->app->setContext([
+            User::USER_ID => $userId
+        ]);
+        $this->app->setRequestBody('{
+            "'.User::EMAIL.'": "newfoo@newbar.new",
+            "'.User::PASSWORD.'": "new_password"
+        }');
+        $this->app->setHandler(
+            new Handler\Api\User\User($this->app, $this->db)
+        );
+        $this->app->run();
+        
+        $this->assertEquals(204, $this->app->getResponseStatus());
     }
     
     public function tearDown() {
