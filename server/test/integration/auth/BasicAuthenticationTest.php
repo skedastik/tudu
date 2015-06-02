@@ -46,9 +46,6 @@ class BasicAuthenticationTest extends DatabaseTest {
         $this->assertEquals(200, $this->app->getResponseStatus());
     }
     
-    /**
-     * @group todo
-     */
     public function testValidCredentialsUsingEmailShouldReturn200() {
         // create a new user
         $email = 'foo@bar.xyz';
