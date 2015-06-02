@@ -143,6 +143,29 @@ abstract class App {
     abstract public function setResponseStatus($status);
     
     /**
+     * Get full URI of requested resource.
+     * 
+     * In "http://www.example.com/path/to/resource", the resource URI is
+     * "/path/to/resource".
+     */
+    abstract public function getRequestUri();
+    
+    /**
+     * Get request scheme.
+     * 
+     * In "http://www.example.com/path/to/resource", the scheme is "http".
+     */
+    abstract public function getRequestScheme();
+    
+    /**
+     * Get request host.
+     * 
+     * In "http://www.example.com/path/to/resource", the host is
+     * "example.com".
+     */
+    abstract public function getRequestHost();
+    
+    /**
      * Immediately send an HTTP response as currently formed and end processing.
      */
     abstract public function send();

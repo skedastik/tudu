@@ -51,6 +51,18 @@ final class Slim extends App {
         $this->slim->response->setStatus($status);
     }
     
+    public function getRequestUri() {
+        return $this->slim->request->getRootUri().$this->slim->request->getResourceUri();
+    }
+    
+    public function getRequestScheme() {
+        return $this->slim->request->getScheme();
+    }
+    
+    public function getRequestHost() {
+        return $this->slim->request->getHost();
+    }
+    
     public function send() {
         $this->slim->stop();
     }
