@@ -102,91 +102,64 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Change an existing user's password.
+ * Update an existing user.
  * 
  * Arguments
  *   _user_id       ID of existing user
- *   _new_pw_hash   New password hash
+ *   _new_email     Optional new email address
+ *   _new_pw_hash   Optional new password hash
  *   _ip            Optional IP address
  * 
  * Returns
  *   ID of user on success
  *   -1 if user ID is invalid
+ *   -2 if email address is already linked to another user
  */
-create or replace function tudu.set_user_password_hash(
+create or replace function tudu.update_user(
     _user_id        bigint,
+    _new_email      varchar,
     _new_pw_hash    varchar,
     _ip             inet        default null
 ) returns bigint as $$
-begin
-    select user_id into _user_id from tudu_user where user_id = _user_id;
-    
-    if _user_id is null then
-        return -1;
-    end if;
-    
-    update tudu_user
-    set password_hash = _new_pw_hash,
-        edate         = now()
-    where user_id = _user_id;
-    
-    perform tudu.user_log_add(_user_id, 'set_password_hash', _ip);
-    
-    return _user_id;
-end;
-$$ language plpgsql security definer;
-
-/**
- * Change an existing user's email address.
- * 
- * Arguments
- *   _user_id       ID of existing user
- *   _new_email     Email address
- *   _ip            Optional IP address
- * 
- * Returns
- *   ID of user on success
- *   -1 if user ID is invalid
- *   -2 if email address is identical to current one
- *   -3 if email address is already linked to another user
- */
-create or replace function tudu.set_user_email(
-    _user_id    bigint,
-    _new_email  varchar,
-    _ip         inet        default null
-) returns bigint as $$
 declare
     _email      varchar;
+    _pw_hash    varchar;
 begin
-    _new_email := util.btrim_whitespace(_new_email);
-    select user_id, email into _user_id, _email from tudu_user where user_id = _user_id;
+    if _new_email is not null then
+        _new_email := util.btrim_whitespace(_new_email);
+    end if;
+    
+    select user_id, email, password_hash into _user_id, _email, _pw_hash from tudu_user where user_id = _user_id;
     
     if _user_id is null then
         return -1;
     end if;
     
-    if _email = _new_email then
+    if exists (select 1 from tudu_user where email = _new_email and user_id <> _user_id) then
         return -2;
     end if;
     
-    if exists (select 1 from tudu_user where email = _new_email) then
-        return -3;
-    end if;
-    
     update tudu_user
-    set email = _new_email,
-        edate = now()
+    set email         = coalesce(_new_email, email),
+        password_hash = coalesce(_new_pw_hash, password_hash),
+        edate         = now()
     where user_id = _user_id;
     
-    perform tudu.user_log_add(
-        _user_id,
-        'set_email',
-        _ip,
-        hstore(array[
-            ['old_email', _email],
-            ['new_email', _new_email]
-        ])
-    );
+    if _new_email is not null and _new_email <> _email then
+        perform tudu.user_log_add(
+            _user_id,
+            'change_email',
+            _ip,
+            hstore(array[
+                ['old_email', _email],
+                ['new_email', _new_email]
+            ])
+        );
+    end if;
+    
+    if _new_pw_hash is not null and _new_pw_hash <> _pw_hash then
+        perform tudu.user_log_add(_user_id, 'change_password_hash', _ip);
+    end if;
     
     return _user_id;
 end;

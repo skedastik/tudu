@@ -164,7 +164,7 @@ class UserRepositoryTest extends DatabaseTest {
         $this->repo->confirmUser($user, '127.0.0.1');
     }
     
-    public function testSetUserPasswordHashShouldSucceedGivenValidInputs() {
+    public function testUpdateUserPasswordHashShouldSucceedGivenValidInputs() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
             User::PASSWORD => 'unlikely_pw_hash'
@@ -174,19 +174,19 @@ class UserRepositoryTest extends DatabaseTest {
             User::USER_ID => $userId,
             User::PASSWORD => 'new_pw_hash'
         ]);
-        $this->repo->setUserPasswordHash($user, '127.0.0.1');
+        $this->repo->updateUser($user, '127.0.0.1');
     }
     
-    public function testSetUserPasswordHashShouldFailGivenInvalidUserId() {
+    public function testUpdateUserPasswordHashShouldFailGivenInvalidUserId() {
         $user = new User([
             User::USER_ID => -1,
             User::PASSWORD => 'password'
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->repo->setUserPasswordHash($user, '127.0.0.1');
+        $this->repo->updateUser($user, '127.0.0.1');
     }
     
-    public function testSetUserEmailShouldSucceedGivenValidInput() {
+    public function testUpdateUserEmailShouldSucceedGivenValidInput() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
             User::PASSWORD => 'unlikely_pw_hash'
@@ -196,10 +196,10 @@ class UserRepositoryTest extends DatabaseTest {
             User::USER_ID => $userId,
             User::EMAIL => 'baz@qux.xyz',
         ]);
-        $this->repo->setUserEmail($user, '127.0.0.1');
+        $this->repo->updateUser($user, '127.0.0.1');
     }
     
-    public function testSetUserEmailShouldNormalizeEmail() {
+    public function testUpdateUserEmailShouldNormalizeEmail() {
         $user = new User([
             User::EMAIL => 'foo@bar.com',
             User::PASSWORD => 'unlikely_pw_hash'
@@ -209,35 +209,21 @@ class UserRepositoryTest extends DatabaseTest {
             User::USER_ID => $userId,
             User::EMAIL => " \n  baz@qux.xyz   ",
         ]);
-        $this->repo->setUserEmail($user, '127.0.0.1');
+        $this->repo->updateUser($user, '127.0.0.1');
         $user = $this->repo->fetch($user);
         $this->assertSame('baz@qux.xyz', $user->get(User::EMAIL));
     }
     
-    public function testSetUserEmailShouldFailGivenInvalidUserId() {
+    public function testUpdateUserEmailShouldFailGivenInvalidUserId() {
         $user = new User([
             User::USER_ID => -1,
             User::EMAIL => 'foo@bar.com',
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->repo->setUserEmail($user, '127.0.0.1');
+        $this->repo->updateUser($user, '127.0.0.1');
     }
     
-    public function testSetUserEmailShouldFailGivenIdenticalEmail() {
-        $user = new User([
-            User::EMAIL => 'foo@bar.com',
-            User::PASSWORD => 'unlikely_pw_hash'
-        ]);
-        $userId = $this->repo->signupUser($user, '127.0.0.1');
-        $user = new User([
-            User::USER_ID => $userId,
-            User::EMAIL => 'foo@bar.com',
-        ]);
-        $this->setExpectedException('\Tudu\Core\Exception\Client');
-        $this->repo->setUserEmail($user, '127.0.0.1');
-    }
-    
-    public function testSetUserEmailToAlreadyUsedEmailShouldFail() {
+    public function testUpdateUserEmailToAlreadyUsedEmailShouldFail() {
         $user1 = new User([
             User::EMAIL => 'baz@qux.xyz',
             User::PASSWORD => 'unlikely_pw_hash'
@@ -253,7 +239,7 @@ class UserRepositoryTest extends DatabaseTest {
             User::EMAIL => 'baz@qux.xyz',
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Validation');
-        $this->repo->setUserEmail($user2, '127.0.0.1');
+        $this->repo->updateUser($user2, '127.0.0.1');
     }
 }
 ?>
