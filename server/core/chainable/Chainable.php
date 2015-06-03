@@ -4,9 +4,10 @@ namespace Tudu\Core\Chainable;
 use \Tudu\Core\Exception;
 
 /**
- * Chainable is a base class for function-like objects. These objects have only
- * one purpose: take some input X and produce some output Y. You compose larger
- * functions by chaining multiple instances together using Chainable::then().
+ * Chainable is a base class for function-like objects (or "functors"). These
+ * objects have only one purpose: take some input X and produce some output Y.
+ * You compose larger functions by chaining multiple instances together using
+ * Chainable::then().
  * 
  * To enable clients to tune the behavior of Chainable objects, use options.
  */
@@ -38,21 +39,7 @@ abstract class Chainable {
     }
     
     /**
-     * Initiate processing.
-     * 
-     * @param mixed $data Input data.
-     * @return mixed Output data.
-     */
-    final public function execute($data) {
-        $first = $this;
-        while ($first->prev) {
-            $first = $first->prev;
-        }
-        return $first->preprocess($data);
-    }
-    
-    /**
-     * Preprocessing step.
+     * Begin processing.
      * 
      * If input data is a sentinel, the data is passed to processSentinel().
      * Otherwise, data is passed to process(). The result is then passed to the
@@ -61,7 +48,7 @@ abstract class Chainable {
      * @param mixed $data Input data.
      * @return mixed Output data.
      */
-    final private function preprocess($data) {
+    final public function execute($data) {
         if ($data instanceof Sentinel) {
             $result = $this->processSentinel($data);
         } else {
@@ -97,7 +84,7 @@ abstract class Chainable {
     }
     
     /**
-     * Pass data to the next object in the chain.
+     * Pass data to the next object in the chain for processing.
      * 
      * If this is the last object in the chain, the data is returned as is.
      * 
@@ -108,19 +95,36 @@ abstract class Chainable {
         if (is_null($this->next)) {
             return $data;
         }
-        return $this->next->preprocess($data);
+        return $this->next->execute($data);
     }
     
     /**
      * Chain another Chainable.
      * 
-     * @param \Tudu\Core\Chainable $chainable Chainable instance.
-     * @return \Tudu\Core\Chainable The next object in the chain.
+     * @param \Tudu\Core\Chainable $next Chainable instance.
+     * @return \Tudu\Core\Chainable The Chainable instance passed in.
      */
-    final public function then(Chainable $chainable) {
-        $this->next = $chainable;
-        $chainable->setPrev($this);
-        return $chainable;
+    final public function then(Chainable $next) {
+        $this->next = $next;
+        $next->setPrev($this);
+        return $next;
+    }
+    
+    /**
+     * Return the first Chainable object in a chain.
+     * 
+     * Chains are built using a chain of calls to `then()`, each of which
+     * returns the next object in the chain. In order to `execute()` the entire
+     * chain, you need to get the first object in the chain using this method.
+     * 
+     * @return \Tudu\Core\Chainable First object in chain.
+     */
+    final public function done() {
+        $first = $this;
+        while ($first->prev) {
+            $first = $first->prev;
+        }
+        return $first;
     }
     
     /**

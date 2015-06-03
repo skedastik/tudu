@@ -10,6 +10,9 @@ final class MockApp extends App {
     private $requestHeaders;
     private $requestMethod;
     private $requestBody;
+    private $requestUri;
+    private $requestScheme;
+    private $requestHost;
     private $responseHeaders;
     private $responseStatus;
     private $handler;
@@ -19,6 +22,9 @@ final class MockApp extends App {
         $this->requestHeaders = [];
         $this->requestMethod = null;
         $this->requestBody = null;
+        $requestUri = '';
+        $requestScheme = '';
+        $requestHost = '';
         $this->responseHeaders = [];
         $this->responseStatus = null;
         $this->handler = null;
@@ -68,6 +74,18 @@ final class MockApp extends App {
     
     public function getResponseStatus() {
         return $this->responseStatus;
+    }
+    
+    public function getRequestUri() {
+        return $this->requestUri;
+    }
+    
+    public function getRequestScheme() {
+        return $this->requestScheme;
+    }
+    
+    public function getRequestHost() {
+        return $this->requestHost;
     }
     
     /**

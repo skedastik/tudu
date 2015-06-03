@@ -48,7 +48,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     
     public function testChainingTwoValidatorsShouldWork() {
         $validator = Validate::String()->is()->validEmail()
-                   ->then(Validate::String()->length()->upTo(15));
+                   ->then(Validate::String()->length()->upTo(15))
+                   ->done();
 
         $input = 'valid@email.xyz';
         $this->assertEquals($input, $validator->execute($input));
@@ -67,7 +68,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     public function testChainingThreeValidatorsShouldWork() {
         $validator = Validate::String()->is()->validEmail()
                    ->then(Validate::String()->length()->from(15))
-                   ->then(Validate::String()->length()->upTo(20));
+                   ->then(Validate::String()->length()->upTo(20))
+                   ->done();
 
         $input = 'just_right@valid.xyz';
         $this->assertEquals($input, $validator->execute($input));
@@ -90,7 +92,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     
     public function testTransformThenValidateShouldTransformThenValidateInput() {
         $chain = Transform::Convert()->to()->booleanString()
-               ->then(Validate::String()->length()->upTo(1));
+               ->then(Validate::String()->length()->upTo(1))
+               ->done();
         
         $input = 'truthy';
         $this->assertEquals('t', $chain->execute($input));
@@ -98,8 +101,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
 
     public function testValidateThenTransformShouldValidateThenTransformInput() {
         $chain = Validate::String()->length()->upTo(1)
-               ->then(Transform::Convert()->to()->booleanString());
-        
+               ->then(Transform::Convert()->to()->booleanString())
+               ->done();
         $input = 'truthy';
         $result = $chain->execute($input);
         $this->assertTrue($result instanceof Sentinel);
@@ -108,8 +111,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
 
     public function testTransformThenValidateWithSentinelShouldGenerateAValidationError() {
         $chain = Transform::Convert()->to()->booleanString()
-               ->then(Validate::String()->length()->from(5));
-        
+               ->then(Validate::String()->length()->from(5))
+               ->done();    
         $error = 'not found';
         $result1 = $chain->execute('error expected');
         $result2 = $chain->execute(new Sentinel($error));
@@ -123,8 +126,8 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     
     public function testDescriptionTransformShouldWorkWithValidationChain() {
         $chain = Validate::String()->length()->upTo(15)
-               ->then(Transform::Description()->to('Test string'));
-        
+               ->then(Transform::Description()->to('Test string'))
+               ->done();
         $input = 'valid string';
         $this->assertEquals($input, $chain->execute($input));
         

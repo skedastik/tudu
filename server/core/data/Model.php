@@ -69,7 +69,8 @@ abstract class Model implements Arrayable {
      * validators for normalizing data.
      * 
      * Each key is a model property. Each value is an appropriate chain of
-     * Validate and possibly Transform objects.
+     * Validate and possibly Transform objects. There is no need to call
+     * `done()` on each chain. This is performed automatically.
      * 
      * Example:
      * 
@@ -290,6 +291,9 @@ abstract class Model implements Arrayable {
         $key = get_class($this);
         if (!isset(self::$normalizerCache[$key])) {
             $normalizers = $this->getNormalizers();
+            foreach ($normalizers as $property => $normalizer) {
+                $normalizers[$property] = $normalizers[$property]->done();
+            }
             foreach (static::$propertyAliases as $alias => $property) {
                 $normalizers[$alias] = $normalizers[$property];
             }
@@ -308,6 +312,9 @@ abstract class Model implements Arrayable {
             $sanitizers = $this->getSanitizers();
             foreach (static::$propertyAliases as $alias => $property) {
                 foreach (array_keys($sanitizers) as $scheme) {
+                    foreach ($sanitizers[$scheme] as $property => $sanitizer) {
+                        $sanitizers[$scheme][$property] = $sanitizers[$scheme][$property]->done();
+                    }
                     if (isset($sanitizers[$scheme][$property])) {
                         $sanitizers[$scheme][$alias] = $sanitizers[$scheme][$property];
                     }

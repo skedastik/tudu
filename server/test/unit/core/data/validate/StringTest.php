@@ -83,8 +83,8 @@ class StringTest extends \PHPUnit_Framework_TestCase {
     
     public function testChainingStringValidatorWithDescriptionTransformShouldWork() {
         $validator = Validate::String()->length()->from(10)
-                   ->then(Transform::Description()->to('String'));
-
+                   ->then(Transform::Description()->to('String'))
+                   ->done();
         $input = 'too short';
         $result = $validator->execute($input);
         $this->assertTrue($result instanceof Sentinel);
