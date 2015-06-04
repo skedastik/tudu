@@ -40,5 +40,12 @@ final class Transform {
     public static function Password() {
         return new Password();
     }
+    
+    /**
+     * Shorthand factory function for Transform\Extract.
+     */
+    public static function Extract() {
+        return new Extract();
+    }
 }
 ?>
