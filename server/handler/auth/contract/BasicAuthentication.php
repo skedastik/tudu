@@ -39,10 +39,11 @@ final class BasicAuthentication implements Authentication {
         $userRepo = new Repository\User($this->db);
         
         $property = is_numeric($id) ? User::USER_ID : User::EMAIL;
-        $user = $userRepo->fetch(new User([
-            $property => $id
-        ]));
-        if ($user instanceof Error) {
+        try {
+            $user = $userRepo->fetch(new User([
+                $property => $id
+            ]));
+        } catch (Exception\Client $e) {
             return null;
         }
         
