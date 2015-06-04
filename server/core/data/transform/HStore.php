@@ -37,6 +37,7 @@ final class HStore extends Transformer {
                 $kvPair = explode('=>', $kvString);
                 return array_map(
                     function ($string) {
+                        // TODO: Explore un-escaping of double quotes.
                         if ($string[0] == '"') {
                             return mb_substr($string, 1, mb_strlen($string) - 2);
                         }
