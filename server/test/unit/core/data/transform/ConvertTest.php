@@ -17,6 +17,18 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('1.5', $transformer->execute(1.5));
         $this->assertSame('1.034E-15', $transformer->execute(10.34e-16));
     }
+    
+    public function testConvertToBooleanStringShouldWork() {
+        $transformer = Transform::Convert()->to()->booleanString();
+        $this->assertSame('t', $transformer->execute(1));
+        $this->assertSame('f', $transformer->execute(0));
+        $this->assertSame('t', $transformer->execute(true));
+        $this->assertSame('t', $transformer->execute('true'));
+        $this->assertSame('t', $transformer->execute('false'));
+        $this->assertSame('f', $transformer->execute(false));
+        $this->assertSame('f', $transformer->execute(null));
+        $this->assertSame('f', $transformer->execute(''));
+    }
 
     public function testConvertToIntegerShouldWork() {
         $transformer = Transform::Convert()->to()->integer();
