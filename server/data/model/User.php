@@ -17,7 +17,6 @@ final class User extends Model {
     const USER_ID       = 'user_id';
     const EMAIL         = 'email';
     const PASSWORD      = 'password';
-    const NEW_PASSWORD  = 'new_password';
     const PASSWORD_HASH = 'password_hash';
     const SIGNUP_TOKEN  = 'signup_token';
     
@@ -46,10 +45,6 @@ final class User extends Model {
             ]
         ];
     }
-    
-    protected static $propertyAliases = [
-        self::NEW_PASSWORD => self::PASSWORD
-    ];
     
     // User password delegate singleton ----------------------------------------
     
