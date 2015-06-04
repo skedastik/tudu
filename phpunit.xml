@@ -25,7 +25,7 @@
             <directory>./server/</directory>
             <exclude>
                 <directory>./server/test/</directory>
-                <file>./server/conf/Conf-template.php</file>
+                <directory>./server/conf/</directory>
                 <file>./server/delegate/Slim.php</file>
             </exclude>
         </whitelist>
