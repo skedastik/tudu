@@ -130,7 +130,7 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function unit_tests.revoke_active_access_tokens_when_no_active_token_of_same_type_exists() returns test_result as $$
+create or replace function unit_tests.revoke_access_tokens_when_no_active_tokens_of_same_type_exists() returns test_result as $$
 declare
     _message    test_result;
     _user       tudu_user%ROWTYPE;
