@@ -1,7 +1,6 @@
 <?php
 namespace Tudu\Test\Unit\Data\Model;
 
-use \Tudu\Data\Repository;
 use \Tudu\Data\Model\User;
 
 class UserTest extends \PHPUnit_Framework_TestCase {

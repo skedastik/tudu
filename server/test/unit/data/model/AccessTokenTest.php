@@ -1,7 +1,6 @@
 <?php
 namespace Tudu\Test\Unit\Data\Model;
 
-use \Tudu\Data\Repository;
 use \Tudu\Core\Chainable\Sentinel;
 use \Tudu\Data\Model\AccessToken;
 
