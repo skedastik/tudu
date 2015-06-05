@@ -9,9 +9,6 @@ use \Tudu\Handler\Auth\Contract\BasicAuthentication;
 use \Tudu\Core\Encoder;
 use \Tudu\Data\Model\User;
 
-/**
- * @group todo
- */
 class BasicAuthenticationTest extends DatabaseTest {
     
     protected $email;
