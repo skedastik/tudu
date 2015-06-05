@@ -39,7 +39,7 @@ final class Task extends Repository {
     public function createTask(Model $task, $ip) {
         $task->set(TaskModel::TAGS, $task->get(TaskModel::DESCRIPTION));
         $this->normalize($task);
-        return $this->db->query(
+        $result = $this->db->queryValue(
             'select tudu.create_task($1, $2, $3, $4)',
             [
                 $task->get(TaskModel::USER_ID),
@@ -48,6 +48,10 @@ final class Task extends Repository {
                 $ip
             ]
         );
+        if ($result == -1) {
+            throw new Exception\Client('User ID not found.');
+        }
+        return $result;
     }
 }
 ?>

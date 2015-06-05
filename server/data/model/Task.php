@@ -24,7 +24,7 @@ final class Task extends Model {
             
             self::DESCRIPTION => Transform::Convert()->to()->string()
                               -> then(Transform::String()->trim())
-                              -> then(Validate::String()->length()->upTo(256))
+                              -> then(Validate::String()->length()->from(1)->upTo(256))
                               -> then(Transform::Description()->to('Task description')),
             
             // extract tags from input string as PostgreSQL array
