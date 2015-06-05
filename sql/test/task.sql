@@ -69,6 +69,35 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function unit_tests.create_task_using_nonexistent_user_id() returns test_result as $$
+declare
+    _message    test_result;
+    _result     bigint;
+    _task_log   tudu_task_log%ROWTYPE;
+begin
+    _result := tudu.create_task(
+        -1,
+        'Learn to play Smoke on the Water',
+        array['guitar'],
+        '127.0.0.1'
+    );
+    _task_log  := tudu.latest_task_log();
+    
+    if _result <> -1 then
+        select assert.fail('should fail') into _message;
+        return _message;
+    end if;
+    
+    if _task_log.task_id is not null then
+        select assert.fail('should NOT create a task log entry') into _message;
+        return _message;
+    end if;
+    
+    select assert.ok('End of test.') into _message;
+    return _message;
+end;
+$$ language plpgsql;
+
 create or replace function unit_tests.set_task_tags() returns test_result as $$
 declare
     _message    test_result;

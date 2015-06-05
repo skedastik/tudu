@@ -10,7 +10,8 @@
  *   _kvs           Optional KVS data
  * 
  * Returns
- *   ID of new task on success
+ *   Task ID on success
+ *   -1 if user ID is not valid
  */
 create or replace function tudu.create_task(
     _user_id        bigint,
@@ -24,6 +25,10 @@ declare
 begin
     _task_id := nextval('tudu_task_seq');
     _tags    := util.denull_btrim_whitespace(_tags);
+    
+    if not exists (select 1 from tudu_user where user_id = _user_id) then
+        return -1;
+    end if;
     
     insert into tudu_task (task_id, user_id, description, tags, kvs)
     values (_task_id, _user_id, _description, _tags, _kvs);
