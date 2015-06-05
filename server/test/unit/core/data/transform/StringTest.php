@@ -25,6 +25,10 @@ class StringTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo', $transformer->execute("foo \n\t\r"));
         $this->assertEquals('foo', $transformer->execute("\n\t\r foo"));
         $this->assertEquals('foo bar', $transformer->execute("\n\t\r      foo bar      \n\t\r"));
+        $this->assertEquals(
+            "foo\nbar",
+            $transformer->execute("   foo\nbar\n   ")
+        );
     }
 
     public function testPassingNonStringInputToStringTransformerShouldThrowAnException() {
