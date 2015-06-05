@@ -2,6 +2,7 @@
 namespace Tudu\Core\Database;
 
 use \Tudu\Core\Logger;
+use \Tudu\Core\Exception;
 
 final class PgSQLConnection extends DbConnection {
     
@@ -36,15 +37,15 @@ final class PgSQLConnection extends DbConnection {
                 $logger->info('Database query ['.$queryString.'] succeeded with params', $params);
             }
         } else {
-            $logger->error('Database query ['.$queryString.'] failed with error', [pg_last_error()]);
+            throw Exception\Internal('Database query ['.$queryString.'] failed with error ['.pg_last_error().']');
         }
         
-        return $result ? pg_fetch_all($result) : FALSE;
+        return pg_fetch_all($result);
     }
     
     public function queryValue($queryString, array $params = [], $queryName = '') {
         $result = $this->query($queryString, $params, $queryName);
-        return $result ? array_values($result[0])[0] : FALSE;
+        return array_values($result[0])[0];
     }
     
     public function getLastError() {
