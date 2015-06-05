@@ -101,7 +101,11 @@ final class Convert extends Transformer {
     }
     
     /**
-     * Convert an array to a PostgreSQL array.
+     * Convert an array to a comma-delimited PostgreSQL array.
+     * 
+     * This method performs a recursive array conversion. All non-NULL elements
+     * are quoted with double-quotes (any double quotes in the input are escaped
+     * with a preceding backslash).
      * 
      * @param array $array
      * @return string
@@ -112,7 +116,7 @@ final class Convert extends Transformer {
                 $element = self::arrayToPgSqlArray($element);
             } else if (is_null($element)) {
                 $element = 'null';
-            } else if (!is_numeric($element)) {
+            } else {
                 $element = '"'.str_replace('"', '\\"', $element).'"';
             }
         }

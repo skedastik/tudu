@@ -42,7 +42,7 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = [1];
-        $expected = '{1}';
+        $expected = '{"1"}';
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = ['foo'];
@@ -54,19 +54,19 @@ class ConvertTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = [1, 'foo'];
-        $expected = '{1, "foo"}';
+        $expected = '{"1", "foo"}';
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = [1, [2]];
-        $expected = '{1, {2}}';
+        $expected = '{"1", {"2"}}';
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = [1, [2, 'foo'], null];
-        $expected = '{1, {2, "foo"}, null}';
+        $expected = '{"1", {"2", "foo"}, null}';
         $this->assertSame($expected, $transformer->execute($input));
         
         $input = [1, [2, ['foo', 3]], null];
-        $expected = '{1, {2, {"foo", 3}}, null}';
+        $expected = '{"1", {"2", {"foo", "3"}}, null}';
         $this->assertSame($expected, $transformer->execute($input));
     }
 
