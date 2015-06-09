@@ -7,9 +7,6 @@ use \Tudu\Data\Model\User;
 use \Tudu\Data\Model\Task;
 use \Tudu\Data\Repository;
 
-/**
- * @group todo
- */
 class TaskRepositoryTest extends DatabaseTest {
     
     protected $repo;
@@ -29,8 +26,7 @@ class TaskRepositoryTest extends DatabaseTest {
         $description = 'Test #description';
         $task = new Task([
             Task::USER_ID => $this->userId,
-            Task::DESCRIPTION => $description,
-            Task::TAGS => $description
+            Task::DESCRIPTION => $description
         ]);
         $taskId = $this->repo->createTask($task, '127.0.0.1');
         $this->assertTrue($taskId >= 0);
@@ -40,8 +36,7 @@ class TaskRepositoryTest extends DatabaseTest {
         $description = 'Tagless description';
         $task = new Task([
             Task::USER_ID => $this->userId,
-            Task::DESCRIPTION => $description,
-            Task::TAGS => $description
+            Task::DESCRIPTION => $description
         ]);
         $taskId = $this->repo->createTask($task, '127.0.0.1');
         $this->assertTrue($taskId >= 0);
@@ -51,8 +46,7 @@ class TaskRepositoryTest extends DatabaseTest {
         $description = 'Test #description';
         $task = new Task([
             Task::USER_ID => -1,
-            Task::DESCRIPTION => $description,
-            Task::TAGS => $description
+            Task::DESCRIPTION => $description
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Client');
         $taskId = $this->repo->createTask($task, '127.0.0.1');
@@ -62,8 +56,7 @@ class TaskRepositoryTest extends DatabaseTest {
         $description = 'Test #description';
         $task = new Task([
             Task::USER_ID => $this->userId,
-            Task::DESCRIPTION => $description,
-            Task::TAGS => $description
+            Task::DESCRIPTION => $description
         ]);
         $taskId = $this->repo->createTask($task, '127.0.0.1');
         $fetchedTask = $this->repo->fetch(new Task([
@@ -78,5 +71,30 @@ class TaskRepositoryTest extends DatabaseTest {
             Task::TASK_ID => -1,
         ]));
     }
+    
+    public function testUpdateTaskShouldSucceedGivenValidInputs() {
+        $description = 'Test #description';
+        $ip = '127.0.0.1';
+        $task = new Task([
+            Task::USER_ID => $this->userId,
+            Task::DESCRIPTION => $description
+        ]);
+        $taskId = $this->repo->createTask($task, $ip);
+        $task->set(Task::TASK_ID, $taskId);
+        $task->set(Task::DESCRIPTION, '#New description');
+        $result = $this->repo->updateTask($task, $ip);
+        $this->assertTrue($result >= 0);
+    }
+    
+    public function testUpdateTaskShouldFailGivenInvalidTaskId() {
+        $task = new Task([
+            Task::TASK_ID => -1,
+            Task::DESCRIPTION => 'foo'
+        ]);
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->updateTask($task, '127.0.0.1');
+    }
+    
+    // TODO: test update task for finished and deleted tasks
 }
 ?>
