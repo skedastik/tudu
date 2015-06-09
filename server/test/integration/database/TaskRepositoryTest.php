@@ -72,6 +72,43 @@ class TaskRepositoryTest extends DatabaseTest {
         ]));
     }
     
+    public function testFinishTaskShouldSucceedGivenValidInputs() {
+        $description = 'Test #description';
+        $ip = '127.0.0.1';
+        $task = new Task([
+            Task::USER_ID => $this->userId,
+            Task::DESCRIPTION => $description
+        ]);
+        $taskId = $this->repo->createTask($task, $ip);
+        $task->set(Task::TASK_ID, $taskId);
+        $result = $this->repo->finishTask($task, $ip);
+        $this->assertTrue($result >= 0);
+    }
+    
+    public function testFinishTaskShouldFailGivenInvalidId() {
+        $task = new Task([
+            Task::TASK_ID => -1
+        ]);
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $this->repo->updateTask($task, '127.0.0.1');
+    }
+    
+    public function testFinishAlreadyFinishedTaskShouldFail() {
+        $description = 'Test #description';
+        $ip = '127.0.0.1';
+        $task = new Task([
+            Task::USER_ID => $this->userId,
+            Task::DESCRIPTION => $description
+        ]);
+        $taskId = $this->repo->createTask($task, $ip);
+        $task->set(Task::TASK_ID, $taskId);
+        $this->repo->finishTask($task, $ip);
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $result = $this->repo->finishTask($task, $ip);
+    }
+    
+    // TODO: Test: Finish deleted task should fail
+    
     public function testUpdateTaskShouldSucceedGivenValidInputs() {
         $description = 'Test #description';
         $ip = '127.0.0.1';
@@ -88,13 +125,26 @@ class TaskRepositoryTest extends DatabaseTest {
     
     public function testUpdateTaskShouldFailGivenInvalidTaskId() {
         $task = new Task([
-            Task::TASK_ID => -1,
-            Task::DESCRIPTION => 'foo'
+            Task::TASK_ID => -1
         ]);
         $this->setExpectedException('\Tudu\Core\Exception\Client');
         $this->repo->updateTask($task, '127.0.0.1');
     }
     
-    // TODO: test update task for finished and deleted tasks
+    public function testUpdateFinishedTaskShouldFail() {
+        $description = 'Test #description';
+        $ip = '127.0.0.1';
+        $task = new Task([
+            Task::USER_ID => $this->userId,
+            Task::DESCRIPTION => $description
+        ]);
+        $taskId = $this->repo->createTask($task, $ip);
+        $task->set(Task::TASK_ID, $taskId);
+        $this->repo->finishTask($task, $ip);
+        $this->setExpectedException('\Tudu\Core\Exception\Client');
+        $result = $this->repo->updateTask($task, $ip);
+    }
+    
+    // TODO: Test: Update deleted task should fail
 }
 ?>

@@ -39,15 +39,12 @@ final class Task extends Repository {
     public function createTask(Model $task, $ip) {
         $task->set(TaskModel::TAGS, $task->get(TaskModel::DESCRIPTION));
         $this->normalize($task);
-        $result = $this->db->queryValue(
-            'select tudu.create_task($1, $2, $3, $4)',
-            [
-                $task->get(TaskModel::USER_ID),
-                $task->get(TaskModel::DESCRIPTION),
-                $task->get(TaskModel::TAGS),
-                $ip
-            ]
-        );
+        $result = $this->db->queryValue('select tudu.create_task($1, $2, $3, $4)', [
+            $task->get(TaskModel::USER_ID),
+            $task->get(TaskModel::DESCRIPTION),
+            $task->get(TaskModel::TAGS),
+            $ip
+        ]);
         if ($result == -1) {
             throw new Exception\Client('User ID not found.', null, 404);
         }
@@ -55,7 +52,7 @@ final class Task extends Repository {
     }
     
     /**
-     * Update existing task.
+     * Update existing task description (and tags implicitly).
      * 
      * @param \Tudu\Core\Data\Model $task Task model to export (task ID
      * required, description optional). Tags are automatically extracted from
@@ -68,15 +65,12 @@ final class Task extends Repository {
             $task->set(TaskModel::TAGS, $task->get(TaskModel::DESCRIPTION));
         }
         $this->normalize($task);
-        $result = $this->db->queryValue(
-            'select tudu.update_task($1, $2, $3, $4)',
-            [
-                $task->get(TaskModel::TASK_ID),
-                $task->get(TaskModel::DESCRIPTION),
-                $task->get(TaskModel::TAGS),
-                $ip
-            ]
-        );
+        $result = $this->db->queryValue('select tudu.update_task($1, $2, $3, $4)', [
+            $task->get(TaskModel::TASK_ID),
+            $task->get(TaskModel::DESCRIPTION),
+            $task->get(TaskModel::TAGS),
+            $ip
+        ]);
         switch ($result) {
             case -1:
                 throw new Exception\Client('Task ID not found.', null, 404);
@@ -84,6 +78,31 @@ final class Task extends Repository {
                 throw new Exception\Client('Task has been deleted.', null, 410);
             case -3:
                 throw new Exception\Client('Task is not in an alterable state.', null, 409);
+        }
+        return $result;
+    }
+    
+    /**
+     * Mark an existing task as finished.
+     * 
+     * @param \Tudu\Core\Data\Model $task Task model to match against (task ID
+     * required).
+     * @param string $ip IP address.
+     * @return int Task ID.
+     */
+    public function finishTask(Model $task, $ip) {
+        $this->normalize($task);
+        $result = $this->db->queryValue('select tudu.finish_task($1, $2)', [
+            $task->get(TaskModel::TASK_ID),
+            $ip
+        ]);
+        switch ($result) {
+            case -1:
+                throw new Exception\Client('Task ID not found.', null, 404);
+            case -2:
+                throw new Exception\Client('Task has been deleted.', null, 410);
+            case -3:
+                throw new Exception\Client('Task is already finished.', null, 409);
         }
         return $result;
     }
