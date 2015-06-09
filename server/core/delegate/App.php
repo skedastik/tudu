@@ -166,6 +166,14 @@ abstract class App {
     abstract public function getRequestHost();
     
     /**
+     * Get the full request URL inlcuding scheme, host, and URI, e.g.:
+     * "http://www.example.com/path/to/resource"
+     */
+    public function getFullRequestUrl() {
+        return $this->app->getRequestScheme().'://'.$this->app->getRequestHost().$this->app->getRequestUri();
+    }
+    
+    /**
      * Immediately send an HTTP response as currently formed and end processing.
      */
     abstract public function send();

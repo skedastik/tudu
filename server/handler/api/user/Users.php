@@ -34,7 +34,7 @@ final class Users extends Endpoint {
         
         $this->app->setResponseStatus(201);
         $this->app->setResponseHeaders([
-            'Location' => $this->app->getRequestScheme().'://'.$this->app->getRequestHost().$this->app->getRequestUri().$userId
+            'Location' => $this->app->getFullRequestUrl().$userId
         ]);
         $this->renderBody([
             User::USER_ID => $userId

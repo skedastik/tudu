@@ -88,14 +88,14 @@ $app->map('/users/:user_id/tasks/(:task_id)', function ($userId) use ($app, $db)
 
 $app->map('/users/:user_id/tasks/', function ($userId) use ($app, $db) {
     $app->setContext([
-        User::USER_ID => $userId
+        Task::USER_ID => $userId
     ]);
     (new Handler\Api\Task\Tasks($app, $db))->run();
 });
 
 $app->map('/users/:user_id/tasks/:task_id', function ($userId, $taskId) use ($app, $db) {
     $app->setContext([
-        User::USER_ID => $userId,
+        Task::USER_ID => $userId,
         Task::TASK_ID => $taskId
     ]);
     (new Handler\Api\Task\Task($app, $db))->run();
