@@ -289,7 +289,6 @@ declare
     _old_email      varchar;
     _old_pw_hash    varchar;
     _user_id        bigint;
-    _user_log       tudu_user_log%ROWTYPE;
 begin
     _user        := tudu.create_random_user();
     _old_email   := _user.email;
@@ -340,7 +339,6 @@ declare
     _old_email      varchar;
     _old_pw_hash    varchar;
     _user_id        bigint;
-    _user_log       tudu_user_log%ROWTYPE;
 begin
     _user        := tudu.create_random_user();
     _old_email   := _user.email;
@@ -369,7 +367,7 @@ begin
     end if;
     
     if exists (select 1 from tudu_user_log where user_id = _user_id and operation = 'change_password_hash') then
-        select assert.fail('should NOT create a user log entry with operation "change_password_hash"') into _message;
+        select assert.fail('should not create a user log entry with operation "change_password_hash"') into _message;
         return _message;
     end if;
     
@@ -385,7 +383,6 @@ declare
     _old_email      varchar;
     _old_pw_hash    varchar;
     _user_id        bigint;
-    _user_log       tudu_user_log%ROWTYPE;
 begin
     _user        := tudu.create_random_user();
     _old_email   := _user.email;
