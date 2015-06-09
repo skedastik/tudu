@@ -126,8 +126,8 @@ $$ language plpgsql security definer;
  * Returns
  *   ID of task on success
  *   -1 if task ID is invalid
- *   -2 if task is already finished
- *   -3 if task is in an incompatible state (e.g. deleted)
+ *   -2 if task has been deleted
+ *   -3 if task is already finished
  */
 create or replace function tudu.finish_task(
     _task_id    bigint,
@@ -142,11 +142,11 @@ begin
         return -1;
     end if;
     
-    if _status = 'finished' then
+    if _status = 'deleted' then
         return -2;
     end if;
     
-    if _status <> 'active' then
+    if _status = 'finished' then
         return -3;
     end if;
     

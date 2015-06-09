@@ -392,7 +392,7 @@ begin
     _task_id  := tudu.finish_task(_task.task_id);
     _task     := tudu.latest_task();
     
-    if _task_id <> -2 then
+    if _task_id <> -3 then
         select assert.fail('should fail') into _message;
         return _message;
     end if;
@@ -402,7 +402,7 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function unit_tests.finish_task_in_incompatible_state() returns test_result as $$
+create or replace function unit_tests.finish_task_with_deleted_status() returns test_result as $$
 declare
     _message    test_result;
     _user       tudu_user%ROWTYPE;
@@ -415,8 +415,8 @@ begin
     _task_id  := tudu.finish_task(_task.task_id);
     _task     := tudu.latest_task();
     
-    if _task_id <> -3 then
-        select assert.fail('should fail for a task that has been deleted') into _message;
+    if _task_id <> -2 then
+        select assert.fail('should fail') into _message;
         return _message;
     end if;
     
