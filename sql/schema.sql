@@ -50,11 +50,11 @@ create table tudu_task (
     finished_date           timestamptz,
     --
     kvs                     hstore not null default '',
-    status                  varchar(32) not null default 'init',
+    status                  varchar(32) not null default 'active',
     edate                   timestamptz not null default current_timestamp,
     cdate                   timestamptz not null default current_timestamp,
     --
-    check (status in ('deleted', 'init', 'finished'))
+    check (status in ('deleted', 'active', 'finished'))
 );
 create index tudu_task_finished_date_idx on tudu_task using btree (finished_date);
 create index tudu_task_cdate_idx on tudu_task using btree (cdate);

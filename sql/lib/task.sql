@@ -4,8 +4,7 @@
  * Arguments
  *   _user_id       ID of existing user
  *   _description   Task description
- *   _tags          Array of tag strings. This array will be normalized: NULLs
- *                  and empty strings are removed, while whitespace is trimmed.
+ *   _tags          Array of tag strings
  *   _ip            Optional IP address
  *   _kvs           Optional KVS data
  * 
@@ -24,7 +23,6 @@ declare
     _task_id        bigint;
 begin
     _task_id := nextval('tudu_task_seq');
-    _tags    := util.denull_btrim_whitespace(_tags);
     
     if not exists (select 1 from tudu_user where user_id = _user_id) then
         return -1;
@@ -40,53 +38,79 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Update an existing task's tags.
+ * Update an existing task.
  * 
  * Arguments
  *   _task_id       ID of existing task
- *   _tags          Array of tag strings or NULL to remove all tags. This array
- *                  will be normalized: NULLs and empty strings are removed,
- *                  whitespace is trimmed.
+ *   _description   (optional) Task description
+ *   _tags          (optional) Array of tags or empty array to remove tags
  *   _ip            Optional IP address
- *                  
+ * 
  * Returns
  *   ID of task on success
  *   -1 if task ID is invalid
- *   -2 if tags are identical (different order is NOT considered identical)
+ *   -2 if task has been deleted
+ *   -3 if task is not in an alterable state
  */
-create or replace function tudu.set_task_tags(
-    _task_id    bigint,
-    _new_tags   varchar[],
-    _ip         inet        default null
+create or replace function tudu.update_task(
+    _task_id            bigint,
+    _new_description    varchar     default null,
+    _new_tags           varchar[]   default null,
+    _ip                 inet        default null
 ) returns bigint as $$
 declare
-    _tags       varchar[];
+    _description    varchar;
+    _tags           varchar[];
+    _status         varchar;
 begin
-    _new_tags := util.denull_btrim_whitespace(_new_tags);
-    select task_id, tags into _task_id, _tags from tudu_task where task_id = _task_id;
+    select task_id, tags, description, status
+    into _task_id, _tags, _description, _status
+    from tudu_task where task_id = _task_id;
     
     if _task_id is null then
         return -1;
     end if;
     
-    if _tags is not distinct from _new_tags then
+    if _status = 'deleted' then
         return -2;
     end if;
     
+    if _status <> 'active' then
+        return -3;
+    end if;
+    
     update tudu_task
-    set tags  = _new_tags,
-        edate = now()
+    set description = coalesce(_new_description, description),
+        tags        = case when _new_tags is null then tags
+                           when array_dims(_new_tags) is null then null
+                           else _new_tags
+                      end,
+        edate       = now()
     where task_id = _task_id;
     
-    perform tudu.task_log_add(
-        _task_id,
-        'set_tags',
-        _ip,
-        hstore(array[
-            ['old_tags', _tags::text],
-            ['new_tags', _new_tags::text]
-        ])
-    );
+    if _new_tags is not null then
+        perform tudu.task_log_add(
+            _task_id,
+            'update_tags',
+            _ip,
+            hstore(array[
+                ['old_tags', _tags::text],
+                ['new_tags', _new_tags::text]
+            ])
+        );
+    end if;
+    
+    if _new_description is not null and _new_description <> _description then
+        perform tudu.task_log_add(
+            _task_id,
+            'update_description',
+            _ip,
+            hstore(array[
+                ['old_description', _description],
+                ['new_description', _new_description]
+            ])
+        );
+    end if;
     
     return _task_id;
 end;
@@ -162,7 +186,7 @@ begin
         return -2;
     end if;
     
-    if _status <> 'init' then
+    if _status <> 'active' then
         return -3;
     end if;
     
