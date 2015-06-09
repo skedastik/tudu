@@ -117,46 +117,6 @@ end;
 $$ language plpgsql security definer;
 
 /**
- * Mark an existing task as deleted.
- * 
- * Arguments
- *   _task_id   ID of existing task
- *   _ip        Optional IP address
- * 
- * Returns
- *   ID of task on success
- *   -1 if task ID is invalid
- *   -2 if task is already deleted
- */
-create or replace function tudu.delete_task(
-    _task_id    bigint,
-    _ip         inet        default null
-) returns bigint as $$
-declare
-    _status     varchar;
-begin
-    select task_id, status into _task_id, _status from tudu_task where task_id = _task_id;
-    
-    if _task_id is null then
-        return -1;
-    end if;
-    
-    if _status = 'deleted' then
-        return -2;
-    end if;
-    
-    update tudu_task
-    set status = 'deleted',
-        edate  = now()
-    where task_id = _task_id;
-    
-    perform tudu.task_log_add(_task_id, 'delete', _ip);
-    
-    return _task_id;
-end;
-$$ language plpgsql security definer;
-
-/**
  * Mark an existing task as finished.
  * 
  * Arguments
