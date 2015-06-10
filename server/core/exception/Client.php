@@ -42,10 +42,11 @@ class Client extends \Exception implements Arrayable {
         \Exception $previous = null
     ) {
         parent::__construct(static::ERROR_STRING, $code, $previous);
-        $this->error = static::ERROR_STRING;
         $this->description = $description;
         $this->context = $context;
         $this->httpStatusCode = $httpStatusCode;
+        $this->error = static::ERROR_STRING;
+        $this->message = static::ERROR_STRING . "\n$this\n";
     }
     
     /**
@@ -81,6 +82,10 @@ class Client extends \Exception implements Arrayable {
      */
     public function getHttpStatusCode() {
         return $this->httpStatusCode;
+    }
+    
+    public function __toString() {
+        return var_export($this->asArray(), true);
     }
 }
 
