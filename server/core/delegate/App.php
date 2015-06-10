@@ -170,7 +170,7 @@ abstract class App {
      * "http://www.example.com/path/to/resource"
      */
     public function getFullRequestUrl() {
-        return $this->app->getRequestScheme().'://'.$this->app->getRequestHost().$this->app->getRequestUri();
+        return $this->getRequestScheme().'://'.$this->getRequestHost().$this->getRequestUri();
     }
     
     /**
