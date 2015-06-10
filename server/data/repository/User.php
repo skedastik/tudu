@@ -33,6 +33,7 @@ final class User extends Repository {
         }
         return new UserModel($result[0], true);
     }
+    
     /**
      * Sign up a new user.
      * 
