@@ -3,10 +3,9 @@ namespace Tudu\Test\Integration\Api;
 
 use \Tudu\Test\Mock\MockApp;
 use \Tudu\Data\Repository;
-use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Model\User;
+use \Tudu\Data\Model\Task;
 use \Tudu\Core\Encoder;
-use \Tudu\Core\Handler\Auth\Auth;
 use \Tudu\Handler;
 use \Tudu\Core\Data\Transform\Transform;
 
@@ -22,16 +21,19 @@ class TaskEndpointTest extends EndpointTest {
         $this->app->addEncoder(new Encoder\JSON());
         $user = new User([
             User::EMAIL => 'foo@example.com',
-            User::PASSWORD => 'pw_hash'
+            User::PASSWORD => 'mypassword'
         ]);
         $userRepo = new Repository\User($this->db);
-        $this->userId = $this->repo->signupUser($user, '127.0.0.1', true);
+        $this->userId = $userRepo->signupUser($user, '127.0.0.1', true);
         $this->app->setHandler(
-            new Handler\Api\User\Tasks($this->app, $this->db)
+            new Handler\Api\Task\Tasks($this->app, $this->db)
         );
         $this->taskRepo = new Repository\Task($this->db);
     }
     
+    /**
+     * @group todo
+     */
     public function testValidPostShouldReturn201AndReturnAppropriateData() {
         // simulate a valid POST to /users/:user_id/tasks/
         $this->app->setRequestMethod('POST');
@@ -39,13 +41,15 @@ class TaskEndpointTest extends EndpointTest {
         $this->app->setContext([
             Task::USER_ID => $this->userId
         ]);
-        $description = "Hello #world, I am #alive.";
+        $description = 'Hello #world, I am #alive.';
         $this->app->setRequestBody('{
-            "'.Task::DESCRIPTION.'": "'.$description.'",
+            "'.Task::DESCRIPTION.'": "'.$description.'"
         }');
         $this->app->run();
         
-        // extract "task_id" property from response body
+        $this->assertEquals(201, $this->app->getResponseStatus());
+        
+        // extract task ID from response body
         $taskId = $this->decodeOutputBuffer()[Task::TASK_ID];
         
         // task should have matching data
@@ -53,7 +57,12 @@ class TaskEndpointTest extends EndpointTest {
             Task::TASK_ID => $taskId
         ]));
         $this->assertSame($description, $task->get(Task::DESCRIPTION));
-        // TODO: compare tags
+        
+        $expectedTask = new Task([
+            Task::TAGS => $description
+        ]);
+        $expectedTask->normalize();
+        $this->assertSame($expectedTask->get(Task::TAGS), $task->get(Task::TAGS));
     }
     
     public function tearDown() {
