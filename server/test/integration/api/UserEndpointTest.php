@@ -2,7 +2,6 @@
 namespace Tudu\Test\Integration\Api;
 
 use \Tudu\Test\Mock\MockApp;
-use \Tudu\Test\Integration\Database\DatabaseTest;
 use \Tudu\Data\Repository;
 use \Tudu\Data\Model\AccessToken;
 use \Tudu\Data\Model\User;
@@ -12,16 +11,9 @@ use \Tudu\Handler;
 use \Tudu\Delegate\PHPass;
 use \Tudu\Core\Data\Transform\Transform;
 
-class UserEndpointTest extends DatabaseTest {
+class UserEndpointTest extends EndpointTest {
     
     protected $userRepo;
-    
-    /**
-     * Decode JSON data from output buffer, returning an array.
-     */
-    private function decodeOutputBuffer() {
-        return json_decode(ob_get_contents(), true);
-    }
     
     public function setUp() {
         parent::setUp();
