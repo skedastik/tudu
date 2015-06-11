@@ -31,9 +31,6 @@ class TaskEndpointTest extends EndpointTest {
         $this->taskRepo = new Repository\Task($this->db);
     }
     
-    /**
-     * @group todo
-     */
     public function testValidPostShouldReturn201AndReturnAppropriateData() {
         // simulate a valid POST to /users/:user_id/tasks/
         $this->app->setRequestMethod('POST');
@@ -57,12 +54,7 @@ class TaskEndpointTest extends EndpointTest {
             Task::TASK_ID => $taskId
         ]));
         $this->assertSame($description, $task->get(Task::DESCRIPTION));
-        
-        $expectedTask = new Task([
-            Task::TAGS => $description
-        ]);
-        $expectedTask->normalize();
-        $this->assertSame($expectedTask->get(Task::TAGS), $task->get(Task::TAGS));
+        $this->assertSame('{world,alive}', $task->get(Task::TAGS));
     }
     
     public function tearDown() {

@@ -27,7 +27,16 @@ final class Task extends Model {
                               -> then(Validate::String()->length()->from(1)->upTo(256))
                               -> then(Transform::Description()->to('Task description')),
             
-            // extract tags from input string as PostgreSQL array
+            /**
+			 * Extract tags from input string as PostgreSQL array.
+			 * 
+			 * TODO: When pushing data into the database, all non-NULL elements
+			 * are double-quoted. However, pulling data from the database will
+			 * produce slightly different results: PostgreSQL has specific rules
+			 * for when array elements are double-quoted. For this and other
+			 * reasons, it probably makes sense to have different normalizers
+			 * for pushing and pulling data.
+			 */
             self::TAGS => Transform::Convert()->to()->string()
                        -> then(Transform::Extract()->hashtags()->asArray())
                        -> then(ForEvery::Element(
