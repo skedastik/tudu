@@ -3,7 +3,7 @@ namespace Tudu\Test\Integration\Api;
 
 use \Tudu\Test\Integration\Database\DatabaseTest;
 
-class EndpointTest extends DatabaseTest {
+abstract class EndpointTest extends DatabaseTest {
     
     /**
      * Decode JSON data from output buffer, returning an array.
