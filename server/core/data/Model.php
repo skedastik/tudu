@@ -9,6 +9,9 @@ use \Tudu\Core\Exception;
  * Model base class.
  */
 abstract class Model implements Arrayable {
+	
+	const PULL = "pull";
+	const PUSH = "push";
     
     private static $normalizerCache;
     private static $sanitizerCache;
@@ -66,7 +69,7 @@ abstract class Model implements Arrayable {
     
     /**
      * This function should return a key/value array of transformers and
-     * validators for normalizing data.
+     * validators for normalizing data prior to pushing into a repository.
      * 
      * Each key is a model property. Each value is an appropriate chain of
      * Validate and possibly Transform objects. There is no need to call
@@ -75,15 +78,15 @@ abstract class Model implements Arrayable {
      * Example:
      * 
      *    [
-     *        'user_id'  => Validate::Number()->isPositive(),
+     *        'user_id' => Validate::Number()->isPositive(),
      *        
-     *        'email'    => Validate::String()->is()->validEmail()->
-     *                   -> with()->length()->from(5),
+     *        'email' => Validate::String()->is()->validEmail()->
+     *                -> with()->length()->from(5),
      *                   
-     *        'status'   => Transform::String()->capitalize()
-     *                   -> then(Validate::String()->length()->upTo(10)),
+     *        'status' => Transform::String()->capitalize()
+     *                 -> then(Validate::String()->length()->upTo(10)),
      *                   
-     *        'isActive' => Transform::Convert()->to()->booleanString()
+     *        'is_active' => Transform::Convert()->to()->booleanString()
      *    ];
      * 
      * Data should never be persisted without being normalized first.
@@ -95,6 +98,25 @@ abstract class Model implements Arrayable {
      * @return array Key/value array of normalizers.
      */
     abstract protected function getNormalizers();
+	
+    /**
+     * Override this function to return a key/value array of transformers for
+     * normalizing data when pulled from a repository. This is purely for
+     * convenience.
+     * 
+     * Example:
+     * 
+     *    [
+     *    	  'key_value_store' => Transform::HStore()->to()->keyValueArray()
+     *    ];
+     * 
+     * This method must be idempotent.
+     * 
+     * @return array Key/value array of transformers.
+     */
+    protected function getPullNormalizers() {
+    	return [];
+    }
     
     /**
      * This function should return a key/value array of sanitization schemes and
@@ -147,12 +169,14 @@ abstract class Model implements Arrayable {
      * 
      * Normalization consists of both validation and possibly transformation.
      * 
+     * @param bool $push Pass TRUE to normalize for pushing data into a repo,
+     * FALSE for pulling data out of a repo. Defaults to TRUE.
      * @return array|NULL Key/value array of errors where each key is a property
      * and each value is an error. If there were no errors, NULL is returned.
      * Properties that validate will have transformations applied. Properties
      * that do not validate will not have transformations applied.
      */
-    final public function normalize() {
+    final public function normalize($push = true) {
         /**
          * TODO: It may be worthwhile to track normalization per-property as
          * well as per-model to avoid repeated normalizations. Something to
@@ -160,7 +184,9 @@ abstract class Model implements Arrayable {
          */
         if (!$this->isNormalized) {
             $normalizers = self::getCachedNormalizers();
-            $errors = $this->applyPropertyFunctors($normalizers);
+            $errors = $this->applyPropertyFunctors(
+				$push ? $normalizers[self::PUSH] : $normalizers[self::PULL]
+			);
             $this->isNormalized = is_null($errors);
             return $errors;
         }
@@ -290,14 +316,22 @@ abstract class Model implements Arrayable {
     final private function getCachedNormalizers() {
         $key = get_class($this);
         if (!isset(self::$normalizerCache[$key])) {
-            $normalizers = $this->getNormalizers();
-            foreach ($normalizers as $property => $normalizer) {
-                $normalizers[$property] = $normalizers[$property]->done();
-            }
-            foreach (static::$propertyAliases as $alias => $property) {
-                $normalizers[$alias] = $normalizers[$property];
-            }
-            self::$normalizerCache[$key] = $normalizers;
+            $allNormalizers = [
+            	self::PUSH => $this->getNormalizers(),
+				self::PULL => $this->getPullNormalizers()
+            ];
+			foreach ($allNormalizers as $type => $normalizers) {
+	            foreach ($normalizers as $property => $normalizer) {
+	                $normalizers[$property] = $normalizer->done();
+	            }
+	            foreach (static::$propertyAliases as $alias => $property) {
+					if (isset($normalizers[$property])) {
+						$normalizers[$alias] = $normalizers[$property];
+					}
+	            }
+				$allNormalizers[$type] = $normalizers;
+			}
+            self::$normalizerCache[$key] = $allNormalizers;
         }
         return self::$normalizerCache[$key];
     }
@@ -313,7 +347,7 @@ abstract class Model implements Arrayable {
             foreach (static::$propertyAliases as $alias => $property) {
                 foreach (array_keys($sanitizers) as $scheme) {
                     foreach ($sanitizers[$scheme] as $property => $sanitizer) {
-                        $sanitizers[$scheme][$property] = $sanitizers[$scheme][$property]->done();
+                        $sanitizers[$scheme][$property] = $sanitizer->done();
                     }
                     if (isset($sanitizers[$scheme][$property])) {
                         $sanitizers[$scheme][$alias] = $sanitizers[$scheme][$property];

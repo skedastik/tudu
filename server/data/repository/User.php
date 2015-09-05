@@ -31,7 +31,9 @@ final class User extends Repository {
         if ($result === false) {
             throw new Exception\Client('User not found.');
         }
-        return new UserModel($result[0], true);
+        $newUser = new UserModel($result[0]);
+		$newUser->normalize(false);
+		return $newUser;
     }
     
     /**

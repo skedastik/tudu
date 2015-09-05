@@ -19,6 +19,7 @@ final class User extends Model {
     const PASSWORD      = 'password';
     const PASSWORD_HASH = 'password_hash';
     const SIGNUP_TOKEN  = 'signup_token';
+	const KVS           = 'kvs';
     
     protected function getNormalizers() {
         return [
@@ -37,6 +38,12 @@ final class User extends Model {
             self::SIGNUP_TOKEN => Transform::Convert()->to()->string()
         ];
     }
+	
+	protected function getPullNormalizers() {
+		return [
+			self::KVS => Transform::HStore()->to()->keyValueArray()
+		];
+	}
     
     protected function getSanitizers() {
         return [

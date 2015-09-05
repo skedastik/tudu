@@ -9,7 +9,6 @@ use \Tudu\Core\Encoder;
 use \Tudu\Core\Handler\Auth\Auth;
 use \Tudu\Handler;
 use \Tudu\Delegate\PHPass;
-use \Tudu\Core\Data\Transform\Transform;
 
 class UserEndpointTest extends EndpointTest {
     
@@ -62,9 +61,7 @@ class UserEndpointTest extends EndpointTest {
         ]));
         
         // extract signup token from user KVS
-        $userKvs = $user->get('kvs');
-        $transformer = Transform::HStore()->to()->keyValueArray();
-        $signupToken = $transformer->execute($userKvs)[User::SIGNUP_TOKEN];
+        $signupToken = $user->get('kvs')[User::SIGNUP_TOKEN];
         
         // simulate a valid POST to /users/:user_id/confirm
         $this->app->setRequestMethod('POST');

@@ -23,7 +23,9 @@ final class AccessToken extends Repository {
         if ($result === false) {
             throw new Exception\Client('Token not found.');
         }
-        return new AccessTokenModel($result[0], true);
+		$newAccessToken = new AccessTokenModel($result[0]);
+		$newAccessToken->normalize(false);
+        return $newAccessToken;
     }
     
     /**

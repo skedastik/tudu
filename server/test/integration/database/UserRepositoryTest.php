@@ -2,7 +2,6 @@
 namespace Tudu\Test\Integration\Database;
 
 use \Tudu\Test\Integration\Database\DatabaseTest;
-use \Tudu\Core\Data\Transform\Transform;
 use \Tudu\Data\Model\User;
 use \Tudu\Data\Repository\User as UserRepo;
 
@@ -114,7 +113,7 @@ class UserRepositoryTest extends DatabaseTest {
         $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
-        $tokenString = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
+        $tokenString = $user->get('kvs')[User::SIGNUP_TOKEN];
         $user = new User([
             User::USER_ID => $userId,
             User::SIGNUP_TOKEN => $tokenString
@@ -154,7 +153,7 @@ class UserRepositoryTest extends DatabaseTest {
         $user = $this->repo->fetch(new User([
             User::USER_ID => $userId,
         ]));
-        $signupToken = Transform::HStore()->execute($user->get('kvs'))[User::SIGNUP_TOKEN];
+        $signupToken = $user->get('kvs')[User::SIGNUP_TOKEN];
         $user = new User([
             User::USER_ID => $userId,
             User::SIGNUP_TOKEN => $signupToken

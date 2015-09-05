@@ -24,7 +24,9 @@ final class Task extends Repository {
         if ($result === false) {
             throw new Exception\Client('Task not found.');
         }
-        return new TaskModel($result[0], true);
+		$newTask = new TaskModel($result[0]);
+		$newTask->normalize(false);
+        return $newTask;
     }
     
     /**

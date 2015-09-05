@@ -33,9 +33,8 @@ final class Task extends Model {
 			 * TODO: When pushing data into the database, all non-NULL elements
 			 * are double-quoted. However, pulling data from the database will
 			 * produce slightly different results: PostgreSQL has specific rules
-			 * for when array elements are double-quoted. For this and other
-			 * reasons, it probably makes sense to have different normalizers
-			 * for pushing and pulling data.
+			 * for when array elements are double-quoted. Create pull normalizer
+			 * to convert PostgreSQL array string to PHP array.
 			 */
             self::TAGS => Transform::Convert()->to()->string()
                        -> then(Transform::Extract()->hashtags()->asArray())
